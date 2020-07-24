@@ -3,17 +3,16 @@ import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
 import Vue from 'vue'
+import ProLayout, { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import App from './App.vue'
 import router from './router'
-import store from './store/'
+import store from './store'
 import i18n from './locales'
-import { VueAxios } from './utils/request'
-import ProLayout, { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import themePluginConfig from '../config/themePluginConfig'
 
 // mock
 // WARNING: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.
-import './mock'
+// import './mock'
 
 import bootstrap from './core/bootstrap'
 import './core/lazy_use'
@@ -24,7 +23,6 @@ import './global.less'
 Vue.config.productionTip = false
 
 // mount axios to `Vue.$http` and `this.$http`
-Vue.use(VueAxios)
 Vue.component('pro-layout', ProLayout)
 Vue.component('page-header-wrapper', PageHeaderWrapper)
 
@@ -35,5 +33,5 @@ new Vue({
   store,
   i18n,
   created: bootstrap,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount('#app')

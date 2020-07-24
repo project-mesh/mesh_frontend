@@ -12,22 +12,22 @@ export default {
   props: {
     title: {
       type: String,
-      default: ''
+      default: '',
     },
     value: {
       type: String,
-      default: ''
+      default: '',
     },
     bordered: {
       type: Boolean,
-      default: false
-    }
-  }
+      default: false,
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
-@import "~ant-design-vue/es/style/themes/default.less";
+@import '~ant-design-vue/es/style/themes/default.less';
 
 .header-info {
   position: relative;

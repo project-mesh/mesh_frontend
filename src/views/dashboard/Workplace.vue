@@ -3,11 +3,12 @@
     <template v-slot:content>
       <div class="page-header-content">
         <div class="avatar">
-          <a-avatar size="large" :src="currentUser.avatar"/>
+          <a-avatar size="large" :src="currentUser.avatar" />
         </div>
         <div class="content">
           <div class="content-title">
-            {{ timeFix }}，{{ user.name }}<span class="welcome-text">，{{ welcome }}</span>
+            {{ timeFix }}，{{ user.name }}
+            <span class="welcome-text">，{{ welcome }}</span>
           </div>
           <div>前端工程师 | 蚂蚁金服 - 某某某事业群 - VUE平台</div>
         </div>
@@ -36,14 +37,15 @@
             style="margin-bottom: 24px;"
             :bordered="false"
             title="进行中的项目"
-            :body-style="{ padding: 0 }">
+            :body-style="{ padding: 0 }"
+          >
             <a slot="extra">全部项目</a>
             <div>
               <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in projects">
                 <a-card :bordered="false" :body-style="{ padding: 0 }">
                   <a-card-meta>
                     <div slot="title" class="card-title">
-                      <a-avatar size="small" :src="item.cover"/>
+                      <a-avatar size="small" :src="item.cover" />
                       <a>{{ item.title }}</a>
                     </div>
                     <div slot="description" class="card-description">
@@ -63,11 +65,14 @@
             <a-list>
               <a-list-item :key="index" v-for="(item, index) in activities">
                 <a-list-item-meta>
-                  <a-avatar slot="avatar" :src="item.user.avatar"/>
+                  <a-avatar slot="avatar" :src="item.user.avatar" />
                   <div slot="title">
-                    <span>{{ item.user.nickname }}</span>&nbsp;
-                    在&nbsp;<a href="#">{{ item.project.name }}</a>&nbsp;
-                    <span>{{ item.project.action }}</span>&nbsp;
+                    <span>{{ item.user.nickname }}</span>
+                    &nbsp; 在&nbsp;
+                    <a href="#">{{ item.project.name }}</a>
+                    &nbsp;
+                    <span>{{ item.project.action }}</span>
+                    &nbsp;
                     <a href="#">{{ item.project.event }}</a>
                   </div>
                   <div slot="description">{{ item.time }}</div>
@@ -76,14 +81,13 @@
             </a-list>
           </a-card>
         </a-col>
-        <a-col
-          style="padding: 0 12px"
-          :xl="8"
-          :lg="24"
-          :md="24"
-          :sm="24"
-          :xs="24">
-          <a-card title="快速开始 / 便捷导航" style="margin-bottom: 24px" :bordered="false" :body-style="{padding: 0}">
+        <a-col style="padding: 0 12px;" :xl="8" :lg="24" :md="24" :sm="24" :xs="24">
+          <a-card
+            title="快速开始 / 便捷导航"
+            style="margin-bottom: 24px;"
+            :bordered="false"
+            :body-style="{ padding: 0 }"
+          >
             <div class="item-group">
               <a>操作一</a>
               <a>操作二</a>
@@ -96,13 +100,14 @@
           </a-card>
           <a-card
             title="XX 指数"
-            style="margin-bottom: 24px"
+            style="margin-bottom: 24px;"
             :loading="radarLoading"
             :bordered="false"
-            :body-style="{ padding: 0 }">
+            :body-style="{ padding: 0 }"
+          >
             <div style="min-height: 400px;">
               <!-- :scale="scale" :axis1Opts="axis1Opts" :axis2Opts="axis2Opts"  -->
-              <radar :data="radarData"/>
+              <radar :data="radarData" />
             </div>
           </a-card>
           <a-card :loading="loading" title="团队" :bordered="false">
@@ -110,7 +115,7 @@
               <a-row>
                 <a-col :span="12" v-for="(item, index) in teams" :key="index">
                   <a>
-                    <a-avatar size="small" :src="item.avatar"/>
+                    <a-avatar size="small" :src="item.avatar" />
                     <span class="member">{{ item.name }}</span>
                   </a>
                 </a-col>
@@ -137,9 +142,9 @@ export default {
   name: 'Workplace',
   components: {
     PageHeaderWrapper,
-    Radar
+    Radar,
   },
-  data () {
+  data() {
     return {
       timeFix: timeFix(),
       avatar: '',
@@ -158,10 +163,10 @@ export default {
         tickLine: null,
         grid: {
           lineStyle: {
-            lineDash: null
+            lineDash: null,
           },
-          hideFirstLine: false
-        }
+          hideFirstLine: false,
+        },
       },
       axis2Opts: {
         dataKey: 'score',
@@ -170,220 +175,239 @@ export default {
         grid: {
           type: 'polygon',
           lineStyle: {
-            lineDash: null
-          }
-        }
+            lineDash: null,
+          },
+        },
       },
-      scale: [{
-        dataKey: 'score',
-        min: 0,
-        max: 80
-      }],
-      axisData: [
-        { item: '引用', a: 70, b: 30, c: 40 },
-        { item: '口碑', a: 60, b: 70, c: 40 },
-        { item: '产量', a: 50, b: 60, c: 40 },
-        { item: '贡献', a: 40, b: 50, c: 40 },
-        { item: '热度', a: 60, b: 70, c: 40 },
-        { item: '引用', a: 70, b: 50, c: 40 }
+      scale: [
+        {
+          dataKey: 'score',
+          min: 0,
+          max: 80,
+        },
       ],
-      radarData: []
+      axisData: [
+        // { item: '引用', a: 70, b: 30, c: 40 },
+        {
+          item: '口碑',
+          a: 60,
+          b: 70,
+          c: 40,
+        },
+        {
+          item: '产量',
+          a: 50,
+          b: 60,
+          c: 40,
+        },
+        {
+          item: '贡献',
+          a: 40,
+          b: 50,
+          c: 40,
+        },
+        {
+          item: '热度',
+          a: 60,
+          b: 70,
+          c: 40,
+        },
+        {
+          item: '引用',
+          a: 70,
+          b: 50,
+          c: 40,
+        },
+      ],
+      radarData: [],
     }
   },
   computed: {
     ...mapState({
       nickname: (state) => state.user.nickname,
-      welcome: (state) => state.user.welcome
+      welcome: (state) => state.user.welcome,
     }),
-    currentUser () {
+    currentUser() {
       return {
         name: 'Serati Ma',
-        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
+        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
       }
     },
-    userInfo () {
+    userInfo() {
       return this.$store.getters.userInfo
-    }
+    },
   },
-  created () {
+  created() {
     this.user = this.userInfo
     this.avatar = this.userInfo.avatar
 
-    getRoleList().then(res => {
+    getRoleList().then((res) => {
       // console.log('workplace -> call getRoleList()', res)
     })
 
-    getServiceList().then(res => {
+    getServiceList().then((res) => {
       // console.log('workplace -> call getServiceList()', res)
     })
   },
-  mounted () {
+  mounted() {
     this.getProjects()
     this.getActivity()
     this.getTeams()
     this.initRadar()
   },
   methods: {
-    getProjects () {
-      this.$http.get('/list/search/projects')
-        .then(res => {
-          this.projects = res.result && res.result.data
-          this.loading = false
-        })
+    getProjects() {
+      this.$http.get('/list/search/projects').then((res) => {
+        this.projects = res.result && res.result.data
+        this.loading = false
+      })
     },
-    getActivity () {
-      this.$http.get('/workplace/activity')
-        .then(res => {
-          this.activities = res.result
-        })
+    getActivity() {
+      this.$http.get('/workplace/activity').then((res) => {
+        this.activities = res.result
+      })
     },
-    getTeams () {
-      this.$http.get('/workplace/teams')
-        .then(res => {
-          this.teams = res.result
-        })
+    getTeams() {
+      this.$http.get('/workplace/teams').then((res) => {
+        this.teams = res.result
+      })
     },
-    initRadar () {
+    initRadar() {
       this.radarLoading = true
 
-      this.$http.get('/workplace/radar')
-        .then(res => {
-          const dv = new DataSet.View().source(res.result)
-          dv.transform({
-            type: 'fold',
-            fields: ['个人', '团队', '部门'],
-            key: 'user',
-            value: 'score'
-          })
-
-          this.radarData = dv.rows
-          this.radarLoading = false
+      this.$http.get('/workplace/radar').then((res) => {
+        const dv = new DataSet.View().source(res.result)
+        dv.transform({
+          type: 'fold',
+          fields: ['个人', '团队', '部门'],
+          key: 'user',
+          value: 'score',
         })
-    }
-  }
+
+        this.radarData = dv.rows
+        this.radarLoading = false
+      })
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  @import "./Workplace.less";
+@import './Workplace.less';
 
-  .project-list {
-
-    .card-title {
-      font-size: 0;
-
-      a {
-        color: rgba(0, 0, 0, 0.85);
-        margin-left: 12px;
-        line-height: 24px;
-        height: 24px;
-        display: inline-block;
-        vertical-align: top;
-        font-size: 14px;
-
-        &:hover {
-          color: #1890ff;
-        }
-      }
-    }
-
-    .card-description {
-      color: rgba(0, 0, 0, 0.45);
-      height: 44px;
-      line-height: 22px;
-      overflow: hidden;
-    }
-
-    .project-item {
-      display: flex;
-      margin-top: 8px;
-      overflow: hidden;
-      font-size: 12px;
-      height: 20px;
-      line-height: 20px;
-
-      a {
-        color: rgba(0, 0, 0, 0.45);
-        display: inline-block;
-        flex: 1 1 0;
-
-        &:hover {
-          color: #1890ff;
-        }
-      }
-
-      .datetime {
-        color: rgba(0, 0, 0, 0.25);
-        flex: 0 0 auto;
-        float: right;
-      }
-    }
-
-    .ant-card-meta-description {
-      color: rgba(0, 0, 0, 0.45);
-      height: 44px;
-      line-height: 22px;
-      overflow: hidden;
-    }
-  }
-
-  .item-group {
-    padding: 20px 0 8px 24px;
+.project-list {
+  .card-title {
     font-size: 0;
 
     a {
-      color: rgba(0, 0, 0, 0.65);
-      display: inline-block;
-      font-size: 14px;
-      margin-bottom: 13px;
-      width: 25%;
-    }
-  }
-
-  .members {
-    a {
-      display: block;
-      margin: 12px 0;
+      color: rgba(0, 0, 0, 0.85);
+      margin-left: 12px;
       line-height: 24px;
       height: 24px;
-
-      .member {
-        font-size: 14px;
-        color: rgba(0, 0, 0, .65);
-        line-height: 24px;
-        max-width: 100px;
-        vertical-align: top;
-        margin-left: 12px;
-        transition: all 0.3s;
-        display: inline-block;
-      }
+      display: inline-block;
+      vertical-align: top;
+      font-size: 14px;
 
       &:hover {
-        span {
-          color: #1890ff;
-        }
+        color: #1890ff;
       }
     }
   }
 
-  .mobile {
+  .card-description {
+    color: rgba(0, 0, 0, 0.45);
+    height: 44px;
+    line-height: 22px;
+    overflow: hidden;
+  }
 
-    .project-list {
+  .project-item {
+    display: flex;
+    margin-top: 8px;
+    overflow: hidden;
+    font-size: 12px;
+    height: 20px;
+    line-height: 20px;
 
-      .project-card-grid {
-        width: 100%;
+    a {
+      color: rgba(0, 0, 0, 0.45);
+      display: inline-block;
+      flex: 1 1 0;
+
+      &:hover {
+        color: #1890ff;
       }
     }
 
-    .more-info {
-      border: 0;
-      padding-top: 16px;
-      margin: 16px 0 16px;
-    }
-
-    .headerContent .title .welcome-text {
-      display: none;
+    .datetime {
+      color: rgba(0, 0, 0, 0.25);
+      flex: 0 0 auto;
+      float: right;
     }
   }
 
+  .ant-card-meta-description {
+    color: rgba(0, 0, 0, 0.45);
+    height: 44px;
+    line-height: 22px;
+    overflow: hidden;
+  }
+}
+
+.item-group {
+  padding: 20px 0 8px 24px;
+  font-size: 0;
+
+  a {
+    color: rgba(0, 0, 0, 0.65);
+    display: inline-block;
+    font-size: 14px;
+    margin-bottom: 13px;
+    width: 25%;
+  }
+}
+
+.members {
+  a {
+    display: block;
+    margin: 12px 0;
+    line-height: 24px;
+    height: 24px;
+
+    .member {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 24px;
+      max-width: 100px;
+      vertical-align: top;
+      margin-left: 12px;
+      transition: all 0.3s;
+      display: inline-block;
+    }
+
+    &:hover {
+      span {
+        color: #1890ff;
+      }
+    }
+  }
+}
+
+.mobile {
+  .project-list {
+    .project-card-grid {
+      width: 100%;
+    }
+  }
+
+  .more-info {
+    border: 0;
+    padding-top: 16px;
+    margin: 16px 0 16px;
+  }
+
+  .headerContent .title .welcome-text {
+    display: none;
+  }
+}
 </style>

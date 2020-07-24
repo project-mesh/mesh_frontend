@@ -44,7 +44,7 @@ import {
   Statistic,
   Descriptions,
   message,
-  notification
+  notification,
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -53,8 +53,7 @@ import VueCropper from 'vue-cropper'
 import Dialog from '@/components/Dialog'
 import MultiTab from '@/components/MultiTab'
 import PageLoading from '@/components/PageLoading'
-import PermissionHelper from '@/utils/helper/permission'
-import './directives/action'
+// import PermissionHelper from '@/utils/helper/permission'
 
 Vue.use(ConfigProvider)
 Vue.use(Layout)
@@ -110,7 +109,7 @@ Vue.use(Viser)
 Vue.use(Dialog) // this.$dialog func
 Vue.use(MultiTab)
 Vue.use(PageLoading)
-Vue.use(PermissionHelper)
+// Vue.use(PermissionHelper)
 Vue.use(VueCropper)
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] NOTICE: Antd use lazy-load.')

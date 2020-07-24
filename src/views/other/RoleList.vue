@@ -5,7 +5,7 @@
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
             <a-form-item label="角色ID">
-              <a-input placeholder="请输入"/>
+              <a-input placeholder="请输入" />
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">
@@ -20,32 +20,29 @@
           <a-col :md="8" :sm="24">
             <span class="table-page-search-submitButtons">
               <a-button type="primary">查询</a-button>
-              <a-button style="margin-left: 8px">重置</a-button>
+              <a-button style="margin-left: 8px;">重置</a-button>
             </span>
           </a-col>
         </a-row>
       </a-form>
     </div>
 
-    <s-table
-      ref="table"
-      size="default"
-      :columns="columns"
-      :data="loadData"
-    >
-      <div
-        slot="expandedRowRender"
-        slot-scope="record"
-        style="margin: 0">
-        <a-row
-          :gutter="24"
-          :style="{ marginBottom: '12px' }">
-          <a-col :span="12" v-for="(role, index) in record.permissions" :key="index" :style="{ marginBottom: '12px' }">
+    <s-table ref="table" size="default" :columns="columns" :data="loadData">
+      <div slot="expandedRowRender" slot-scope="record" style="margin: 0;">
+        <a-row :gutter="24" :style="{ marginBottom: '12px' }">
+          <a-col
+            :span="12"
+            v-for="(role, index) in record.permissions"
+            :key="index"
+            :style="{ marginBottom: '12px' }"
+          >
             <a-col :span="4">
               <span>{{ role.permissionName }}：</span>
             </a-col>
             <a-col :span="20" v-if="role.actionEntitySet.length > 0">
-              <a-tag color="cyan" v-for="(action, k) in role.actionEntitySet" :key="k">{{ action.describe }}</a-tag>
+              <a-tag color="cyan" v-for="(action, k) in role.actionEntitySet" :key="k">
+                {{ action.describe }}
+              </a-tag>
             </a-col>
             <a-col :span="20" v-else>-</a-col>
           </a-col>
@@ -56,7 +53,8 @@
         <a-divider type="vertical" />
         <a-dropdown>
           <a class="ant-dropdown-link">
-            更多 <a-icon type="down" />
+            更多
+            <a-icon type="down" />
           </a>
           <a-menu slot="overlay">
             <a-menu-item>
@@ -74,7 +72,6 @@
     </s-table>
 
     <role-modal ref="modal" @ok="handleOk"></role-modal>
-
   </a-card>
 </template>
 
@@ -86,11 +83,12 @@ export default {
   name: 'TableList',
   components: {
     STable,
-    RoleModal
+    RoleModal,
   },
-  data () {
+  data() {
     return {
-      description: '列表使用场景：后台管理中的权限管理以及角色管理，可用于基于 RBAC 设计的角色权限控制，颗粒度细到每一个操作类型。',
+      description:
+        '列表使用场景：后台管理中的权限管理以及角色管理，可用于基于 RBAC 设计的角色权限控制，颗粒度细到每一个操作类型。',
 
       visible: false,
 
@@ -105,64 +103,66 @@ export default {
       columns: [
         {
           title: '唯一识别码',
-          dataIndex: 'id'
+          dataIndex: 'id',
         },
         {
           title: '角色名称',
-          dataIndex: 'name'
+          dataIndex: 'name',
         },
         {
           title: '状态',
-          dataIndex: 'status'
+          dataIndex: 'status',
         },
         {
           title: '创建时间',
           dataIndex: 'createTime',
-          sorter: true
-        }, {
+          sorter: true,
+        },
+        {
           title: '操作',
           width: '150px',
           dataIndex: 'action',
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        return this.$http.get('/role', {
-          params: Object.assign(parameter, this.queryParam)
-        }).then(res => {
-          return res.result
-        })
-      },
+      loadData: (parameter) =>
+        this.$http
+          .get('/role', {
+            params: Object.assign(parameter, this.queryParam),
+          })
+          .then((res) => res.result),
 
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
     }
   },
   methods: {
-    handleEdit (record) {
-      this.mdl = Object.assign({}, record)
+    handleEdit(record) {
+      this.mdl = { ...record }
 
-      this.mdl.permissions.forEach(permission => {
-        permission.actionsOptions = permission.actionEntitySet.map(action => {
-          return { label: action.describe, value: action.action, defaultCheck: action.defaultCheck }
-        })
+      this.mdl.permissions.forEach((permission) => {
+        permission.actionsOptions = permission.actionEntitySet.map((action) => ({
+          label: action.describe,
+          value: action.action,
+          defaultCheck: action.defaultCheck,
+        }))
       })
 
       console.log(this.mdl)
       this.visible = true
     },
-    handleOk () {
+    handleOk() {
       // 新增/修改 成功时，重载列表
       this.$refs.table.refresh()
     },
-    onChange (selectedRowKeys, selectedRows) {
+    onChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
-    }
+    },
   },
   watch: {
     /*
@@ -177,6 +177,6 @@ export default {
         })
       }
       */
-  }
+  },
 }
 </script>

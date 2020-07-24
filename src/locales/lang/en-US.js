@@ -4,11 +4,11 @@ import momentEU from 'moment/locale/eu'
 const components = {
   antLocale: antdEnUS,
   momentName: 'eu',
-  momentLocale: momentEU
+  momentLocale: momentEU,
 }
 
 const locale = {
-  'message': '-',
+  message: '-',
   'menu.home': 'Home',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': 'Analysis',
@@ -36,10 +36,11 @@ const locale = {
   'app.setting.copy': 'Copy Setting',
   'app.setting.loading': 'Loading theme',
   'app.setting.copyinfo': 'copy success，please replace defaultSettings in src/models/setting.js',
-  'app.setting.production.hint': 'Setting panel shows in development environment only, please manually modify'
+  'app.setting.production.hint':
+    'Setting panel shows in development environment only, please manually modify',
 }
 
 export default {
   ...components,
-  ...locale
+  ...locale,
 }

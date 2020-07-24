@@ -7,7 +7,9 @@
     </div>
     <div class="extra">
       <a-avatar :src="avatar" size="small" />
-      <a :href="href">{{ owner }}</a> 发布在 <a :href="href">{{ href }}</a>
+      <a :href="href">{{ owner }}</a>
+      发布在
+      <a :href="href">{{ href }}</a>
       <em>{{ updateAt | moment }}</em>
     </div>
   </div>
@@ -19,29 +21,29 @@ export default {
   props: {
     prefixCls: {
       type: String,
-      default: 'antd-pro-components-article-list-content-index-listContent'
+      default: 'antd-pro-components-article-list-content-index-listContent',
     },
     description: {
       type: String,
-      default: ''
+      default: '',
     },
     owner: {
       type: String,
-      required: true
+      required: true,
     },
     avatar: {
       type: String,
-      required: true
+      required: true,
     },
     href: {
       type: String,
-      required: true
+      required: true,
     },
     updateAt: {
       type: String,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>
 

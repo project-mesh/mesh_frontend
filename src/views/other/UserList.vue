@@ -5,7 +5,7 @@
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
             <a-form-item label="角色ID">
-              <a-input placeholder="请输入"/>
+              <a-input placeholder="请输入" />
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">
@@ -20,7 +20,7 @@
           <a-col :md="8" :sm="24">
             <span class="table-page-search-submitButtons">
               <a-button type="primary">查询</a-button>
-              <a-button style="margin-left: 8px">重置</a-button>
+              <a-button style="margin-left: 8px;">重置</a-button>
             </span>
           </a-col>
         </a-row>
@@ -32,22 +32,24 @@
       size="default"
       :columns="columns"
       :data="loadData"
-      :expandedRowKeys="expandedRowKeys"
+      :expanded-row-keys="expandedRowKeys"
       @expand="handleExpand"
     >
-      <div
-        slot="expandedRowRender"
-        slot-scope="record"
-        style="margin: 0">
-        <a-row
-          :gutter="24"
-          :style="{ marginBottom: '12px' }">
-          <a-col :span="12" v-for="(role, index) in record.permissions" :key="index" :style="{ marginBottom: '12px', height: '23px' }">
+      <div slot="expandedRowRender" slot-scope="record" style="margin: 0;">
+        <a-row :gutter="24" :style="{ marginBottom: '12px' }">
+          <a-col
+            :span="12"
+            v-for="(role, index) in record.permissions"
+            :key="index"
+            :style="{ marginBottom: '12px', height: '23px' }"
+          >
             <a-col :lg="4" :md="24">
               <span>{{ role.permissionName }}：</span>
             </a-col>
             <a-col :lg="20" :md="24" v-if="role.actionList && role.actionList.length > 0">
-              <a-tag color="cyan" v-for="action in role.actionList" :key="action">{{ action | permissionFilter }}</a-tag>
+              <a-tag color="cyan" v-for="action in role.actionList" :key="action">
+                {{ action | permissionFilter }}
+              </a-tag>
             </a-col>
             <a-col :span="20" v-else>-</a-col>
           </a-col>
@@ -60,7 +62,8 @@
         <a-divider type="vertical" />
         <a-dropdown>
           <a class="ant-dropdown-link">
-            更多 <a-icon type="down" />
+            更多
+            <a-icon type="down" />
           </a>
           <a-menu slot="overlay">
             <a-menu-item>
@@ -77,48 +80,34 @@
       </span>
     </s-table>
 
-    <a-modal
-      title="操作"
-      style="top: 20px;"
-      :width="800"
-      v-model="visible"
-      @ok="handleOk"
-    >
+    <a-modal title="操作" style="top: 20px;" :width="800" v-model="visible" @ok="handleOk">
       <a-form class="permission-form" :form="form">
-
         <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
           label="唯一识别码"
-          hasFeedback
-          validateStatus="success"
+          has-feedback
+          validate-status="success"
         >
-          <a-input
-            placeholder="唯一识别码"
-            disabled="disabled"
-            v-decorator="['id']"
-          />
+          <a-input placeholder="唯一识别码" disabled="disabled" v-decorator="['id']" />
         </a-form-item>
 
         <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
           label="角色名称"
-          hasFeedback
-          validateStatus="success"
+          has-feedback
+          validate-status="success"
         >
-          <a-input
-            placeholder="起一个名字"
-            v-decorator="['name']"
-          />
+          <a-input placeholder="起一个名字" v-decorator="['name']" />
         </a-form-item>
 
         <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
           label="状态"
-          hasFeedback
-          validateStatus="warning"
+          has-feedback
+          validate-status="warning"
         >
           <a-select v-decorator="['status', { initialValue: 1 }]">
             <a-select-option :value="1">正常</a-select-option>
@@ -126,18 +115,8 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="描述"
-          hasFeedback
-        >
-          <a-textarea
-            :rows="5"
-            placeholder="..."
-            id="describe"
-            v-decorator="['describe']"
-          />
+        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="描述" has-feedback>
+          <a-textarea :rows="5" placeholder="..." id="describe" v-decorator="['describe']" />
         </a-form-item>
 
         <a-divider>拥有权限</a-divider>
@@ -145,19 +124,20 @@
           <a-form-item
             class="permission-group"
             v-if="permission.actionsOptions && permission.actionsOptions.length > 0"
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
+            :label-col="labelCol"
+            :wrapper-col="wrapperCol"
             :key="permission.permissionId"
             :label="permission.permissionName"
           >
             <a-checkbox>全选</a-checkbox>
-            <a-checkbox-group v-decorator="[`permissions.${permission.permissionId}`]" :options="permission.actionsOptions"/>
+            <a-checkbox-group
+              v-decorator="[`permissions.${permission.permissionId}`]"
+              :options="permission.actionsOptions"
+            />
           </a-form-item>
         </template>
-
       </a-form>
     </a-modal>
-
   </a-card>
 </template>
 
@@ -169,53 +149,55 @@ import { PERMISSION_ENUM } from '@/utils/helper/permission'
 
 const STATUS = {
   1: '启用',
-  2: '禁用'
+  2: '禁用',
 }
 
 const columns = [
   {
     title: '唯一识别码',
-    dataIndex: 'id'
+    dataIndex: 'id',
   },
   {
     title: '角色名称',
-    dataIndex: 'name'
+    dataIndex: 'name',
   },
   {
     title: '状态',
     dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
+    scopedSlots: { customRender: 'status' },
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     scopedSlots: { customRender: 'createTime' },
-    sorter: true
-  }, {
+    sorter: true,
+  },
+  {
     title: '操作',
     width: '150px',
     dataIndex: 'action',
-    scopedSlots: { customRender: 'action' }
-  }
+    scopedSlots: { customRender: 'action' },
+  },
 ]
 
 export default {
   name: 'TableList',
   components: {
-    STable
+    STable,
   },
-  data () {
+  data() {
     return {
-      description: '列表使用场景：后台管理中的权限管理以及角色管理，可用于基于 RBAC 设计的角色权限控制，颗粒度细到每一个操作类型。',
+      description:
+        '列表使用场景：后台管理中的权限管理以及角色管理，可用于基于 RBAC 设计的角色权限控制，颗粒度细到每一个操作类型。',
 
       visible: false,
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 }
+        sm: { span: 5 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 }
+        sm: { span: 16 },
       },
       form: this.$form.createForm(this),
       permissions: [],
@@ -227,58 +209,54 @@ export default {
       // 表头
       columns,
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        return getRoleList(parameter)
-          .then(res => {
-            console.log('getRoleList', res)
-            // 展开全部行
-            this.expandedRowKeys = res.result.data.map(item => item.id)
-            return res.result
-          })
-      },
+      loadData: (parameter) =>
+        getRoleList(parameter).then((res) => {
+          console.log('getRoleList', res)
+          // 展开全部行
+          this.expandedRowKeys = res.result.data.map((item) => item.id)
+          return res.result
+        }),
 
       expandedRowKeys: [],
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
     }
   },
   filters: {
-    statusFilter (key) {
+    statusFilter(key) {
       return STATUS[key]
     },
-    permissionFilter (key) {
+    permissionFilter(key) {
       const permission = PERMISSION_ENUM[key]
       return permission && permission.label
-    }
+    },
   },
-  created () {
-    getServiceList().then(res => {
+  created() {
+    getServiceList().then((res) => {
       console.log('getServiceList.call()', res)
     })
 
-    getRoleList().then(res => {
+    getRoleList().then((res) => {
       console.log('getRoleList.call()', res)
     })
   },
   methods: {
-    handleEdit (record) {
+    handleEdit(record) {
       this.visible = true
       console.log('record', record)
 
       const checkboxGroup = {}
-      this.permissions = record.permissions.map(permission => {
+      this.permissions = record.permissions.map((permission) => {
         const groupKey = `permissions.${permission.permissionId}`
         checkboxGroup[groupKey] = permission.actionList
-        const actionsOptions = permission.actionEntitySet.map(action => {
-          return {
-            label: action.describe,
-            value: action.action,
-            defaultCheck: action.defaultCheck
-          }
-        })
+        const actionsOptions = permission.actionEntitySet.map((action) => ({
+          label: action.describe,
+          value: action.action,
+          defaultCheck: action.defaultCheck,
+        }))
         return {
           ...permission,
-          actionsOptions
+          actionsOptions,
         }
       })
 
@@ -290,27 +268,27 @@ export default {
         this.form.setFieldsValue(checkboxGroup)
       })
     },
-    handleOk (e) {
+    handleOk(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         console.log(err, values)
       })
     },
-    onChange (selectedRowKeys, selectedRows) {
+    onChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    handleExpand (expanded, record) {
+    handleExpand(expanded, record) {
       console.log('expanded', expanded, record)
       if (expanded) {
         this.expandedRowKeys.push(record.id)
       } else {
-        this.expandedRowKeys = this.expandedRowKeys.filter(item => record.id !== item)
+        this.expandedRowKeys = this.expandedRowKeys.filter((item) => record.id !== item)
       }
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
-    }
+    },
   },
   watch: {
     /*
@@ -325,7 +303,7 @@ export default {
         })
       }
       */
-  }
+  },
 }
 </script>
 
@@ -336,5 +314,4 @@ export default {
     margin-bottom: 0;
   }
 }
-
 </style>

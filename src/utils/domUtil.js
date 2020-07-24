@@ -10,7 +10,7 @@ export const setDocumentTitle = function (title) {
     i.src = '/favicon.ico'
     i.style.display = 'none'
     i.onload = function () {
-      setTimeout(function () {
+      setTimeout(() => {
         i.remove()
       }, 9)
     }

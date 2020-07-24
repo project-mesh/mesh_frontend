@@ -1,35 +1,19 @@
-const VueAxios = {
-  vm: {},
-  // eslint-disable-next-line no-unused-vars
-  install (Vue, instance) {
-    if (this.installed) {
-      return
-    }
-    this.installed = true
+import axios from 'axios'
 
-    if (!instance) {
-      // eslint-disable-next-line no-console
-      console.error('You have to install axios')
-      return
-    }
+// 创建 axios 实例
+const request = axios.create({
+  // API 请求的默认前缀
+  baseURL: process.env.VUE_APP_API_BASE_URL,
+  timeout: 6000, // 请求超时时间
+})
 
-    Vue.axios = instance
+// 异常拦截处理器
+const errorHandler = (error) => Promise.reject(error)
 
-    Object.defineProperties(Vue.prototype, {
-      axios: {
-        get: function get () {
-          return instance
-        }
-      },
-      $http: {
-        get: function get () {
-          return instance
-        }
-      }
-    })
-  }
-}
+// request interceptor
+request.interceptors.request.use((config) => config, errorHandler)
 
-export {
-  VueAxios
-}
+// response interceptor
+request.interceptors.response.use((response) => response.data, errorHandler)
+
+export default request

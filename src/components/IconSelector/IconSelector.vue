@@ -3,7 +3,12 @@
     <a-tabs v-model="currentTab" @change="handleTabChange">
       <a-tab-pane v-for="v in icons" :tab="v.title" :key="v.key">
         <ul>
-          <li v-for="(icon, key) in v.icons" :key="`${v.key}-${key}`" :class="{ 'active': selectedIcon==icon }" @click="handleSelectedIcon(icon)" >
+          <li
+            v-for="(icon, key) in v.icons"
+            :key="`${v.key}-${key}`"
+            :class="{ active: selectedIcon === icon }"
+            @click="handleSelectedIcon(icon)"
+          >
             <a-icon :type="icon" :style="{ fontSize: '36px' }" />
           </li>
         </ul>
@@ -20,67 +25,70 @@ export default {
   props: {
     prefixCls: {
       type: String,
-      default: 'ant-pro-icon-selector'
+      default: 'ant-pro-icon-selector',
     },
     // eslint-disable-next-line
     value: {
-      type: String
-    }
+      type: String,
+    },
   },
-  data () {
+  data() {
     return {
       selectedIcon: this.value || '',
       currentTab: 'directional',
-      icons
+      icons,
     }
   },
   watch: {
-    value (val) {
+    value(val) {
       this.selectedIcon = val
       this.autoSwitchTab()
-    }
+    },
   },
-  created () {
+  created() {
     if (this.value) {
       this.autoSwitchTab()
     }
   },
   methods: {
-    handleSelectedIcon (icon) {
+    handleSelectedIcon(icon) {
       this.selectedIcon = icon
       this.$emit('change', icon)
     },
-    handleTabChange (activeKey) {
+    handleTabChange(activeKey) {
       this.currentTab = activeKey
     },
-    autoSwitchTab () {
-      icons.some(item => item.icons.some(icon => icon === this.value) && (this.currentTab = item.key))
-    }
-  }
+    autoSwitchTab() {
+      icons.some(
+        (item) => item.icons.some((icon) => icon === this.value) && (this.currentTab = item.key)
+      )
+    },
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  @import "../index.less";
+@import '../index.less';
 
-  ul{
-    list-style: none;
-    padding: 0;
-    overflow-y: scroll;
-    height: 250px;
+ul {
+  list-style: none;
+  padding: 0;
+  overflow-y: scroll;
+  height: 250px;
 
-    li{
-      display: inline-block;
-      padding: @padding-sm;
-      margin: 3px 0;
-      border-radius: @border-radius-base;
+  li {
+    display: inline-block;
+    padding: @padding-sm;
+    margin: 3px 0;
+    border-radius: @border-radius-base;
 
-      &:hover, &.active{
-        // box-shadow: 0px 0px 5px 2px @primary-color;
-        cursor: pointer;
-        color: @white;
-        background-color: @primary-color;
-      }
+    &:hover,
+    &.active {
+      // box-shadow: 0px 0px 5px 2px @primary-color;
+      cursor: pointer;
+      color: @white;
+      background-color: @primary-color;
     }
   }
+}
 </style>

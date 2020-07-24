@@ -1,5 +1,5 @@
 <template>
-  <a-list itemLayout="horizontal">
+  <a-list item-layout="horizontal">
     <a-list-item>
       <a-list-item-meta>
         <template v-slot:title>
@@ -12,7 +12,12 @@
         </template>
       </a-list-item-meta>
       <template v-slot:actions>
-        <a-switch checkedChildren="暗色" unCheckedChildren="白色" :defaultChecked="navTheme === 'dark' && true || false" @change="onChange" />
+        <a-switch
+          checked-children="暗色"
+          un-checked-children="白色"
+          :default-checked="(navTheme === 'dark' && true) || false"
+          @change="onChange"
+        />
       </template>
     </a-list-item>
     <a-list-item>
@@ -22,7 +27,8 @@
         </template>
         <template v-slot:description>
           <span>
-            页面风格配色： <a>{{ colorFilter(primaryColor) }}</a>
+            页面风格配色：
+            <a>{{ colorFilter(primaryColor) }}</a>
           </span>
         </template>
       </a-list-item-meta>
@@ -35,34 +41,33 @@ import { baseMixin } from '@/store/app-mixin'
 import { NAV_THEME, TOGGLE_NAV_THEME } from '@/store/mutation-types'
 
 const themeMap = {
-  'dark': '暗色',
-  'light': '白色'
+  dark: '暗色',
+  light: '白色',
 }
 
 export default {
   mixins: [baseMixin],
-  data () {
-    return {
-    }
+  data() {
+    return {}
   },
   filters: {
-    themeFilter (theme) {
+    themeFilter(theme) {
       return themeMap[theme]
-    }
+    },
   },
   methods: {
-    colorFilter (color) {
-      const c = colorList.find(o => o.color === color)
+    colorFilter(color) {
+      const c = colorList.find((o) => o.color === color)
       return c && c.key
     },
 
-    onChange (checked) {
+    onChange(checked) {
       if (checked) {
         this.$store.commit(TOGGLE_NAV_THEME, NAV_THEME.DARK)
       } else {
         this.$store.commit(TOGGLE_NAV_THEME, NAV_THEME.LIGHT)
       }
-    }
-  }
+    },
+  },
 }
 </script>

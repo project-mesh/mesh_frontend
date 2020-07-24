@@ -30,7 +30,9 @@
                   v-decorator="['owner']"
                   @change="handleChange"
                 >
-                  <a-select-option v-for="item in owners" :key="item.id">{{ item.name }}</a-select-option>
+                  <a-select-option v-for="item in owners" :key="item.id">
+                    {{ item.name }}
+                  </a-select-option>
                 </a-select>
                 <a class="list-articles-trigger" @click="setOwner">只看自己的</a>
               </a-form-item>
@@ -62,10 +64,10 @@
     <a-card style="margin-top: 24px;" :bordered="false">
       <a-list
         size="large"
-        rowKey="id"
+        row-key="id"
         :loading="loading"
-        itemLayout="vertical"
-        :dataSource="data"
+        item-layout="vertical"
+        :data-source="data"
       >
         <a-list-item :key="item.id" slot="renderItem" slot-scope="item">
           <template slot="actions">
@@ -83,7 +85,13 @@
               </span>
             </template>
           </a-list-item-meta>
-          <article-list-content :description="item.description" :owner="item.owner" :avatar="item.avatar" :href="item.href" :updateAt="item.updatedAt" />
+          <article-list-content
+            :description="item.description"
+            :owner="item.owner"
+            :avatar="item.avatar"
+            :href="item.href"
+            :update-at="item.updatedAt"
+          />
         </a-list-item>
         <div slot="footer" v-if="data.length > 0" style="text-align: center; margin-top: 16px;">
           <a-button @click="loadMore" :loading="loadingMore">加载更多</a-button>
@@ -96,29 +104,30 @@
 <script>
 import { TagSelect, StandardFormRow, ArticleListContent } from '@/components'
 import IconText from './components/IconText'
+
 const TagSelectOption = TagSelect.Option
 
 const owners = [
   {
     id: 'wzj',
-    name: '我自己'
+    name: '我自己',
   },
   {
     id: 'wjh',
-    name: '吴家豪'
+    name: '吴家豪',
   },
   {
     id: 'zxx',
-    name: '周星星'
+    name: '周星星',
   },
   {
     id: 'zly',
-    name: '赵丽颖'
+    name: '赵丽颖',
   },
   {
     id: 'ym',
-    name: '姚明'
-  }
+    name: '姚明',
+  },
 ]
 
 export default {
@@ -127,46 +136,51 @@ export default {
     TagSelectOption,
     StandardFormRow,
     ArticleListContent,
-    IconText
+    IconText,
   },
-  data () {
+  data() {
     return {
       owners,
       loading: true,
       loadingMore: false,
       data: [],
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
     }
   },
-  mounted () {
+  mounted() {
     this.getList()
   },
   methods: {
-    handleChange (value) {
+    handleChange(value) {
       console.log(`selected ${value}`)
     },
-    getList () {
-      this.$http.get('/list/article').then(res => {
+    getList() {
+      this.$http.get('/list/article').then((res) => {
         console.log('res', res)
         this.data = res.result
         this.loading = false
       })
     },
-    loadMore () {
+    loadMore() {
       this.loadingMore = true
-      this.$http.get('/list/article').then(res => {
-        this.data = this.data.concat(res.result)
-      }).finally(() => {
-        this.loadingMore = false
+      this.$http
+        .get('/list/article')
+        .then((res) => {
+          this.data = this.data.concat(res.result)
+        })
+        .finally(() => {
+          this.loadingMore = false
+        })
+    },
+    setOwner() {
+      const {
+        form: { setFieldsValue },
+      } = this
+      setFieldsValue({
+        owner: ['wzj'],
       })
     },
-    setOwner () {
-      const { form: { setFieldsValue } } = this
-      setFieldsValue({
-        owner: ['wzj']
-      })
-    }
-  }
+  },
 }
 </script>
 

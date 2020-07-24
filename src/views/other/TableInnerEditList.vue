@@ -5,7 +5,7 @@
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
             <a-form-item label="规则编号">
-              <a-input placeholder=""/>
+              <a-input placeholder="" />
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">
@@ -20,12 +20,12 @@
           <template v-if="advanced">
             <a-col :md="8" :sm="24">
               <a-form-item label="调用次数">
-                <a-input-number style="width: 100%"/>
+                <a-input-number style="width: 100%;" />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="更新日期">
-                <a-date-picker style="width: 100%" placeholder="请输入更新日期"/>
+                <a-date-picker style="width: 100%;" placeholder="请输入更新日期" />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -47,13 +47,16 @@
               </a-form-item>
             </a-col>
           </template>
-          <a-col :md="!advanced && 8 || 24" :sm="24">
-            <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
+          <a-col :md="(!advanced && 8) || 24" :sm="24">
+            <span
+              class="table-page-search-submitButtons"
+              :style="(advanced && { float: 'right', overflow: 'hidden' }) || {}"
+            >
               <a-button type="primary">查询</a-button>
-              <a-button style="margin-left: 8px">重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
+              <a-button style="margin-left: 8px;">重置</a-button>
+              <a @click="toggleAdvanced" style="margin-left: 8px;">
                 {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
+                <a-icon :type="advanced ? 'up' : 'down'" />
               </a>
             </span>
           </a-col>
@@ -65,12 +68,19 @@
       <a-button type="primary" icon="plus">新建</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+          <a-menu-item key="1">
+            <a-icon type="delete" />
+            删除
+          </a-menu-item>
           <!-- lock | unlock -->
-          <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
+          <a-menu-item key="2">
+            <a-icon type="lock" />
+            锁定
+          </a-menu-item>
         </a-menu>
-        <a-button style="margin-left: 8px">
-          批量操作 <a-icon type="down" />
+        <a-button style="margin-left: 8px;">
+          批量操作
+          <a-icon type="down" />
         </a-button>
       </a-dropdown>
     </div>
@@ -81,15 +91,22 @@
       :columns="columns"
       :data="loadData"
       :alert="{ show: true, clear: true }"
-      :rowSelection="{ selectedRowKeys: this.selectedRowKeys, onChange: this.onSelectChange }"
+      :row-selection="{
+        selectedRowKeys: this.selectedRowKeys,
+        onChange: this.onSelectChange,
+      }"
     >
-      <template v-for="(col, index) in columns" v-if="col.scopedSlots" :slot="col.dataIndex" slot-scope="text, record">
+      <template
+        v-for="(col, index) in filteredColumns"
+        :slot="col.dataIndex"
+        slot-scope="text, record"
+      >
         <div :key="index">
           <a-input
             v-if="record.editable"
-            style="margin: -5px 0"
+            style="margin: -5px 0;"
             :value="text"
-            @change="e => handleChange(e.target.value, record.key, col, record)"
+            @change="(e) => handleChange(e.target.value, record.key, col, record)"
           />
           <template v-else>{{ text }}</template>
         </div>
@@ -111,7 +128,6 @@
         </div>
       </template>
     </s-table>
-
   </a-card>
 </template>
 
@@ -121,9 +137,9 @@ import { STable } from '@/components'
 export default {
   name: 'TableList',
   components: {
-    STable
+    STable,
   },
-  data () {
+  data() {
     return {
       // 高级搜索 展开/关闭
       advanced: false,
@@ -134,12 +150,12 @@ export default {
         {
           title: '规则编号',
           dataIndex: 'no',
-          width: 90
+          width: 90,
         },
         {
           title: '描述',
           dataIndex: 'description',
-          scopedSlots: { customRender: 'description' }
+          scopedSlots: { customRender: 'description' },
         },
         {
           title: '服务调用次数',
@@ -147,7 +163,7 @@ export default {
           width: '150px',
           sorter: true,
           needTotal: true,
-          scopedSlots: { customRender: 'callNo' }
+          scopedSlots: { customRender: 'callNo' },
           // customRender: (text) => text + ' 次'
         },
         {
@@ -155,42 +171,40 @@ export default {
           dataIndex: 'status',
           width: '100px',
           needTotal: true,
-          scopedSlots: { customRender: 'status' }
+          scopedSlots: { customRender: 'status' },
         },
         {
           title: '更新时间',
           dataIndex: 'updatedAt',
           width: '200px',
           sorter: true,
-          scopedSlots: { customRender: 'updatedAt' }
+          scopedSlots: { customRender: 'updatedAt' },
         },
         {
           table: '操作',
           dataIndex: 'action',
           width: '120px',
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        return this.$http.get('/service', {
-          params: Object.assign(parameter, this.queryParam)
-        }).then(res => {
-          return res.result
-        })
-      },
+      loadData: (parameter) =>
+        this.$http
+          .get('/service', {
+            params: Object.assign(parameter, this.queryParam),
+          })
+          .then((res) => res.result),
 
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
     }
   },
   methods: {
-
-    handleChange (value, key, column, record) {
+    handleChange(value, key, column, record) {
       console.log(value, key, column)
       record[column.dataIndex] = value
     },
-    edit (row) {
+    edit(row) {
       row.editable = true
       // row = Object.assign({}, row)
     },
@@ -202,32 +216,37 @@ export default {
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           console.log('OK')
           // 在这里调用删除接口
           return new Promise((resolve, reject) => {
             setTimeout(Math.random() > 0.5 ? resolve : reject, 1000)
           }).catch(() => console.log('Oops errors!'))
         },
-        onCancel () {
+        onCancel() {
           console.log('Cancel')
-        }
+        },
       })
     },
-    save (row) {
+    save(row) {
       row.editable = false
     },
-    cancel (row) {
+    cancel(row) {
       row.editable = false
     },
 
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
-    }
+    },
+  },
+  computed: {
+    filteredColumns() {
+      return this.columns.filter((el) => el.scopedSlots)
+    },
   },
   watch: {
     /*
@@ -242,27 +261,27 @@ export default {
         })
       }
       */
-  }
+  },
 }
 </script>
 
 <style lang="less" scoped>
-  .search {
-    margin-bottom: 54px;
-  }
+.search {
+  margin-bottom: 54px;
+}
 
+.fold {
+  width: calc(100% - 216px);
+  display: inline-block;
+}
+
+.operator {
+  margin-bottom: 18px;
+}
+
+@media screen and (max-width: 900px) {
   .fold {
-    width: calc(100% - 216px);
-    display: inline-block
+    width: 100%;
   }
-
-  .operator {
-    margin-bottom: 18px;
-  }
-
-  @media screen and (max-width: 900px) {
-    .fold {
-      width: 100%;
-    }
-  }
+}
 </style>

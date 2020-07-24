@@ -1,12 +1,13 @@
 <template>
   <div>
     <v-chart
-      :forceFit="true"
+      :force-fit="true"
       :height="height"
       :width="width"
       :data="data"
       :scale="scale"
-      :padding="0">
+      :padding="0"
+    >
       <v-tooltip />
       <v-interval
         :shape="['liquid-fill-gauge']"
@@ -14,7 +15,7 @@
         color=""
         :v-style="{
           lineWidth: 10,
-          opacity: 0.75
+          opacity: 0.75,
         }"
         :tooltip="[
           'transfer*value',
@@ -22,7 +23,7 @@
             return {
               name: transfer,
               value,
-            };
+            }
           },
         ]"
       ></v-interval>
@@ -33,7 +34,7 @@
         :top="true"
         :position="{
           gender: row.transfer,
-          value: 45
+          value: 45,
         }"
         :content="row.value + '%'"
         :v-style="{
@@ -52,16 +53,14 @@ export default {
   props: {
     height: {
       type: Number,
-      default: 0
+      default: 0,
     },
     width: {
       type: Number,
-      default: 0
-    }
-  }
+      default: 0,
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

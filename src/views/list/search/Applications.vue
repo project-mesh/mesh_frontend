@@ -52,12 +52,17 @@
     </a-card>
 
     <div class="ant-pro-pages-list-applications-filterCardList">
-      <a-list :loading="loading" :data-source="data" :grid="{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }" style="margin-top: 24px;">
+      <a-list
+        :loading="loading"
+        :data-source="data"
+        :grid="{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }"
+        style="margin-top: 24px;"
+      >
         <a-list-item slot="renderItem" slot-scope="item">
           <a-card :body-style="{ paddingBottom: 20 }" hoverable>
             <a-card-meta :title="item.title">
               <template slot="avatar">
-                <a-avatar size="small" :src="item.avatar"/>
+                <a-avatar size="small" :src="item.avatar" />
               </template>
             </a-card-meta>
             <template slot="actions">
@@ -101,6 +106,7 @@
 import moment from 'moment'
 import { TagSelect, StandardFormRow, Ellipsis, AvatarList } from '@/components'
 import CardInfo from './components/CardInfo'
+
 const TagSelectOption = TagSelect.Option
 const AvatarListItem = AvatarList.AvatarItem
 
@@ -112,35 +118,35 @@ export default {
     TagSelect,
     TagSelectOption,
     StandardFormRow,
-    CardInfo
+    CardInfo,
   },
-  data () {
+  data() {
     return {
       data: [],
       form: this.$form.createForm(this),
-      loading: true
+      loading: true,
     }
   },
   filters: {
-    fromNow (date) {
+    fromNow(date) {
       return moment(date).fromNow()
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.getList()
   },
   methods: {
-    handleChange (value) {
+    handleChange(value) {
       console.log(`selected ${value}`)
     },
-    getList () {
-      this.$http.get('/list/article', { params: { count: 8 } }).then(res => {
+    getList() {
+      this.$http.get('/list/article', { params: { count: 8 } }).then((res) => {
         console.log('res', res)
         this.data = res.result
         this.loading = false
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -174,7 +180,7 @@ export default {
 
     > span {
       flex: 1 1;
-      color: rgba(0,0,0,.45);
+      color: rgba(0, 0, 0, 0.45);
       font-size: 12px;
     }
 

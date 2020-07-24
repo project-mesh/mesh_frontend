@@ -2,10 +2,10 @@
 const carbonUrl = '//cdn.carbonads.com/carbon.js?serve=CK7DL2JW&placement=antdvcom'
 export default {
   props: {
-    isMobile: Boolean
+    isMobile: Boolean,
   },
   watch: {
-    $route (e, t) {
+    $route(e, t) {
       const adId = '#carbonads'
       // if(isGitee) {
       //   adId = '#cf';
@@ -21,13 +21,13 @@ export default {
           this.load()
         }
       }, 20000)
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.load()
   },
   methods: {
-    load () {
+    load() {
       // if(isGitee) {
       //   axios.get('https://api.codefund.app/properties/162/funder.html?template=horizontal')
       //   .then(function (response) {
@@ -40,11 +40,11 @@ export default {
         e.src = carbonUrl
         this.$el.appendChild(e)
       }
-    }
+    },
   },
-  render () {
-    return <div id="carbon-ads" class={this.isMobile ? 'carbon-mobile' : ''} />
-  }
+  render() {
+    return <div id='carbon-ads' class={this.isMobile ? 'carbon-mobile' : ''} />
+  },
 }
 </script>
 <style lang="less">

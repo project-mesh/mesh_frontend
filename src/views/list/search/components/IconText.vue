@@ -1,6 +1,6 @@
 <template>
   <span>
-    <a-icon :type="type" style="margin-right: 8px" />
+    <a-icon :type="type" style="margin-right: 8px;" />
     {{ text }}
   </span>
 </template>
@@ -9,14 +9,14 @@
 export default {
   name: 'IconText',
   props: {
-    'type': {
+    type: {
       type: String,
-      required: true
+      required: true,
     },
     text: {
       type: [String, Number],
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>
