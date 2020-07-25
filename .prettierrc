@@ -1,0 +1,7 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "endOfLine": "auto",
+  "jsxSingleQuote": true,
+  "htmlWhitespaceSensitivity": "ignore"
+}
