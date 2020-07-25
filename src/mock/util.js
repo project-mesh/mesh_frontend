@@ -2,7 +2,7 @@ const responseBody = {
   message: '',
   timestamp: 0,
   result: null,
-  code: 0
+  code: 0,
 }
 
 export const builder = (data, message, code = 0, headers = {}) => {
@@ -27,10 +27,11 @@ export const getQueryParameters = (options) => {
   if (!search) {
     return {}
   }
-  return JSON.parse('{"' + decodeURIComponent(search)
-    .replace(/"/g, '\\"')
-    .replace(/&/g, '","')
-    .replace(/=/g, '":"') + '"}')
+  return JSON.parse(
+    '{"' +
+      decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') +
+      '"}'
+  )
 }
 
 export const getBody = (options) => {
