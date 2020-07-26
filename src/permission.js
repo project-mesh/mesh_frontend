@@ -6,7 +6,6 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-  console.log(to.fullPath)
   if (to.fullPath === '/user/login') {
     return next()
   }

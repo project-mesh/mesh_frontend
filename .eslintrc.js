@@ -15,7 +15,7 @@ module.exports = {
     parser: 'babel-eslint',
   },
   rules: {
-    'no-console': isProd ? 'warn' : 'off',
+    'no-console': 'warn',
     'no-debugger': isProd ? 'warn' : 'off',
     'prettier/prettier': 'error',
     'vue/eqeqeq': ['error', 'smart'],
