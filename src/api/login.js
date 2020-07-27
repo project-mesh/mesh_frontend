@@ -1,7 +1,7 @@
 import request from '@/utils/axios'
 
 const userApi = {
-  Login: '/auth/login',
+  Login: '/login',
   Logout: '/auth/logout',
   ForgePassword: '/auth/forge-password',
   Register: '/auth/register',

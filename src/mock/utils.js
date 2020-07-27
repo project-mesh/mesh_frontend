@@ -44,7 +44,7 @@ export const functionFactory = (func) => (options) => {
   const queryParams = getQueryParameters(options)
   console.log('query Params: ', queryParams)
   if (Object.keys(queryParams).length) return deepCopy(func(queryParams))
+  console.log(options)
   const body = getBody(options)
-  console.log('data: ', body.data)
-  return deepCopy(func(body.data))
+  return deepCopy(func(body))
 }

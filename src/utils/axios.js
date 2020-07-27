@@ -9,13 +9,13 @@ const request = axios.create({
   responseType: 'json',
 })
 
-// // 异常拦截处理器
-// const errorHandler = (error) => Promise.reject(error)
+// 异常拦截处理器
+const errorHandler = (error) => Promise.reject(error)
 //
 // // request interceptor
 // request.interceptors.request.use((config) => config, errorHandler)
 //
-// // response interceptor
-// request.interceptors.response.use((response) => response.data, errorHandler)
+// response interceptor
+request.interceptors.response.use((response) => response.data, errorHandler)
 
 export default request

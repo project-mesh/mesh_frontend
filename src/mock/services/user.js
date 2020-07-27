@@ -28,7 +28,7 @@ const login = (data) => {
       })
     )
 
-  return utils.builder(currUser)
+  return utils.builder({ ...currUser, token: 'fake token' })
 }
 
 Mock.mock(/\/login/, 'post', utils.functionFactory(login))
