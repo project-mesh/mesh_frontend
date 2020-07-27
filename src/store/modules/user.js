@@ -1,5 +1,5 @@
 import storage from 'store'
-import { login } from '@/api/login'
+import { login, getInfo } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 const user = {
@@ -52,7 +52,7 @@ const user = {
             console.log(response.data)
             console.log(response.data.token)
             const token = response.data.token
-            // storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
+            storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', token)
             console.log('will resolve')
             resolve()
