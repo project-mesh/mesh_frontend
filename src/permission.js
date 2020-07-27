@@ -13,8 +13,6 @@ const defaultRoutePath = '/dashboard/workplace'
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-  console.log('in router.beforeEach')
-  console.log(storage.get(ACCESS_TOKEN))
   if (storage.get(ACCESS_TOKEN)) {
     console.log('have token')
     if (to.path === loginRoutePath) {
@@ -22,32 +20,23 @@ router.beforeEach((to, from, next) => {
       next({ path: defaultRoutePath })
       NProgress.done()
     } else {
-      console.log(store.getters.addRouters)
       if (store.getters.addRouters.length === 0) {
-        console.log('addRouters === 0')
         // TODO : role filter
         const role = store.getters.role
         // alert('hello')
         store.dispatch('GenerateRoutes', { role }).then(() => {
           router.addRoutes(store.getters.addRouters)
-          console.log(store.getters.addRouters)
           const redirect = decodeURIComponent(from.query.redirect || to.path)
-          console.log('from.query.redirect:', from.query.redirect)
-          console.log('to', to.path)
-          console.log('redirect is: ', redirect)
           // next({ path: redirect })
           if (to.path === redirect) {
             // set the replace: true so the navigation will not leave a history record
             next({ ...to, replace: true })
-            console.log(...to)
           } else {
             // 跳转到目的路由
             next({ path: redirect })
           }
-          console.log('todo: xxx')
         })
       } else {
-        console.log('addRouters !== 0')
         next()
       }
     }
