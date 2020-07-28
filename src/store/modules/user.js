@@ -63,7 +63,12 @@ const user = {
           })
       })
     },
-    //
+    Logout({ commit, state }) {
+      commit('SET_TOKEN', '')
+      commit('SET_ROLES', [])
+      storage.remove(ACCESS_TOKEN)
+      //
+    },
   },
 }
 

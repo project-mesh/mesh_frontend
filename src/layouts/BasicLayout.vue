@@ -15,7 +15,6 @@
       广告代码 真实项目中请移除
       production remove this Ads
     -->
-    <ads v-if="isProPreviewSite && !collapsed" />
     <!-- Ads end -->
 
     <setting-drawer :settings="settings" @change="handleSettingChange" />
@@ -42,7 +41,6 @@ import { SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
 import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
 import GlobalFooter from '@/components/GlobalFooter'
-import Ads from '@/components/Other/CarbonAds'
 import LogoSvg from '../assets/logo.svg?inline'
 
 export default {
@@ -51,7 +49,6 @@ export default {
     SettingDrawer,
     RightContent,
     GlobalFooter,
-    Ads,
   },
   data() {
     return {
