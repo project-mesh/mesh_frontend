@@ -11,11 +11,66 @@
           <a-icon type="appstore" />
         </a-radio-button>
       </a-radio-group>
-      <a-button type="primary">
+      <a-button type="primary" @click="() => (createProjForm = true)">
         创建新项目
         <a-icon type="folder-add" />
       </a-button>
     </div>
+    <a-modal
+      v-model="createProjForm"
+      title="创建新项目"
+      centered
+      @ok="() => (createProjForm = false)"
+    >
+      <!-- 项目创建表单 -->
+      <a-form
+        :form="form"
+        :label-col="{ span: 5 }"
+        :wrapper-col="{ span: 16 }"
+        @submit="handleSubmit"
+      >
+        <a-form-item label="项目名称">
+          <a-input
+            v-decorator="['projName', { rules: [{ required: true, message: '请输入项目名称!' }] }]"
+          />
+        </a-form-item>
+        <a-form-item label="项目权限">
+          <a-select
+            v-decorator="[
+              'projAuthority',
+              { rules: [{ required: true, message: '请选择项目权限!' }] },
+            ]"
+            placeholder="公有/私有"
+          >
+            <a-select-option value="public">
+              公开
+            </a-select-option>
+            <a-select-option value="private">
+              私密
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="项目封面">
+          <a-upload
+            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            list-type="picture-card"
+            :file-list="fileList"
+            @preview="handlePreview"
+            @change="handleChange"
+          >
+            <div v-if="fileList.length < 1">
+              <a-icon type="plus" />
+              <div class="ant-upload-text">
+                Upload
+              </div>
+            </div>
+          </a-upload>
+          <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+            <img alt="example" style="width: 100%;" :src="previewImage" />
+          </a-modal>
+        </a-form-item>
+      </a-form>
+    </a-modal>
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="data">
         <a-list-item slot="renderItem" slot-scope="item">
@@ -58,6 +113,12 @@
 
 <script>
 import store from '../../store'
+//图片转 base64
+function getBase64(img, callback) {
+  const reader = new FileReader()
+  reader.addEventListener('load', () => callback(reader.result))
+  reader.readAsDataURL(img)
+}
 export default {
   name: 'Project',
   methods: {
@@ -68,6 +129,19 @@ export default {
     showCardView() {
       console.log('显示卡片')
       this.listVisible = false
+    },
+    handleCancel() {
+      this.previewVisible = false
+    },
+    async handlePreview(file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+    },
+    handleChange({ fileList }) {
+      this.fileList = fileList
     },
   },
   beforeMount: function () {
@@ -82,6 +156,10 @@ export default {
     return {
       listVisible: false, //是否显示列表 true显示列表 false显示卡片
       data: [],
+      createProjForm: false, //显示创建项目的表单
+      previewVisible: false,
+      previewImage: '',
+      fileList: [],
     }
   },
 }
@@ -102,5 +180,10 @@ export default {
 }
 .card-col {
   margin-top: 20px;
+}
+.card-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
