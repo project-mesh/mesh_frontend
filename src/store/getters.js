@@ -11,6 +11,9 @@ const getters = {
   userInfo: (state) => state.user.info,
   addRouters: (state) => state.permission.addRouters,
   multiTab: (state) => state.app.multiTab,
+  teamName: (state) => state.teamInfo.teamName,
+  adminName: (state) => state.teamInfo.adminName,
+  projects: (state) => state.teamInfo.projects,
 }
 
 export default getters

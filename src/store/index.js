@@ -7,6 +7,7 @@ import user from './modules/user'
 // import permission from './modules/async-router'
 import getters from './getters'
 import permission from './modules/permission'
+import teamInfo from './modules/teamInfo'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     app,
     user,
     permission,
+    teamInfo,
   },
   state: {},
   mutations: {},

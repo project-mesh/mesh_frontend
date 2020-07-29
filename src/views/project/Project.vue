@@ -11,10 +11,15 @@
           <a-icon type="appstore" />
         </a-radio-button>
       </a-radio-group>
-      <a-button type="primary" @click="() => (createProjForm = true)">
-        创建新项目
-        <a-icon type="folder-add" />
-      </a-button>
+      <div class="search-and-create">
+        <div class="search-box">
+          <a-input-search placeholder="输入要查找的项目" enter-button @search="onSearch" />
+        </div>
+        <a-button type="primary" @click="() => (createProjForm = true)">
+          创建新项目
+          <a-icon type="folder-add" />
+        </a-button>
+      </div>
     </div>
     <a-modal
       v-model="createProjForm"
@@ -74,6 +79,12 @@
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="data">
         <a-list-item slot="renderItem" slot-scope="item">
+          <img
+            slot="extra"
+            width="100"
+            alt="logo"
+            src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+          />
           <a-list-item-meta>
             <div slot="title">{{ item.title }}</div>
             <div slot="description">{{ item.manager }}</div>
@@ -195,5 +206,13 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.search-and-create {
+  display: flex;
+  justify-content: space-between;
+}
+.search-box {
+  margin-right: 10px;
 }
 </style>
