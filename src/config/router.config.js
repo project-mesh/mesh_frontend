@@ -20,7 +20,7 @@ export const asyncRouterMap = [
         path: '/project',
         name: 'project',
         // redirect: '/dashboard/workplace',
-        component: RouteView,
+        component: () => import('@/views/project/Project'),
         hideChildrenInMenu: true,
         meta: {
           title: '项目',
