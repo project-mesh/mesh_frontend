@@ -19,10 +19,10 @@
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="data">
         <a-list-item slot="renderItem" slot-scope="item">
-          <a-list-item-meta
-            description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-          >
-            <a slot="title" href="https://www.antdv.com/">{{ item.title }}</a>
+          <a-list-item-meta>
+            <div slot="title">{{ item.title }}</div>
+            <div slot="description">{{ item.description }}</div>
+            <a slot="description">进入项目</a>
           </a-list-item-meta>
         </a-list-item>
       </a-list>
@@ -30,22 +30,26 @@
     <div v-if="!listVisible">
       <a-row type="flex" class="card-row">
         <a-col class="card-col">
-          <a-card hoverable style="width: 300px;">
-            <img
-              slot="cover"
-              alt="example"
-              src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-            />
-            <template slot="actions" class="ant-card-actions">
-              <a-icon key="setting" type="setting" />
-              <a-icon key="edit" type="edit" />
-              <a-icon key="ellipsis" type="ellipsis" />
-            </template>
-            <a-card-meta
-              title="数据库课程设计"
-              description="数据库课程设计小学期项目"
-            ></a-card-meta>
-          </a-card>
+          <a-list :grid="{ gutter: 16, column: 4 }" :data-source="data">
+            <a-list-item slot="renderItem" slot-scope="item">
+              <a-card hoverable style="width: 300px;">
+                <img
+                  slot="cover"
+                  alt="example"
+                  src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                />
+                <template slot="actions" class="ant-card-actions">
+                  <a-icon key="setting" type="setting" />
+                  <a-icon key="edit" type="edit" />
+                  <a-icon key="ellipsis" type="ellipsis" />
+                </template>
+                <a-card-meta>
+                  <div slot="title">{{ item.title }}</div>
+                  <div slot="description">{{ item.description }}</div>
+                </a-card-meta>
+              </a-card>
+            </a-list-item>
+          </a-list>
         </a-col>
       </a-row>
     </div>
