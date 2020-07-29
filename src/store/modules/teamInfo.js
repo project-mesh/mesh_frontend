@@ -28,11 +28,13 @@ const teamInfo = {
         let projects = [
           {
             projectName: '项目一',
-            projectAdmin: '刘雪迪',
+            projectAdmin: 'Tom',
+            imgUrl: 'https://pic.qqtn.com/up/2019-9/2019092509041339444.jpg',
           },
           {
             projectName: '项目二',
-            projectAdmin: '蒋金峰',
+            projectAdmin: 'Jerry',
+            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
           },
         ]
         commit('SET_ADMINNAME', adminName)

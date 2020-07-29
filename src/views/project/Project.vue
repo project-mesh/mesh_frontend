@@ -79,50 +79,42 @@
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="data">
         <a-list-item slot="renderItem" slot-scope="item">
-          <img
-            slot="extra"
-            width="100"
-            alt="logo"
-            src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-          />
+          <img slot="extra" width="100" alt="logo" :src="item.imgUrl" />
           <a-list-item-meta>
-            <div slot="title">{{ item.title }}</div>
-            <div slot="description">{{ item.manager }}</div>
+            <div slot="title">{{ item.projectName }}</div>
+            <div slot="description">{{ item.projectAdmin }}</div>
             <a slot="description">进入项目</a>
           </a-list-item-meta>
         </a-list-item>
       </a-list>
     </div>
     <div v-if="!listVisible">
-      <a-row type="flex" class="card-row">
-        <a-col class="card-col">
-          <a-list :grid="{ gutter: 16, column: 4 }" :data-source="data">
-            <a-list-item slot="renderItem" slot-scope="item">
-              <a-card hoverable style="width: 300px;">
-                <img
-                  slot="cover"
-                  alt="example"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                />
-                <template slot="actions" class="ant-card-actions">
-                  <a-icon key="setting" type="setting" />
-                  <a-icon key="edit" type="edit" />
-                  <a-icon key="ellipsis" type="ellipsis" />
-                </template>
-                <a-card-meta>
-                  <div slot="title" class="card-text">{{ item.title }}</div>
-                  <div slot="description" class="card-text">{{ item.manager }}</div>
-                </a-card-meta>
-              </a-card>
-            </a-list-item>
-          </a-list>
-        </a-col>
-      </a-row>
+      <div>
+        <a-list type="flex" :grid="{ gutter: 24, column: 5 }" :data-source="data" class="card-row">
+          <a-list-item slot="renderItem" slot-scope="item" class="list-item">
+            <a-card hoverable style="width: 250px; overflow: hidden;">
+              <img slot="cover" alt="example" :src="item.imgUrl" class="card-img" />
+
+              <template slot="actions" class="ant-card-actions">
+                <a-icon key="setting" type="setting" />
+                <a-icon key="edit" type="edit" />
+                <a-icon key="ellipsis" type="ellipsis" />
+              </template>
+              <a-card-meta>
+                <div slot="title" class="card-text">{{ item.projectName }}</div>
+                <div slot="description" class="card-text">{{ item.projectAdmin }}</div>
+              </a-card-meta>
+            </a-card>
+          </a-list-item>
+        </a-list>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import store from '../../store'
+
 const data = [
   {
     title: 'Ant Design Title 1',
@@ -141,7 +133,6 @@ const data = [
     manager: '吴亦凡',
   },
 ]
-
 //图片转 base64
 function getBase64(img, callback) {
   const reader = new FileReader()
@@ -183,6 +174,14 @@ export default {
       fileList: [],
     }
   },
+  beforeMount: function () {
+    let defaultTeamName = store.getters.teamName
+    store.dispatch({
+      type: 'GetTeamInfo',
+      teamName: defaultTeamName,
+    })
+    this.data = store.getters.projects
+  },
 }
 </script>
 
@@ -194,20 +193,21 @@ export default {
   justify-content: space-between;
 }
 .card-row {
-  height: 400px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.card-col {
+  height: 500px;
   margin-top: 20px;
+}
+.card-img {
+  width: 250px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .card-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .search-and-create {
   display: flex;
   justify-content: space-between;
