@@ -20,8 +20,8 @@
       <a-list item-layout="horizontal" :data-source="data">
         <a-list-item slot="renderItem" slot-scope="item">
           <a-list-item-meta>
-            <div slot="title">{{ item.title }}</div>
-            <div slot="description">{{ item.description }}</div>
+            <div slot="title">{{ item.projectName }}</div>
+            <div slot="description">{{ item.projectAdmin }}</div>
             <a slot="description">进入项目</a>
           </a-list-item-meta>
         </a-list-item>
@@ -44,8 +44,8 @@
                   <a-icon key="ellipsis" type="ellipsis" />
                 </template>
                 <a-card-meta>
-                  <div slot="title">{{ item.title }}</div>
-                  <div slot="description">{{ item.description }}</div>
+                  <div slot="title">{{ item.projectName }}</div>
+                  <div slot="description">{{ item.projectAdmin }}</div>
                 </a-card-meta>
               </a-card>
             </a-list-item>
@@ -57,24 +57,7 @@
 </template>
 
 <script>
-const data = [
-  {
-    title: 'Ant Design Title 1',
-    description: 'To be NO.1',
-  },
-  {
-    title: 'Ant Design Title 2',
-    description: 'To be NO.2',
-  },
-  {
-    title: 'Ant Design Title 3',
-    description: 'To be NO.3',
-  },
-  {
-    title: 'Ant Design Title 4',
-    description: 'To be NO.4',
-  },
-]
+import store from '../../store'
 export default {
   name: 'Project',
   methods: {
@@ -87,10 +70,18 @@ export default {
       this.listVisible = false
     },
   },
+  beforeMount: function () {
+    let defaultTeamName = store.getters.teamName
+    store.dispatch({
+      type: 'GetTeamInfo',
+      teamName: defaultTeamName,
+    })
+    this.data = store.getters.projects
+  },
   data() {
     return {
       listVisible: false, //是否显示列表 true显示列表 false显示卡片
-      data,
+      data: [],
     }
   },
 }
