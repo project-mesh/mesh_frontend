@@ -1,5 +1,4 @@
 import storage from 'store'
-import { login, getInfo } from '@/api/login'
 import sendRequest from '../../api'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
@@ -7,7 +6,6 @@ const user = {
   state: {
     token: '',
     username: '',
-    id: '',
     role: '',
     showMode: '',
     profile: '',
@@ -21,9 +19,6 @@ const user = {
     },
     SET_USERNAME: (state, username) => {
       state.username = username
-    },
-    SET_ID: (state, id) => {
-      state.id = id
     },
     SET_ROLE: (state, role) => {
       state.role = role
@@ -69,12 +64,20 @@ const user = {
       storage.remove(ACCESS_TOKEN)
       //
     },
+    // 通过token的方式获取用户信息，和login相同url。每次路由跳转时均会触发这个action
     GetUserInfo({ commit }) {
       return new Promise((resolve, reject) => {
         console.log('step into GetUserInfo')
         sendRequest('login', storage.get(ACCESS_TOKEN))
           .then((response) => {
+            // TODO : Parameter verification
             console.log('response from getUserInfo', response)
+            commit('SET_USERNAME', response.data.username)
+            commit('SET_SHOWMODE', response.data.showMode)
+            commit('SET_ROLE', response.data.role)
+            commit('SET_PROFILE', response.data.profile)
+            commit('SET_TEAMS', response.data.teams)
+            commit('SET_PREFERENCE', response.data.preference)
           })
           .catch((err) => {
             console.log('error from GetUserInfo', err)
