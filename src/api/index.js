@@ -49,6 +49,18 @@ const apiMap = {
     url: '/knowledgebase/team',
     method: 'patch',
   },
+  deleteNotification: {
+    url: '/notification',
+    method: 'delete',
+  },
+  finishNotification: {
+    url: '/notification',
+    method: 'patch',
+  },
+  queryNotification: {
+    url: '/notification',
+    method: 'get',
+  },
   showMode: {
     url: '/preference/show-mode',
     method: 'post',
