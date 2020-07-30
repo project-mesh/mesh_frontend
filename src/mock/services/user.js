@@ -5,10 +5,9 @@ import md5 from 'md5'
 
 const login = (data) => {
   let currUser = utils.deepCopy(users)
-  currUser = currUser.find(
-    (user) => user.username === data.username && user.password === md5(data.password)
-  )
-
+  // currUser = currUser.find(
+  //   (user) => user.username === data.username && user.password === md5(data.password)
+  // )
   currUser.teams = []
   teamMembers
     .filter((teamMember) => teamMember.username === currUser.username)

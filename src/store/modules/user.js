@@ -1,5 +1,6 @@
 import storage from 'store'
 import { login, getInfo } from '@/api/login'
+import sendRequest from '../../api'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 const user = {
@@ -46,7 +47,7 @@ const user = {
     // 登录
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        login(userInfo)
+        sendRequest('login', userInfo)
           .then((response) => {
             console.log('resolve func begin')
             console.log(response.data)
@@ -65,9 +66,22 @@ const user = {
     },
     Logout({ commit, state }) {
       commit('SET_TOKEN', '')
-      commit('SET_ROLES', [])
       storage.remove(ACCESS_TOKEN)
       //
+    },
+    GetUserInfo({ commit }) {
+      return new Promise((resolve, reject) => {
+        console.log('step into GetUserInfo')
+        sendRequest('login', storage.get(ACCESS_TOKEN))
+          .then((response) => {
+            console.log('response from getUserInfo', response)
+          })
+          .catch((err) => {
+            console.log('error from GetUserInfo', err)
+            commit('SET_TOKEN', '')
+            storage.remove(ACCESS_TOKEN)
+          })
+      })
     },
   },
 }
