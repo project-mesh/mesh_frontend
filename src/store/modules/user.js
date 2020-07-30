@@ -1,5 +1,5 @@
 import storage from 'store'
-import { login, getInfo } from '@/api/login'
+import sendRequest from '@/api'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 const user = {
@@ -46,7 +46,7 @@ const user = {
     // 登录
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        login(userInfo)
+        sendRequest('login', userInfo)
           .then((response) => {
             console.log('resolve func begin')
             console.log(response.data)
