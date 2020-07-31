@@ -61,12 +61,20 @@ const apiMap = {
     url: '/notification',
     method: 'get',
   },
-  showMode: {
+  preferenceShowMode: {
     url: '/preference/show-mode',
     method: 'post',
   },
-  showTeam: {
+  preferenceTeam: {
     url: '/preference/team',
+    method: 'post',
+  },
+  preferenceColor: {
+    url: '/preference/color',
+    method: 'post',
+  },
+  prefeneceLayout: {
+    url: '/prefenece/layout',
     method: 'post',
   },
   createProject: {
@@ -101,8 +109,12 @@ const apiMap = {
     url: '/task',
     method: 'delete',
   },
-  queryTask: {
-    url: '/task',
+  queryProjectTask: {
+    url: '/task/project',
+    method: 'get',
+  },
+  queryTeamTask: {
+    url: '/task/team',
     method: 'get',
   },
   updateTask: {
