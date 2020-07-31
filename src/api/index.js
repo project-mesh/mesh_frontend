@@ -160,6 +160,7 @@ const sendRequest = (apiName, data) => {
   const config = { ...apiMap[apiName] }
   if (config.method === 'get') config.params = data
   else config.data = data
+  console.log('request data is:', data)
   return request(config)
 }
 

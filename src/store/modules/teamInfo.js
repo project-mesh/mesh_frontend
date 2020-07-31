@@ -1,46 +1,94 @@
 // teamName存储team-selector选择的具体团队
 // 该模块存储当前团队下的数据
+
+import sendRequest from '../../api'
+import store from '@/store'
+
 const teamInfo = {
   state: {
-    teamID: 'asdfghjkl',
-    teamName: '数据库课程团队', // TODO : 应该默认为空，在登录时获取
+    teamId: '',
+    createTime: 0,
+    teamName: '',
     adminName: '',
-    projects: [],
+    members: [], // 包括 username, profile
+    teamProjects: [], // 包括 projectName projectId projectLogo adminName
   },
-
   mutations: {
+    SET_TEAMID: (state, teamId) => {
+      state.teamId = teamId
+    },
+    SET_CREATETIME: (state, createTime) => {
+      state.createTime = createTime
+    },
     SET_TEAMNAME: (state, teamName) => {
       state.teamName = teamName
     },
     SET_ADMINNAME: (state, adminName) => {
       state.adminName = adminName
     },
-    SET_PROJECTS: (state, projects) => {
-      state.projects = projects
+    SET_MEMBERS: (state, members) => {
+      state.members = members
+    },
+    SET_TEAMPROJECTS: (state, teamProjects) => {
+      state.teamProjects = teamProjects
+    },
+    SET_ALL: (state, data) => {
+      state.teamId = data.teamId
+      state.createTime = data.createTime
+      state.teamName = data.teamName
+      state.adminName = data.adminName
+      state.members = data.members
+      state.teamProjects = data.teamProjects
+    },
+    ADD_PROJECTS: (state, project) => {
+      state.teamProjects.push(project)
+    },
+    REMOVE_PROJECTS: (state, projectId) => {
+      state.teamProjects.filter((item) => {
+        return item.projectId !== projectId
+      })
     },
   },
-
   actions: {
-    GetTeamInfo({ commit }, teamName) {
-      // when you login you will get a default teamName
-      if (teamName) {
-        //TODO : send a request to get new team info
-        const adminName = '刘雪迪'
-        let projects = [
-          {
-            projectName: '项目一',
-            projectAdmin: 'Tom',
-            imgUrl: 'https://pic.qqtn.com/up/2019-9/2019092509041339444.jpg',
-          },
-          {
-            projectName: '项目二',
-            projectAdmin: 'Jerry',
-            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
-          },
-        ]
-        commit('SET_ADMINNAME', adminName)
-        commit('SET_PROJECTS', projects)
+    QueryTeam({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('queryTeam', requestData)
+          .then((response) => {
+            console.log('response in GetTeamInfo is : ', response)
+            commit('SET_ALL', response.data)
+          })
+          .catch((error) => {
+            console.log('error in GetTeamInfo is : ', error)
+          })
+        resolve()
+      })
+    },
+    inviteMember({ commit }, requestData) {
+      if (store.getters.teamId) {
+        sendRequest('inviteNewTeamMember', requestData)
+          .then((response) => {
+            console.log('response from inviteMember action is:', response)
+          })
+          .catch((error) => {
+            console.log('error from inviteMember action is:', error)
+          })
       }
+    },
+    createTeam({ commit }, requestData) {
+      sendRequest('createTeam', requestData)
+        .then((response) => {
+          console.log('response from createTeam action is:', response)
+          commit('SET_ALL', response.data)
+        })
+        .catch((error) => {
+          console.log('error from createTeam action is:', error)
+        })
+    },
+    joinTeam({ commit }, requestData) {
+      sendRequest('joinTeam', requestData).then((response) => {
+        console.log('response from createTeam action is:', response)
+        commit('SET_ALL', response.data)
+      })
     },
   },
 }

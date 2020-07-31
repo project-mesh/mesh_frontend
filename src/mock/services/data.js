@@ -148,7 +148,7 @@ export const users = [
     password: md5('test'),
     showMode: 'card',
     preference: {
-      preferenceTeam: '数据库团队',
+      preferenceTeam: '数据库',
       preferenceColor: 'blue',
       preferenceLayout: 'Default',
     },
@@ -161,7 +161,7 @@ export const users = [
     password: md5('test'),
     showMode: 'card',
     preference: {
-      preferenceTeam: '数据库团队',
+      preferenceTeam: '数据库',
       preferenceColor: 'blue',
       preferenceLayout: 'Default',
     },

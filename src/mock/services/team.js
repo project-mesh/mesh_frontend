@@ -7,7 +7,7 @@ const getTeams = (queryParams) => {
   resTeams = resTeams.filter(
     (team) =>
       teamMembers.findIndex(
-        (member) => member.username === queryParams.username && member.teamId === team.teamId
+        (member) => member.username === 'test' && member.teamId === team.teamId
       ) !== -1
   )
 
