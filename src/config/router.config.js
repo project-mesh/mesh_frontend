@@ -76,6 +76,16 @@ export const asyncRouterMap = [
                   keepAlive: true,
                 },
               },
+              // 项目知识库
+              {
+                path: '/project/detail/repositories',
+                name: 'projectRepo',
+                // TODO: 修改成对应页面
+                component: () => import('@/views/exception/404'),
+                meta: {
+                  keepAlive: true,
+                },
+              },
               // 公告
               {
                 path: '/project/detail/bulletin',
@@ -91,39 +101,17 @@ export const asyncRouterMap = [
         ],
       },
 
-      // 知识库
+      // 团队知识库
       {
         path: '/repositories',
         redirect: '/repostitories/project',
+        name: 'teamRepo',
         // TODO: 修改成对应页面
         component: () => import('@/views/exception/404'),
-        hideChildrenInMenu: true,
         meta: {
           title: '知识库',
           icon: 'form',
         },
-        children: [
-          // 项目知识库页面，若当前团队下沒有项目，直接跳转到团队知识库
-          {
-            path: '/repostitories/project',
-            name: 'projectRepo',
-            // TODO: 修改成对应页面
-            component: () => import('@/views/exception/404'),
-            meta: {
-              keepAlive: true,
-            },
-          },
-          // 团队知识库页面，若当前沒有团队，跳转到创建团队页面
-          {
-            path: '/repostitories/team',
-            name: 'teamRepo',
-            // TODO: 修改成对应页面
-            component: () => import('@/views/exception/404'),
-            meta: {
-              keepAlive: true,
-            },
-          },
-        ],
       },
 
       // 日历页面

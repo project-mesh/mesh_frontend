@@ -24,7 +24,7 @@ const notification = {
     },
   },
   actions: {
-    getAllNotifications: ({ commit }, requestData) => {
+    queryNotification: ({ commit }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('queryNotification', requestData)
           .then((response) => {
