@@ -114,7 +114,7 @@ const levelColor = {
   2: '#ff7e05',
   3: '#52c41a',
 }
-import { register } from '../../api/login'
+import sendRequest from '@/api'
 
 export default {
   name: 'Register',
@@ -198,7 +198,7 @@ export default {
         if (!err) {
           this.state.passwordLevelChecked = false
           console.log('will call register api by values:', values)
-          register({ ...values })
+          sendRequest('register', { ...values })
             .then((response) => {
               console.log('success register:', response)
               //TODO : store commit
