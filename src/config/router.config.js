@@ -91,9 +91,17 @@ export const asyncRouterMap = [
         path: '/calendar',
         name: 'calendar',
         component: RouteView,
-        // redirect: '/list/table-list',
-        meta: { title: '日历', icon: 'calendar', permission: ['table'] },
+        redirect: '/calender/BasicCalendar',
+        meta: { title: '日历', icon: 'calendar', permission: ['calendar'] },
         hideChildrenInMenu: true,
+        children: [
+          {
+            path: '/calender/BasicCalendar',
+            name: 'BasicCalendar',
+            component: () => import('@/views/calendar/BasicCalendar'),
+            meta: { title: '日历', keepAlive: true, permission: ['calendar'] },
+          },
+        ],
         // children: [
         //   {
         //     path: '/list/table-list/:pageNo([1-9]\\d*)?',
