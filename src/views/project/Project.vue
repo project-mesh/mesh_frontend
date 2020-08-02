@@ -90,9 +90,9 @@
     </div>
     <div v-if="!listVisible">
       <div>
-        <a-list type="flex" :grid="{ gutter: 24, column: 5 }" :data-source="data" class="card-row">
+        <a-list type="flex" :grid="{ gutter: 16, column: 4 }" :data-source="data" class="card-row">
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
-            <a-card hoverable style="width: 250px; overflow: hidden;">
+            <a-card hoverable style="width: 100%; overflow: hidden;">
               <img slot="cover" alt="example" :src="item.imgUrl" class="card-img" />
 
               <template slot="actions" class="ant-card-actions">
@@ -197,7 +197,7 @@ export default {
   margin-top: 20px;
 }
 .card-img {
-  width: 250px;
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;

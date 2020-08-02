@@ -36,6 +36,31 @@ const teamInfo = {
             projectAdmin: 'Jerry',
             imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
           },
+          {
+            projectName: '项目二',
+            projectAdmin: 'Jerry',
+            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+          },
+          {
+            projectName: '项目二',
+            projectAdmin: 'Jerry',
+            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+          },
+          {
+            projectName: '项目二',
+            projectAdmin: 'Jerry',
+            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+          },
+          {
+            projectName: '项目二',
+            projectAdmin: 'Jerry',
+            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+          },
+          {
+            projectName: '项目二',
+            projectAdmin: 'Jerry',
+            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+          },
         ]
         commit('SET_ADMINNAME', adminName)
         commit('SET_PROJECTS', projects)
