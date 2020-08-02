@@ -10,9 +10,9 @@ export const teamTask = {
     },
   },
   actions: {
-    queryTeamTask({ commmit }, requestData) {
+    queryTeamTasks({ commmit }, requestData) {
       return new Promise((resolve, reject) => {
-        sendRequest('queryTeamTask', requestData)
+        sendRequest('queryTeamTasks', requestData)
           .then((response) => {
             const { data } = response
             if (data.isSuccess) commmit('SET_TASKS', data.tasks)
