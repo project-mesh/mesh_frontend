@@ -35,7 +35,7 @@ const notification = {
           .catch((error) => reject(error))
       })
     },
-    updateNotification: ({ commit }, requestData) => {
+    finishNotification: ({ commit }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('updateNotification', requestData)
           .then((response) => {
