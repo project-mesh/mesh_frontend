@@ -89,7 +89,7 @@ const apiMap = {
     url: '/task',
     method: 'delete',
   },
-  queryTask: {
+  queryProjectTasks: {
     url: '/task',
     method: 'get',
   },
@@ -160,7 +160,7 @@ const sendRequest = (apiName, data) => {
   const config = { ...apiMap[apiName] }
   if (config.method === 'get') config.params = data
   else config.data = data
-  console.log('request data is:', data)
+  console.log('apiName is: ', apiName, 'request data is:', data)
   return request(config)
 }
 

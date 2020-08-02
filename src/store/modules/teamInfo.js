@@ -12,6 +12,7 @@ const teamInfo = {
     adminName: '',
     members: [], // 包括 username, profile
     teamProjects: [], // 包括 projectName projectId projectLogo adminName
+    knowledgeBase: [], //
   },
   mutations: {
     SET_TEAMID: (state, teamId) => {
@@ -32,6 +33,9 @@ const teamInfo = {
     SET_TEAMPROJECTS: (state, teamProjects) => {
       state.teamProjects = teamProjects
     },
+    SET_TEAMKB: (state, teamKB) => {
+      state.knowledgeBase = teamKB
+    },
     SET_ALL: (state, data) => {
       state.teamId = data.teamId
       state.createTime = data.createTime
@@ -50,7 +54,7 @@ const teamInfo = {
     },
   },
   actions: {
-    QueryTeam({ commit }, requestData) {
+    queryTeam({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('queryTeam', requestData)
           .then((response) => {
@@ -85,9 +89,72 @@ const teamInfo = {
         })
     },
     joinTeam({ commit }, requestData) {
-      sendRequest('joinTeam', requestData).then((response) => {
-        console.log('response from createTeam action is:', response)
-        commit('SET_ALL', response.data)
+      sendRequest('joinTeam', requestData)
+        .then((response) => {
+          console.log('response from joinTeam action is:', response)
+          commit('SET_ALL', response.data)
+        })
+        .catch((error) => {
+          console.log('error from joinTeam action is:', error)
+        })
+    },
+    queryTeamKB({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('queryTeamKB', requestData)
+          .then((response) => {
+            commit('SET_TEAMKB', response.data.knowledgeBase)
+          })
+          .catch((error) => {
+            console.log('error in queryTeamKB is : ', error)
+          })
+      })
+    },
+    createTeamKB({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('createTeamKB', requestData)
+          .then((response) => {
+            let newRequestData = {}
+            newRequestData.username = requestData.username
+            newRequestData.teamId = requestData.teamId
+            newRequestData.knowledgeName = requestData.knowledgeName
+            newRequestData.hyperlink = requestData.hyperlink
+            store.dispatch('queryTeamKB', newRequestData)
+          })
+          .catch((error) => {
+            console.log('error in createTeamKB is : ', error)
+          })
+      })
+    },
+    updateTeamKB({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('updateTeamKB', requestData)
+          .then((response) => {
+            let newRequestData = {}
+            newRequestData.username = requestData.username
+            newRequestData.teamId = requestData.teamId
+            newRequestData.knowledgeName = requestData.knowledgeName
+            newRequestData.hyperlink = requestData.hyperlink
+            store.dispatch('queryTeamKB', newRequestData)
+          })
+          .catch((error) => {
+            console.log('error in updateTeamKB is : ', error)
+          })
+      })
+    },
+    deleteTeamKB({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('deleteTeamKB', requestData)
+          .then((response) => {
+            let newRequestData = {}
+            newRequestData.username = requestData.username
+            newRequestData.teamId = requestData.teamId
+            newRequestData.knowledgeName = requestData.knowledgeName
+            newRequestData.hyperlink = requestData.hyperlink
+            store.dispatch('queryTeamKB', newRequestData)
+          })
+          .catch((error) => {
+            console.log('error in deleteTeamKB is : ', error)
+          })
       })
     },
   },

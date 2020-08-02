@@ -13,8 +13,6 @@ const defaultRoutePath = '/dashboard/workplace'
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-  // store.dispatch('GetUserInfo')
-  store.dispatch('createTeam', 'cbtd')
   if (storage.get(ACCESS_TOKEN)) {
     console.log('have token')
     if (to.path === loginRoutePath) {

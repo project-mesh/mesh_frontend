@@ -17,6 +17,8 @@ const getters = {
   teamAdminName: (state) => state.teamInfo.adminName,
   teamProjects: (state) => state.teamInfo.teamProjects,
   teamMembers: (state) => state.teamInfo.members,
+  projectTasks: (state) => state.projectTasks.tasks,
+  projectSubTasks: (state) => state.projectTasks.subTasks,
 }
 
 export default getters
