@@ -104,7 +104,6 @@ export const asyncRouterMap = [
       // 团队知识库
       {
         path: '/repositories',
-        redirect: '/repostitories/project',
         name: 'teamRepo',
         // TODO: 修改成对应页面
         component: () => import('@/views/exception/404'),
