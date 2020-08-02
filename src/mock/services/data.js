@@ -147,7 +147,12 @@ export const users = [
     profile: 'xxxxx',
     password: md5('test'),
     showMode: 'card',
-    preferenceTeam: '数据库',
+    preference: {
+      preferenceTeam: '数据库',
+      preferenceColor: 'blue',
+      preferenceLayout: 'Default',
+    },
+    role: 'user',
   },
   {
     username: 'zengze',
@@ -155,6 +160,11 @@ export const users = [
     profile: 'xxxxx',
     password: md5('test'),
     showMode: 'card',
-    preferenceTeam: '数据库',
+    preference: {
+      preferenceTeam: '数据库',
+      preferenceColor: 'blue',
+      preferenceLayout: 'Default',
+    },
+    role: 'admin',
   },
 ]

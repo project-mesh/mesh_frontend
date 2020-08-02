@@ -109,11 +109,11 @@ const apiMap = {
     url: '/task',
     method: 'delete',
   },
-  queryProjectTask: {
+  queryProjectTasks: {
     url: '/task/project',
     method: 'get',
   },
-  queryTeamTask: {
+  queryTeamTasks: {
     url: '/task/team',
     method: 'get',
   },
@@ -171,11 +171,20 @@ const apiMap = {
   },
 }
 
+const loginByToken = (token) => {
+  const config = { ...apiMap['login'] }
+  config.headers = { token: token }
+  console.log('config with token is: ', config)
+  return request(config)
+}
+
 const sendRequest = (apiName, data) => {
   if (!apiMap[apiName]) throw new Error('api未定义！')
+  if (apiName === 'login' && typeof data === 'string') return loginByToken(data)
   const config = { ...apiMap[apiName] }
   if (config.method === 'get') config.params = data
   else config.data = data
+  console.log('apiName is: ', apiName, 'request data is:', data)
   return request(config)
 }
 
