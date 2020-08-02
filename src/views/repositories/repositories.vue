@@ -1,141 +1,105 @@
 <template>
-  <page-header-wrapper>
-    <a-card style="margin-top: 24px;" :bordered="false" title="知识库">
-      <div slot="extra">
-        <a-radio-group v-model="status">
-          <a-radio-button value="team">
-            <a-icon type="team" />
-          </a-radio-button>
-          <a-radio-button value="project">
-            <a-icon type="project" />
-          </a-radio-button>
-        </a-radio-group>
+  <a-card style="margin-top: 24px;" :bordered="false" title="知识库">
+    <div class="operate">
+      <a-button type="dashed" style="width: 100%;" icon="plus" @click="add">添加</a-button>
+    </div>
 
-        <!---   <a-input-search style="margin-left: 16px; width: 272px;" />
-     --->
-      </div>
-
-      <div class="operate">
-        <a-button type="dashed" style="width: 100%;" icon="plus" @click="add">添加</a-button>
-      </div>
-
-      <a-list
-        size="large"
-        :pagination="{
-          showSizeChanger: true,
-          showQuickJumper: true,
-          pageSize: 5,
-          total: 50,
-        }"
-      >
-        <a-list-item :key="index" v-for="(item, index) in data">
-          <a-list-item-meta :description="item.description">
-            <a slot="title" href="404">{{ item.title }}</a>
-          </a-list-item-meta>
-          <div slot="actions">
-            <a @click="edit(item)">编辑</a>
+    <a-list
+      size="large"
+      :pagination="{
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSize: 5,
+        total: 50,
+      }"
+    >
+      <a-list-item :key="index" v-for="(item, index) in data">
+        <a-list-item-meta :description="item.hyperlink">
+          <a slot="title" href="404">{{ item.knowledgeName }}</a>
+        </a-list-item-meta>
+        <div slot="actions">
+          <a @click="edit(item)">编辑</a>
+        </div>
+        <div slot="actions">
+          <a-dropdown>
+            <a-menu slot="overlay">
+              <a-menu-item><a @click="edit(item)">编辑</a></a-menu-item>
+              <a-menu-item><a>删除</a></a-menu-item>
+            </a-menu>
+            <a>
+              更多
+              <a-icon type="down" />
+            </a>
+          </a-dropdown>
+        </div>
+        <div class="list-content">
+          <div class="list-content-item">
+            <span>上传人</span>
+            <p>{{ item.uploaderName }}</p>
           </div>
-          <div slot="actions">
-            <a-dropdown>
-              <a-menu slot="overlay">
-                <a-menu-item><a @click="edit(item)">编辑</a></a-menu-item>
-                <a-menu-item><a>删除</a></a-menu-item>
-              </a-menu>
-              <a>
-                更多
-                <a-icon type="down" />
-              </a>
-            </a-dropdown>
+          <div class="list-content-item">
+            <span>上传时间</span>
+            <p>{{ item.createTimeDisplay }}</p>
           </div>
-          <div class="list-content">
-            <div class="list-content-item">
-              <span>上传人</span>
-              <p>{{ item.uploader }}</p>
-            </div>
-            <div class="list-content-item">
-              <span>上传时间</span>
-              <p>{{ item.uploadAt }}</p>
-            </div>
-          </div>
-        </a-list-item>
-      </a-list>
-    </a-card>
-  </page-header-wrapper>
+        </div>
+      </a-list-item>
+    </a-list>
+  </a-card>
 </template>
 
 <script>
 // 演示如何使用 this.$dialog 封装 modal 组件
-import TaskForm from './TaskForm'
+import TaskForm from '@/views/repositories/TaskForm'
+import { formatDateByPattern } from '@/utils/dateUtil'
+/*
+{
+  "error_code": 0,
+  "data": {
+    "isSuccess": true,
+    "msg": "",
+    "knowledgeBase": [
+      {
+        "knowledgeId": "asgsdfvgdxzvzsd",
+        "knowledgeName": "项目地址",
+        "hyperlink": "xxxx",
+        "uploaderName": "王新宇",
+        "createTime": "1595215568570"
+      }
+    ]
+  }
+}
+*/
 
 const data = []
 data.push({
-  title: 'Alipay',
-  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-  description: '那是一种内在的东西， 他们到达不了，也无法触及的',
-  link: '',
-  uploader: '付晓晓',
-  uploadAt: '2018-07-26 22:44',
-  progress: {
-    value: 90,
-  },
+  knowledgeName: '谷歌',
+  hyperlink: 'www.google.com',
+  uploaderName: '付晓晓',
+  createTime: '1595215568570',
 })
 data.push({
-  title: 'Angular',
-  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
-  description: '希望是一个好东西，也许是最好的，好东西是不会消亡的',
-  link: '',
-  uploader: '曲丽丽',
-  uploadAt: '2018-07-26 22:44',
-  progress: {
-    value: 54,
-  },
+  knowledgeName: '百度',
+  hyperlink: 'www.baidu.com',
+  uploaderName: '付晓晓',
+  createTime: '1595215561593',
 })
 data.push({
-  title: 'Ant Design',
-  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/dURIMkkrRFpPgTuzkwnB.png',
-  description: '生命就像一盒巧克力，结果往往出人意料',
-  link: '',
-  uploader: '林东东',
-  uploadAt: '2018-07-26 22:44',
-  progress: {
-    value: 66,
-  },
+  knowledgeName: '必应',
+  hyperlink: 'www.bing.com',
+  uploaderName: '付晓晓',
+  createTime: '1595215561593',
 })
 data.push({
-  title: 'Ant Design Pro',
-  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png',
-  description: '城镇中有那么多的酒馆，她却偏偏走进了我的酒馆',
-  link: '',
-  uploader: '周星星',
-  uploadAt: '2018-07-26 22:44',
-  progress: {
-    value: 30,
-  },
+  knowledgeName: '百度',
+  hyperlink: 'www.baidu.com',
+  uploaderName: '付晓晓',
+  createTime: '1595215561593',
 })
-data.push({
-  title: 'Bootstrap',
-  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-  description: '那时候我只会想自己想要什么，从不想自己拥有什么',
-  link: '',
-  uploader: '吴加好',
-  uploadAt: '2018-07-26 22:44',
-  progress: {
-    status: 'exception',
-    value: 100,
-  },
-})
-data.push({
-  title: 'test6',
-  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-  description: '那时候我只会想自己想要什么，从不想自己拥有什么',
-  link: '',
-  uploader: '吴加好',
-  uploadAt: '2018-07-26 22:44',
-  progress: {
-    status: 'exception',
-    value: 100,
-  },
-})
+
+for (const item of data) {
+  const fullDate = new Date(Number(item.createTime))
+  item.createTimeDisplay = formatDateByPattern(fullDate, 'yyyy-MM-dd hh:mm')
+}
 
 export default {
   name: 'Repositories',
