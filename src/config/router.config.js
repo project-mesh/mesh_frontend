@@ -61,8 +61,9 @@ export const asyncRouterMap = [
       // forms
       {
         path: '/repositories',
+        name: 'repositories',
         // redirect: '/form/base-form',
-        component: RouteView,
+        component: () => import('@/views/repositories/repositories'),
         meta: { title: '知识库', icon: 'form', permission: ['form'] },
         // children: [
         //   {
