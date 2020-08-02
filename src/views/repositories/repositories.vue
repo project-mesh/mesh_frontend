@@ -30,8 +30,7 @@
       >
         <a-list-item :key="index" v-for="(item, index) in data">
           <a-list-item-meta :description="item.description">
-            <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
-            <a slot="title">{{ item.title }}</a>
+            <a slot="title" href="404">{{ item.title }}</a>
           </a-list-item-meta>
           <div slot="actions">
             <a @click="edit(item)">编辑</a>
@@ -39,7 +38,7 @@
           <div slot="actions">
             <a-dropdown>
               <a-menu slot="overlay">
-                <a-menu-item><a>编辑</a></a-menu-item>
+                <a-menu-item><a @click="edit(item)">编辑</a></a-menu-item>
                 <a-menu-item><a>删除</a></a-menu-item>
               </a-menu>
               <a>
@@ -73,6 +72,7 @@ data.push({
   title: 'Alipay',
   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
   description: '那是一种内在的东西， 他们到达不了，也无法触及的',
+  link: '',
   uploader: '付晓晓',
   uploadAt: '2018-07-26 22:44',
   progress: {
@@ -83,6 +83,7 @@ data.push({
   title: 'Angular',
   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
   description: '希望是一个好东西，也许是最好的，好东西是不会消亡的',
+  link: '',
   uploader: '曲丽丽',
   uploadAt: '2018-07-26 22:44',
   progress: {
@@ -93,6 +94,7 @@ data.push({
   title: 'Ant Design',
   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/dURIMkkrRFpPgTuzkwnB.png',
   description: '生命就像一盒巧克力，结果往往出人意料',
+  link: '',
   uploader: '林东东',
   uploadAt: '2018-07-26 22:44',
   progress: {
@@ -103,6 +105,7 @@ data.push({
   title: 'Ant Design Pro',
   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png',
   description: '城镇中有那么多的酒馆，她却偏偏走进了我的酒馆',
+  link: '',
   uploader: '周星星',
   uploadAt: '2018-07-26 22:44',
   progress: {
@@ -113,6 +116,19 @@ data.push({
   title: 'Bootstrap',
   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
   description: '那时候我只会想自己想要什么，从不想自己拥有什么',
+  link: '',
+  uploader: '吴加好',
+  uploadAt: '2018-07-26 22:44',
+  progress: {
+    status: 'exception',
+    value: 100,
+  },
+})
+data.push({
+  title: 'test6',
+  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
+  description: '那时候我只会想自己想要什么，从不想自己拥有什么',
+  link: '',
   uploader: '吴加好',
   uploadAt: '2018-07-26 22:44',
   progress: {
@@ -138,7 +154,9 @@ export default {
         {
           record: {},
           on: {
-            ok() {},
+            ok() {
+              alert('add')
+            },
             cancel() {},
             close() {},
           },
@@ -159,7 +177,9 @@ export default {
         {
           record,
           on: {
-            ok() {},
+            ok() {
+              alert('edit')
+            },
             cancel() {},
             close() {},
           },
