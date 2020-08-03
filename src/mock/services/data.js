@@ -55,6 +55,7 @@ export const tasks = [
     isFinished: false,
     status: '开发中',
     priority: 1,
+    createTime: Date.now(),
     deadline: '2020-06-18',
     description: '任务内容详细描述xxxxxxxx',
     founder: 'zengze',
@@ -70,6 +71,7 @@ export const subTasks = [
     isFinished: false,
     status: '开发中',
     priority: 1,
+    createTime: Date.now(),
     deadline: '2020-06-18',
     description: '任务内容详细描述xxxxxxxx',
     founder: 'zengze',
@@ -85,6 +87,7 @@ export const projects = [
     projectLogo: 'xxxxxxxxxxx',
     description: 'description',
     adminName: 'test',
+    isPublic: true,
     createTime: Date.now(),
   },
   {
@@ -94,6 +97,7 @@ export const projects = [
     projectName: '前端开发',
     projectLogo: 'xxxxxxx',
     adminName: 'zengze',
+    isPublic: true,
     description: '?????????????????????',
   },
 ]
@@ -144,7 +148,7 @@ export const users = [
   {
     username: 'test',
     email: Mock.mock('@email'),
-    profile: 'xxxxx',
+    avatar: 'xxxxx',
     password: md5('test'),
     showMode: 'card',
     preference: {
@@ -157,7 +161,7 @@ export const users = [
   {
     username: 'zengze',
     email: Mock.mock('@email'),
-    profile: 'xxxxx',
+    avatar: 'xxxxx',
     password: md5('test'),
     showMode: 'card',
     preference: {

@@ -117,11 +117,11 @@ export const asyncRouterMap = [
       {
         path: '/calendar',
         name: 'calendar',
-        // TODO: 修改成对应页面
-        component: () => import('@/views/exception/404'),
+        component: () => import('@/views/calendar/BasicCalendar'),
         meta: {
           title: '日历',
           icon: 'calendar',
+          keepAlive: true,
         },
       },
 
