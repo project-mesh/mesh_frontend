@@ -150,8 +150,8 @@ export const users = [
     email: Mock.mock('@email'),
     avatar: 'xxxxx',
     password: md5('test'),
-    showMode: 'card',
     preference: {
+      preferenceShowMode: 'card',
       preferenceTeam: '数据库',
       preferenceColor: 'blue',
       preferenceLayout: 'Default',
@@ -163,8 +163,8 @@ export const users = [
     email: Mock.mock('@email'),
     avatar: 'xxxxx',
     password: md5('test'),
-    showMode: 'card',
     preference: {
+      preferenceShowMode: 'card',
       preferenceTeam: '数据库',
       preferenceColor: 'blue',
       preferenceLayout: 'Default',
