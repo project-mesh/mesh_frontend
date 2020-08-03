@@ -5,7 +5,7 @@ import store from '@/store'
 const user = {
   state: {
     token: '',
-    username: 'test',
+    username: '',
     role: '',
     avatar: '',
     preference: {},
@@ -49,7 +49,8 @@ const user = {
             commit('SET_AVATAR', response.data.profile)
             commit('SET_TEAMS', response.data.teams)
             commit('SET_PREFERENCE', response.data.preference)
-            resolve()
+            commit('SET_TEAMID', response.data.preference.preferenceTeam)
+            resolve(response)
           })
           .catch((error) => {
             reject(error)

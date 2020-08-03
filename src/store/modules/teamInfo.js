@@ -1,17 +1,41 @@
 // teamName存储team-selector选择的具体团队
 // 该模块存储当前团队下的数据
-
 import sendRequest from '../../api'
 import store from '@/store'
 
 const teamInfo = {
   state: {
-    teamId: '',
+    teamId: '数据库',
     createTime: 0,
     teamName: '',
     adminName: '',
     members: [], // 包括 username, profile
-    teamProjects: [], // 包括 projectName projectId projectLogo adminName
+    teamProjects: [
+      {
+        projectName: 'Ant Design Title 1',
+        projectId: 'Ant Design Title 1',
+        adminName: '周杰伦',
+        projectLogo: 'https://pic.qqtn.com/up/2019-9/2019092509041339444.jpg',
+      },
+      {
+        projectName: 'Ant Design Title 2',
+        projectId: 'Ant Design Title 2',
+        adminName: '蔡徐坤',
+        projectLogo: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+      },
+      {
+        projectName: 'Ant Design Title 3',
+        projectId: 'Ant Design Title 3',
+        adminName: '郭麒麟',
+        projectLogo: 'https://pic.qqtn.com/up/2019-9/2019092509041339444.jpg',
+      },
+      {
+        projectName: 'Ant Design Title 4',
+        projectId: 'Ant Design Title 4',
+        adminName: '吴亦凡',
+        projectLogo: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+      },
+    ], // 包括 projectName projectId projectLogo adminName
     knowledgeBase: [], //
   },
   mutations: {
@@ -37,12 +61,12 @@ const teamInfo = {
       state.knowledgeBase = teamKB
     },
     SET_ALL: (state, data) => {
-      state.teamId = data.teamId
+      // state.teamId = data.teamId
       state.createTime = data.createTime
       state.teamName = data.teamName
       state.adminName = data.adminName
       state.members = data.members
-      state.teamProjects = data.teamProjects
+      // state.teamProjects = data.teamProjects
     },
     ADD_PROJECTS: (state, project) => {
       state.teamProjects.push(project)

@@ -11,8 +11,21 @@ const whiteList = ['login', 'register', 'registerResult'] // no redirect whiteli
 const loginRoutePath = '/user/login'
 const defaultRoutePath = '/dashboard/workplace'
 
-router.beforeEach((to, from, next) => {
-  NProgress.start() // start progress bar
+var menuQueryMap = {
+  list: () => ({
+    teamId: store.getters.teamId,
+  }),
+  me: () => ({
+    teamId: store.getters.teamId,
+    username: store.getters.username,
+  }),
+  repositories: () => ({
+    teamId: store.getters.teamId,
+    username: store.getters.username,
+  }),
+}
+
+function checkToken(to, from, next) {
   if (storage.get(ACCESS_TOKEN)) {
     console.log('have token')
     if (to.path === loginRoutePath) {
@@ -37,7 +50,14 @@ router.beforeEach((to, from, next) => {
           }
         })
       } else {
-        next()
+        let menuItem = to.path.split('/').pop()
+        console.log('看这里！！！！！', to)
+        if (menuItem in menuQueryMap && Object.keys(to.params).length === 0) {
+          let params = menuQueryMap[menuItem]()
+          next({ name: to.name, params: params, replace: true })
+        } else {
+          next()
+        }
       }
     }
   } else {
@@ -48,6 +68,18 @@ router.beforeEach((to, from, next) => {
       next({ path: loginRoutePath })
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
+  }
+}
+
+router.beforeEach((to, from, next) => {
+  NProgress.start() // start progress bar
+  if (!store.getters.username) {
+    store.dispatch('Login').then((response) => {
+      console.log('in begin login response is :', response)
+      checkToken(to, from, next)
+    })
+  } else {
+    checkToken(to, from, next)
   }
 })
 
