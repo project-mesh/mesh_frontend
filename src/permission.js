@@ -25,6 +25,42 @@ var menuQueryMap = {
   }),
 }
 
+function handle(to, from, next) {
+  if (to.path === loginRoutePath) {
+    console.log('will lead you to your home page')
+    next({ path: defaultRoutePath })
+    NProgress.done()
+  } else {
+    if (store.getters.addRouters.length === 0) {
+      // TODO : role filter
+      const role = store.getters.role
+      // alert('hello')
+      store.dispatch('GenerateRoutes', { role }).then(() => {
+        router.addRoutes(store.getters.addRouters)
+        const redirect = decodeURIComponent(from.query.redirect || to.path)
+        // next({ path: redirect })
+        if (to.path === redirect) {
+          // set the replace: true so the navigation will not leave a history record
+          next({ ...to, replace: true })
+        } else {
+          // 跳转到目的路由
+          next({ path: redirect })
+        }
+      })
+    } else {
+      let menuItem = to.path.split('/').pop()
+      console.log('打印：menuItem: ')
+      console.log('看这里！！！！！', to)
+      if (menuItem in menuQueryMap && Object.keys(to.query).length === 0) {
+        let query = menuQueryMap[menuItem]()
+        next({ ...to, query: query, replace: true })
+      } else {
+        next()
+      }
+    }
+  }
+}
+
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   if (storage.get(ACCESS_TOKEN)) {
@@ -32,45 +68,14 @@ router.beforeEach((to, from, next) => {
       store
         .dispatch('Login', { token: storage.get(ACCESS_TOKEN) })
         .then((response) => {
-          console.log('in begin login response is :', response)
-          if (to.path === loginRoutePath) {
-            console.log('will lead you to your home page')
-            next({ path: defaultRoutePath })
-            NProgress.done()
-          } else {
-            if (store.getters.addRouters.length === 0) {
-              // TODO : role filter
-              const role = store.getters.role
-              // alert('hello')
-              store.dispatch('GenerateRoutes', { role }).then(() => {
-                router.addRoutes(store.getters.addRouters)
-                const redirect = decodeURIComponent(from.query.redirect || to.path)
-                // next({ path: redirect })
-                if (to.path === redirect) {
-                  // set the replace: true so the navigation will not leave a history record
-                  next({ ...to, replace: true })
-                } else {
-                  // 跳转到目的路由
-                  next({ path: redirect })
-                }
-              })
-            } else {
-              let menuItem = to.path.split('/').pop()
-              console.log('打印：menuItem: ')
-              console.log('看这里！！！！！', to)
-              if (menuItem in menuQueryMap && Object.keys(to.query).length === 0) {
-                let query = menuQueryMap[menuItem]()
-                next({ ...to, query: query, replace: true })
-              } else {
-                next()
-              }
-            }
-          }
+          handle(to, from, next)
         })
         .catch((error) => {
           console.log('in begin login error is:', error)
           store.dispatch('Logout')
         })
+    } else {
+      handle(to, from, next)
     }
   } else {
     if (whiteList.includes(to.name)) {
