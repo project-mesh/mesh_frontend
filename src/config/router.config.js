@@ -26,36 +26,19 @@ export const asyncRouterMap = [
           title: '项目',
           keepAlive: true,
           icon: 'project',
-          // permission: ['dashboard'],
         },
-        // children: [
-        //   {
-        //     path: '/dashboard/analysis/:pageNo([1-9]\\d*)?',
-        //     name: 'Analysis',
-        //     component: () => import('@/views/dashboard/Analysis'),
-        //     meta: {
-        //       title: 'menu.dashboard.analysis',
-        //       keepAlive: false,
-        //       permission: ['dashboard'],
-        //     },
-        //   },
-        //   // 外部链接
-        //   {
-        //     path: 'https://www.baidu.com/',
-        //     name: 'Monitor',
-        //     meta: { title: 'menu.dashboard.monitor', target: '_blank' },
-        //   },
-        //   {
-        //     path: '/dashboard/workplace',
-        //     name: 'Workplace',
-        //     component: () => import('@/views/dashboard/Workplace'),
-        //     meta: {
-        //       title: 'menu.dashboard.workplace',
-        //       keepAlive: true,
-        //       permission: ['dashboard'],
-        //     },
-        //   },
-        // ],
+      },
+      //暂时用作statics统计页面路由
+      {
+        path: '/statictics',
+        name: 'statictics',
+        component: () => import('@/views/statictics/Statictics'),
+        hideChildrenInMenu: true,
+        meta: {
+          title: '统计',
+          keepAlive: true,
+          icon: 'statictics',
+        },
       },
 
       // forms
@@ -64,26 +47,6 @@ export const asyncRouterMap = [
         // redirect: '/form/base-form',
         component: RouteView,
         meta: { title: '知识库', icon: 'form', permission: ['form'] },
-        // children: [
-        //   {
-        //     path: '/form/base-form',
-        //     name: 'BaseForm',
-        //     component: () => import('@/views/form/basicForm'),
-        //     meta: { title: '基础表单', keepAlive: true, permission: ['form'] },
-        //   },
-        //   {
-        //     path: '/form/step-form',
-        //     name: 'StepForm',
-        //     component: () => import('@/views/form/stepForm/StepForm'),
-        //     meta: { title: '分步表单', keepAlive: true, permission: ['form'] },
-        //   },
-        //   {
-        //     path: '/form/advanced-form',
-        //     name: 'AdvanceForm',
-        //     component: () => import('@/views/form/advancedForm/AdvancedForm'),
-        //     meta: { title: '高级表单', keepAlive: true, permission: ['form'] },
-        //   },
-        // ],
       },
 
       // list
