@@ -6,6 +6,7 @@ import md5 from 'md5'
 const login = (data) => {
   const usersCopy = utils.deepCopy(users)
   console.log('mock: login')
+  console.log('login data: ', data)
   data.password && (data.password = md5(data.password))
   data.token && (data = JSON.parse(data.token))
 

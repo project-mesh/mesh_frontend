@@ -171,13 +171,6 @@ const apiMap = {
   },
 }
 
-const loginByToken = (token) => {
-  const config = { ...apiMap['login'] }
-  config.headers = { token: token }
-  console.log('config with token is: ', config)
-  return request(config)
-}
-
 const sendRequest = (apiName, data) => {
   if (!apiMap[apiName]) throw new Error('api未定义！')
   // if (apiName === 'login' && typeof data === 'string') return loginByToken(data)

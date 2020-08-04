@@ -1,4 +1,5 @@
 import { asyncRouterMap, constantRouterMap } from '@/config/router.config'
+import store from '../index'
 
 function filterAsyncRouter(routerMap, role) {
   //TODO : role filter, now you can access all of them

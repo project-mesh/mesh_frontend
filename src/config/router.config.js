@@ -1,5 +1,6 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout } from '@/layouts'
+import store from '../store'
 
 const RouteView = {
   name: 'RouteView',
@@ -19,7 +20,7 @@ export const asyncRouterMap = [
         path: '/project',
         name: 'project',
         redirect: '/project/list',
-        component: RouteView,
+        component: () => import('@/views/project/Project'),
         hideChildrenInMenu: true,
         meta: {
           title: '项目',
