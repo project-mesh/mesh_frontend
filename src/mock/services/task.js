@@ -22,8 +22,12 @@ const getTeamTasks = (queryParams) => {
       projects.find((project) => project.projectId === task.projectId).teamId === queryParams.teamId
   )
 
+  resTasks.forEach((task) => {
+    task.projectName = projects.find((project) => task.projectId === project.projectId).projectName
+  })
+
   return utils.builder({ tasks: resTasks })
 }
 
-Mock.mock(/\/subtask/, 'get', utils.functionFactory(getTeamTasks))
-Mock.mock(/\/task/, 'get', utils.functionFactory(getProjectTasks))
+Mock.mock(/\/task\/team/, 'get', utils.functionFactory(getTeamTasks))
+Mock.mock(/\/task\/project/, 'get', utils.functionFactory(getProjectTasks))

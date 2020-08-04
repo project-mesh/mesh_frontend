@@ -10,6 +10,7 @@ import getters from './getters'
 import permission from './modules/permission'
 import teamInfo from './modules/teamInfo'
 import projectTasks from './modules/projectTasks'
+import teamTasks from './modules/teamTasks'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     permission,
     teamInfo,
     projectTasks,
+    teamTasks,
   },
   state: {},
   mutations: {},

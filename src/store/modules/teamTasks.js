@@ -1,6 +1,6 @@
 import sendRequest from '@/api/index'
 
-export const teamTask = {
+export const teamTasks = {
   state: {
     tasks: [],
   },
@@ -10,12 +10,12 @@ export const teamTask = {
     },
   },
   actions: {
-    queryTeamTasks({ commmit }, requestData) {
+    queryTeamTasks({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('queryTeamTasks', requestData)
           .then((response) => {
             const { data } = response
-            if (data.isSuccess) commmit('SET_TASKS', data.tasks)
+            if (data.isSuccess) commit('SET_TASKS', data.tasks)
             resolve(response)
           })
           .catch((error) => reject(error))
@@ -23,3 +23,5 @@ export const teamTask = {
     },
   },
 }
+
+export default teamTasks
