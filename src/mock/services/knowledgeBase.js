@@ -6,7 +6,7 @@ const getKBs = (isProjectKB) => (queryParams) => {
   const resKBs = (isProjectKB ? projectKB : teamKB).filter((KB) =>
     isProjectKB ? KB.projectId === queryParams.projectId : KB.teamId === queryParams.teamId
   )
-
+  console.log('mock kb: ', resKBs)
   return utils.builder({ knowledgeBase: resKBs })
 }
 

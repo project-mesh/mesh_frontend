@@ -107,7 +107,7 @@ export const asyncRouterMap = [
         path: '/repositories',
         name: 'teamRepo',
         // TODO: 修改成对应页面
-        component: () => import('@/views/exception/404'),
+        component: () => import('@/views/repositories/repositories'),
         meta: {
           title: '知识库',
           icon: 'form',

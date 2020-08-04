@@ -32,7 +32,7 @@ import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 
 export default {
-  computed: mapGetters(['teamTasks']),
+  computed: mapGetters(['teamTasks', 'username', 'teamId']),
   methods: {
     ...mapActions(['queryTeamTasks']),
     // getListData(value) {
@@ -80,12 +80,11 @@ export default {
   },
 
   mounted() {
-    this.queryTeamTasks({ username: 'test', teamId: '数据库' })
+    this.queryTeamTasks({ username: this.username, teamId: this.teamId })
       .then((response) => {
         this.$notification.success({
           description: '成功获取团队任务',
         })
-        console.log(response)
       })
       .catch((error) => {
         this.$notification.error({

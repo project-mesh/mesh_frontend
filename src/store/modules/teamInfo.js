@@ -84,56 +84,70 @@ const teamInfo = {
           .then((response) => {
             console.log('response in GetTeamInfo is : ', response)
             commit('SET_ALL', response.data)
+            resolve(response)
           })
           .catch((error) => {
             console.log('error in GetTeamInfo is : ', error)
+            reject(error)
           })
         resolve()
       })
     },
     inviteMember({ commit }, requestData) {
-      if (store.getters.teamId) {
+      return new Promise((resolve, reject) => {
         sendRequest('inviteNewTeamMember', requestData)
           .then((response) => {
             console.log('response from inviteMember action is:', response)
+            resolve(response)
           })
           .catch((error) => {
             console.log('error from inviteMember action is:', error)
+            reject(error)
           })
-      }
+      })
     },
     createTeam({ commit }, requestData) {
-      sendRequest('createTeam', requestData)
-        .then((response) => {
-          console.log('response from createTeam action is:', response)
-          commit('SET_ALL', response.data)
-        })
-        .catch((error) => {
-          console.log('error from createTeam action is:', error)
-        })
+      return new Promise((resolve, reject) => {
+        sendRequest('createTeam', requestData)
+          .then((response) => {
+            console.log('response from createTeam action is:', response)
+            commit('SET_ALL', response.data)
+            resolve(response)
+          })
+          .catch((error) => {
+            console.log('error from createTeam action is:', error)
+            reject(error)
+          })
+      })
     },
     joinTeam({ commit }, requestData) {
-      sendRequest('joinTeam', requestData)
-        .then((response) => {
-          console.log('response from joinTeam action is:', response)
-          commit('SET_ALL', response.data)
-        })
-        .catch((error) => {
-          console.log('error from joinTeam action is:', error)
-        })
+      return new Promise((resolve, reject) => {
+        sendRequest('joinTeam', requestData)
+          .then((response) => {
+            console.log('response from joinTeam action is:', response)
+            commit('SET_ALL', response.data)
+            resolve(response)
+          })
+          .catch((error) => {
+            console.log('error from joinTeam action is:', error)
+            reject(error)
+          })
+      })
     },
     queryTeamKB({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('queryTeamKB', requestData)
           .then((response) => {
             commit('SET_TEAMKB', response.data.knowledgeBase)
+            resolve(response)
           })
           .catch((error) => {
             console.log('error in queryTeamKB is : ', error)
+            reject(error)
           })
       })
     },
-    createTeamKB({ commit }, requestData) {
+    createTeamKB({ commit, dispatch }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('createTeamKB', requestData)
           .then((response) => {
@@ -142,10 +156,15 @@ const teamInfo = {
             newRequestData.teamId = requestData.teamId
             newRequestData.knowledgeName = requestData.knowledgeName
             newRequestData.hyperlink = requestData.hyperlink
-            store.dispatch('queryTeamKB', newRequestData)
+            return dispatch('queryTeamKB', newRequestData)
+          })
+          .then((response) => {
+            resolve(response)
+            console.log('queryTeamKB success')
           })
           .catch((error) => {
             console.log('error in createTeamKB is : ', error)
+            reject(error)
           })
       })
     },
@@ -158,7 +177,11 @@ const teamInfo = {
             newRequestData.teamId = requestData.teamId
             newRequestData.knowledgeName = requestData.knowledgeName
             newRequestData.hyperlink = requestData.hyperlink
-            store.dispatch('queryTeamKB', newRequestData)
+            return store.dispatch('queryTeamKB', newRequestData)
+          })
+          .then((response) => {
+            resolve(response)
+            console.log('queryTeamKB success')
           })
           .catch((error) => {
             console.log('error in updateTeamKB is : ', error)
@@ -174,7 +197,11 @@ const teamInfo = {
             newRequestData.teamId = requestData.teamId
             newRequestData.knowledgeName = requestData.knowledgeName
             newRequestData.hyperlink = requestData.hyperlink
-            store.dispatch('queryTeamKB', newRequestData)
+            return store.dispatch('queryTeamKB', newRequestData)
+          })
+          .then((response) => {
+            resolve(response)
+            console.log('queryTeamKB success')
           })
           .catch((error) => {
             console.log('error in deleteTeamKB is : ', error)
