@@ -17,11 +17,15 @@ var menuQueryMap = {
   }),
   me: () => ({
     teamId: store.getters.teamId,
-    username: store.getters.username,
   }),
   repositories: () => ({
     teamId: store.getters.teamId,
-    username: store.getters.username,
+  }),
+  calendar: () => ({
+    teamId: store.getters.teamId,
+  }),
+  members: () => ({
+    teamId: store.getters.teamId,
   }),
 }
 

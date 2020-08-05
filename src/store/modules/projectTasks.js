@@ -34,11 +34,12 @@ const projectTasks = {
             })
             commit('SET_PROJECTTASKS', onlyTasks)
             commit('SET_PROJECTSUBTASKS', subTasks)
+            resolve(response)
           })
           .catch((error) => {
             console.log('error in queryProjectTasks is : ', error)
+            reject(error)
           })
-        resolve()
       })
     },
     createProjectTasks: ({ commit }, requestData) => {

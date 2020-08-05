@@ -21,12 +21,7 @@
         </a-button>
       </div>
     </div>
-    <a-modal
-      v-model="createProjForm"
-      title="创建新项目"
-      centered
-      @ok="() => (createProjForm = false)"
-    >
+    <a-modal v-model="createProjForm" title="创建新项目" centered @ok="handleSubmit">
       <!-- 项目创建表单 -->
       <a-form
         :form="form"
@@ -77,9 +72,9 @@
       </a-form>
     </a-modal>
     <div v-if="listVisible" class="list-view">
-      <a-list item-layout="horizontal" :data-source="data">
+      <a-list item-layout="horizontal" :data-source="teamProjects">
         <a-list-item slot="renderItem" slot-scope="item">
-          <img slot="extra" width="100" alt="logo" :src="item.imgUrl" />
+          <img slot="extra" width="100" alt="logo" :src="item.projectLogo" />
           <a-list-item-meta>
             <div slot="title">{{ item.projectName }}</div>
             <div slot="description">{{ item.adminName }}</div>
@@ -90,10 +85,15 @@
     </div>
     <div v-if="!listVisible">
       <div>
-        <a-list type="flex" :grid="{ gutter: 24, column: 5 }" :data-source="data" class="card-row">
+        <a-list
+          type="flex"
+          :grid="{ gutter: 24, column: 5 }"
+          :data-source="teamProjects"
+          class="card-row"
+        >
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
             <a-card hoverable style="width: 250px; overflow: hidden;">
-              <img slot="cover" alt="example" :src="item.imgUrl" class="card-img" />
+              <img slot="cover" alt="example" :src="item.projectLogo" class="card-img" />
 
               <template slot="actions" class="ant-card-actions">
                 <a-icon key="setting" type="setting" />
@@ -114,6 +114,8 @@
 
 <script>
 import store from '../../store'
+import { mapActions, mapGetters } from 'vuex'
+import { timeFix } from '@/utils/util'
 
 //图片转 base64
 function getBase64(img, callback) {
@@ -123,7 +125,9 @@ function getBase64(img, callback) {
 }
 export default {
   name: 'Project',
+  computed: mapGetters(['teamProjects']),
   methods: {
+    ...mapActions(['queryTeam', 'createTeam']),
     showListView() {
       console.log('显示列表')
       this.listVisible = true
@@ -145,32 +149,64 @@ export default {
     handleChange({ fileList }) {
       this.fileList = fileList
     },
+    handleSubmit(e) {
+      this.createProjForm = false
+      e.preventDefault()
+      console.log('哈哈哈哈哈哈哈')
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+          this.createTeam({
+            username: store.getters.username,
+            teamId: store.getters.teamId,
+            projectName: values.projName,
+            adminName: '',
+            isPublic: values.projAuthority !== 'private',
+          })
+            .then((response) => {
+              console.log('success,boy', response)
+              // 延迟显示欢迎信息
+              setTimeout(() => {
+                this.$notification.success({
+                  message: '创建成功',
+                  description: `${timeFix()}，已成功添加新项目`,
+                })
+              }, 0)
+            })
+            .catch((err) => {
+              console.log('error, boy: ', err)
+              this.$notification.error({
+                message: '创建失败',
+                description: err,
+              })
+            })
+        }
+      })
+    },
   },
   data() {
     return {
       listVisible: false, //是否显示列表 true显示列表 false显示卡片
-      data: [],
       createProjForm: false, //显示创建项目的表单
       previewVisible: false,
       previewImage: '',
       fileList: [],
+      form: this.$form.createForm(this),
     }
   },
   mounted: function () {
-    console.log('in Project Page, params is: ', this.$route.params)
-    store.dispatch({
-      type: 'queryTeam',
-      teamId: store.getters.teamId,
-      username: store.getters.username,
-    })
-    this.data = []
-    store.getters.teamProjects.map((item) => {
-      let obj = {}
-      obj.projectName = item.projectName
-      obj.adminName = item.adminName
-      obj.imgUrl = item.projectLogo
-      this.data.push(obj)
-    })
+    console.log('in Project Page, query is: ', this.$route.query)
+    let teamId = this.$route.query.teamId
+    this.queryTeam({ teamId: teamId, username: store.getters.username })
+      .then((response) => {
+        console.log('更新页面数据！', store.getters.teamProjects)
+      })
+      .catch((err) => {
+        this.$notification.error({
+          message: '获取项目数据失败',
+          description: err,
+        })
+      })
   },
 }
 </script>

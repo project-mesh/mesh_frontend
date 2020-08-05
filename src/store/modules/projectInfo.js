@@ -151,7 +151,6 @@ const projectInfo = {
             const { data } = response
             if (data.isSuccess) {
               const { project } = data
-
               commit('ADD_PROJECT', project, { root: true })
             }
             resolve(response)
