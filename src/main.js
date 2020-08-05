@@ -9,6 +9,7 @@ import router from './router'
 import store from './store'
 import i18n from './locales'
 import themePluginConfig from '../config/themePluginConfig'
+import VCharts from 'v-charts'
 
 // mock
 // WARNING: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.
@@ -21,6 +22,8 @@ import './utils/filter' // global filter
 import './global.less'
 
 Vue.config.productionTip = false
+
+Vue.use(VCharts)
 
 // mount axios to `Vue.$http` and `this.$http`
 Vue.component('pro-layout', ProLayout)
