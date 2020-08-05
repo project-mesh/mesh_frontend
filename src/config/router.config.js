@@ -131,7 +131,7 @@ export const asyncRouterMap = [
         path: '/members',
         name: 'members',
         // TODO: 修改成对应页面
-        component: () => import('@/views/exception/404'),
+        component: () => import('@/views/team/Team'),
         meta: {
           title: '团队',
           icon: 'team',
