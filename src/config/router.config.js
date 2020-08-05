@@ -30,14 +30,14 @@ export const asyncRouterMap = [
       },
       //暂时用作statics统计页面路由
       {
-        path: '/statictics',
-        name: 'statictics',
-        component: () => import('@/views/statictics/Statictics'),
+        path: '/statistics',
+        name: 'statistics',
+        component: () => import('@/views/statistics/Statistics'),
         hideChildrenInMenu: true,
         meta: {
           title: '统计',
           keepAlive: true,
-          icon: 'statictics',
+          icon: 'statistics',
         },
       },
 
