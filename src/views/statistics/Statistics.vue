@@ -91,7 +91,6 @@ export default {
   data() {
     this.ringSettings = {
       roseType: 'radius',
-      radius: [100, 150],
     }
     this.histogramSettings = {
       itemStyle: {
