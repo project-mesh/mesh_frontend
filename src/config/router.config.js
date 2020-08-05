@@ -37,7 +37,7 @@ export const asyncRouterMap = [
         meta: {
           title: '统计',
           keepAlive: true,
-          icon: 'statistics',
+          icon: 'bar-chart',
         },
       },
 
