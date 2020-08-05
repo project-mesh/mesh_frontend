@@ -55,6 +55,22 @@
             </a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item label="项目负责人">
+          <a-select
+            v-decorator="[
+              'projAuthority',
+              { rules: [{ required: true, message: '请选择项目负责人!' }] },
+            ]"
+            placeholder="选择项目管理员"
+          >
+            <a-select-option value="1">
+              xxx
+            </a-select-option>
+            <a-select-option value="2">
+              yyy
+            </a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="项目封面">
           <a-upload
             action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
