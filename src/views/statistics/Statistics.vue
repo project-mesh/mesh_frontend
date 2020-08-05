@@ -9,7 +9,6 @@
         <a-col :sm="24" :md="10" class="col">
           <a-card
             class="antd-pro-pages-dashboard-analysis-salesCard"
-            :loading="loading"
             :bordered="false"
             title="任务按执行者分布"
             :style="{ height: '100%' }"
@@ -23,21 +22,57 @@
                 </a-radio-group>
               </div>
             </div>
+            <ve-ring
+              v-if="performeRingVisible"
+              :data="performerData"
+              :settings="ringSettings"
+            ></ve-ring>
+            <ve-histogram
+              v-if="!performeRingVisible"
+              :data="performerData"
+              :settings="histogramSettings"
+            ></ve-histogram>
             <div>
-              <div>
-                <v-chart :force-fit="true" :height="405" :data="pieData" :scale="pieScale">
-                  <v-tooltip :show-title="false" data-key="item*percent" />
-                  <v-axis />
-                  <v-legend data-key="item" />
-                  <v-pie position="percent" color="item" :v-style="pieStyle" />
-                  <v-coord type="theta" :radius="0.75" :inner-radius="0.6" />
-                </v-chart>
-              </div>
+              <a-radio-group default-value="a">
+                <a-radio-button value="a" @click="performeShowRing">
+                  环状图
+                </a-radio-button>
+                <a-radio-button value="b" @click="performeShowHistograme">
+                  直方图
+                </a-radio-button>
+              </a-radio-group>
             </div>
           </a-card>
         </a-col>
         <a-col :sm="24" :md="10" class="col">
-          <ve-ring :data="chartData"></ve-ring>
+          <a-card
+            class="antd-pro-pages-dashboard-analysis-salesCard"
+            :bordered="false"
+            title="任务完成情况"
+            :style="{ height: '100%' }"
+          >
+            <div slot="extra" style="height: inherit;"></div>
+            <ve-histogram
+              v-if="finishHistogramVisible"
+              :data="finishData"
+              :settings="histogramSettings"
+            ></ve-histogram>
+            <ve-line
+              v-if="!finishHistogramVisible"
+              :data="finishData"
+              :settings="histogramSettings"
+            ></ve-line>
+            <div>
+              <a-radio-group default-value="a">
+                <a-radio-button value="a" @click="finishShowHistogram">
+                  直方图
+                </a-radio-button>
+                <a-radio-button value="b" @click="finishShowLine">
+                  折线图
+                </a-radio-button>
+              </a-radio-group>
+            </div>
+          </a-card>
         </a-col>
         <a-col :sm="24" :md="10" class="col">
           <a-statistic title="Active Users" :value="112893" style="margin-right: 50px;" />
@@ -49,117 +84,84 @@
 </template>
 
 <script>
-import {
-  ChartCard,
-  MiniArea,
-  MiniBar,
-  MiniProgress,
-  RankList,
-  Bar,
-  Trend,
-  NumberInfo,
-  MiniSmoothArea,
-} from '@/components'
-
-const DataSet = require('@antv/data-set')
-
-const sourceData = [
-  { item: '无负责人', count: 32.2 },
-  { item: '蔡徐坤', count: 21 },
-  { item: 'Tom', count: 17 },
-  { item: 'lxd', count: 5 },
-]
-
-const pieScale = [
-  {
-    dataKey: 'percent',
-    min: 0,
-    formatter: '.0%',
-  },
-]
-
-const dv = new DataSet.View().source(sourceData)
-dv.transform({
-  type: 'percent',
-  field: 'count',
-  dimension: 'item',
-  as: 'percent',
-})
-const pieData = dv.rows
-
+import { values } from 'mockjs2'
 export default {
   name: 'Statistics',
-  components: {
-    ChartCard,
-    MiniArea,
-    MiniBar,
-    MiniProgress,
-    RankList,
-    Bar,
-    Trend,
-    NumberInfo,
-    MiniSmoothArea,
-  },
+  components: {},
   data() {
-    return {
-      //
-      pieScale,
-      pieData,
-      sourceData,
-      pieStyle: {
-        stroke: '#fff',
-        lineWidth: 1,
+    this.ringSettings = {
+      roseType: 'radius',
+      radius: [100, 150],
+    }
+    this.histogramSettings = {
+      itemStyle: {
+        color: '#1890ff',
       },
-      chartData: {
-        columns: ['日期', '访问用户'],
+    }
+    return {
+      performeRingVisible: true, //第一个表格显示环状图true 直方图 false
+      finishHistogramVisible: true, //显示直方图true 折线图 false
+      performerData: {
+        columns: ['principal', 'count'],
         rows: [
-          { 日期: '1/1', 访问用户: 1393 },
-          { 日期: '1/2', 访问用户: 3530 },
-          { 日期: '1/3', 访问用户: 2923 },
-          { 日期: '1/4', 访问用户: 1723 },
-          { 日期: '1/5', 访问用户: 3792 },
-          { 日期: '1/6', 访问用户: 4593 },
+          { principal: '虞姬', count: 1393 },
+          { principal: '蔡文姬', count: 3530 },
+          { principal: '白起', count: 2923 },
+          { principal: '张飞', count: 1723 },
+          { principal: '诸葛亮', count: 3792 },
+          { principal: '未分配', count: 4593 },
+        ],
+      },
+      finishData: {
+        columns: ['case', 'count'],
+        rows: [
+          { case: '未完成', count: 1393 },
+          { case: '已完成', count: 3530 },
+          { case: '已逾期', count: 2923 },
+          { case: '未认领', count: 1723 },
+          { case: '已认领', count: 3792 },
         ],
       },
     }
+  },
+  methods: {
+    performeShowRing() {
+      console.log('显示环状图')
+      this.performeRingVisible = true
+    },
+    performeShowHistograme() {
+      console.log('显示饼状图')
+      this.performeRingVisible = false
+    },
+    finishShowHistogram() {
+      console.log('显示直方图')
+      this.finishHistogramVisible = true
+    },
+    finishShowLine() {
+      console.log('显示折线图')
+      this.finishHistogramVisible = false
+    },
   },
 }
 </script>
 
 <style lang="less" scoped>
 .row {
-  padding: '24px';
-  min-height: '360px';
+  padding: 20px;
+  min-height: 300px;
 }
 
 .col {
-  padding: 24px;
+  padding-top: 10px;
   background: #ffffff;
   margin-bottom: 24px;
-  margin-left: 24px;
-}
-
-.antd-pro-pages-dashboard-analysis-twoColLayout {
-  position: relative;
-  display: flex;
-  display: block;
-  flex-flow: row wrap;
+  margin-left: 60px;
 }
 
 .antd-pro-pages-dashboard-analysis-salesCard {
   height: calc(100% - 24px);
   /deep/ .ant-card-head {
     position: relative;
-  }
-}
-
-.dashboard-analysis-iconGroup {
-  i {
-    margin-left: 16px;
-    color: rgba(0, 0, 0, 0.45);
-    cursor: pointer;
-    transition: color 0.32s;
-    color: black;
   }
 }
 
