@@ -1,7 +1,9 @@
 <template>
   <a-card style="margin-top: 24px;" :bordered="false" title="知识库">
     <div class="operate">
-      <a-button type="dashed" style="width: 100%;" icon="plus" @click="add">添加</a-button>
+      <a-button type="dashed" icon="plus" block @click="add">
+        添加
+      </a-button>
     </div>
 
     <a-list
@@ -14,13 +16,25 @@
       }"
     >
       <a-list-item :key="index" v-for="(item, index) in teamKBWithFormatedCreateTime">
-        <a-list-item-meta :description="item.hyperlink">
-          <a slot="title" href="404">{{ item.knowledgeName }}</a>
+        <a-list-item-meta :title="item.knowledgeName">
+          <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
         </a-list-item-meta>
         <div slot="actions">
-          <a @click="edit(item)">编辑</a>
+          <a-button type="link" @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">
+            编辑
+          </a-button>
         </div>
         <div slot="actions">
+          <a-button
+            type="link"
+            :loading="deleteLoading"
+            @click="deleteKB(item)"
+            :disabled="!isTeamAdminOrUploader(item)"
+          >
+            删除
+          </a-button>
+        </div>
+        <!-- <div slot="actions">
           <a-dropdown>
             <a-menu slot="overlay">
               <a-menu-item><a @click="edit(item)">编辑</a></a-menu-item>
@@ -31,7 +45,7 @@
               <a-icon type="down" />
             </a>
           </a-dropdown>
-        </div>
+        </div> -->
         <div class="list-content">
           <div class="list-content-item">
             <span>上传人</span>
@@ -112,7 +126,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['teamKB', 'username', 'teamId']),
+    ...mapGetters(['teamKB', 'username', 'teamId', 'teamAdminName']),
     teamKBWithFormatedCreateTime() {
       const formatedData = JSON.parse(JSON.stringify(this.teamKB))
       formatedData.forEach((knowledge) => {
@@ -126,7 +140,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryTeamKB']),
+    ...mapActions(['queryTeamKB', 'queryTeam', 'deleteTeamKB']),
+    isTeamAdminOrUploader(knowledge) {
+      return this.username === this.teamAdminName || this.username === knowledge.uploaderName
+    },
     add() {
       this.$dialog(
         TaskForm,
@@ -134,9 +151,7 @@ export default {
         {
           record: {},
           on: {
-            ok() {
-              alert('add')
-            },
+            ok() {},
             cancel() {},
             close() {},
           },
@@ -147,6 +162,7 @@ export default {
           width: 700,
           centered: true,
           maskClosable: false,
+          // confirmLoading: true,
         }
       )
     },
@@ -158,7 +174,7 @@ export default {
           record,
           on: {
             ok() {
-              alert('edit')
+              // alert('edit')
             },
             cancel() {},
             close() {},
@@ -173,8 +189,32 @@ export default {
         }
       )
     },
+    deleteKB(knowledge) {
+      this.deleteTeamKB({
+        username: this.username,
+        teamId: this.teamId,
+        knowledgeId: knowledge.knowledgeId,
+      })
+        .then((response) =>
+          this.$notification.success({
+            message: '成功删除团队知识库',
+          })
+        )
+        .catch((error) =>
+          this.$notification.error({
+            message: '删除知识库失败',
+            description: error.message,
+          })
+        )
+    },
   },
   mounted() {
+    // for test
+    this.queryTeam({ username: this.username, teamId: this.teamId })
+      .then((response) => console.log(response))
+      .catch((error) => console.error(error))
+    // for test
+
     this.queryTeamKB({ username: this.username, teamId: this.teamId })
       .then((response) => {
         console.log('queryTeamKB resolve')

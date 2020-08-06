@@ -109,7 +109,7 @@ const teamInfo = {
         sendRequest('queryTeam', requestData)
           .then((response) => {
             console.log('response in GetTeamInfo is : ', response)
-            commit('SET_ALL', response.data)
+            commit('SET_ALL', response.data.team)
             resolve(response)
           })
           .catch((error) => {
@@ -136,7 +136,7 @@ const teamInfo = {
         sendRequest('createTeam', requestData)
           .then((response) => {
             console.log('response from createTeam action is:', response)
-            commit('SET_ALL', response.data)
+            commit('SET_ALL', response.data.team)
             resolve(response)
           })
           .catch((error) => {
@@ -150,7 +150,7 @@ const teamInfo = {
         sendRequest('joinTeam', requestData)
           .then((response) => {
             console.log('response from joinTeam action is:', response)
-            commit('SET_ALL', response.data)
+            commit('SET_ALL', response.data.team)
             resolve(response)
           })
           .catch((error) => {
