@@ -6,16 +6,32 @@
       </a-button>
     </div>
 
+    <a-modal
+      :width="700"
+      centered
+      :visible="visible"
+      :confirm-loading="confirmLoading"
+      :title="modalTitle"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
+      <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
+    </a-modal>
+
     <a-list
       size="large"
+      :data-source="teamKBWithFormatedCreateTime"
       :pagination="{
         showSizeChanger: true,
         showQuickJumper: true,
-        pageSize: 5,
-        total: 50,
+        pageSize: pageSize,
+        total: teamKBWithFormatedCreateTime.length,
+        current: currentPage,
+        onChange: handlePageChange,
+        onShowSizeChange: handlePageSizeChange,
       }"
     >
-      <a-list-item :key="index" v-for="(item, index) in teamKBWithFormatedCreateTime">
+      <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
         <a-list-item-meta :title="item.knowledgeName">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
         </a-list-item-meta>
@@ -26,9 +42,9 @@
         </div>
         <div slot="actions">
           <a-button
+            :loading="deleteLoading[index]"
             type="link"
-            :loading="deleteLoading"
-            @click="deleteKB(item)"
+            @click="deleteKB(item, index)"
             :disabled="!isTeamAdminOrUploader(item)"
           >
             删除
@@ -118,11 +134,18 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Repositories',
-  components: {},
+  components: { TaskForm },
   data() {
     return {
       // data,
       status: 'all',
+      selectedItem: {},
+      visible: false,
+      confirmLoading: false,
+      modalTitle: '新建',
+      pageSize: 10,
+      currentPage: 1,
+      deleteLoading: [],
     }
   },
   computed: {
@@ -138,6 +161,13 @@ export default {
 
       return formatedData
     },
+    teamKBInCurrentPage() {
+      const start = (this.currentPage - 1) * this.pageSize
+      const len = Math.min(this.teamKBWithFormatedCreateTime.length - start, this.pageSize)
+
+      console.log(`start: ${start}, len: ${len}`)
+      return this.teamKBWithFormatedCreateTime.slice(start, len)
+    },
   },
   methods: {
     ...mapActions(['queryTeamKB', 'queryTeam', 'deleteTeamKB']),
@@ -145,61 +175,56 @@ export default {
       return this.username === this.teamAdminName || this.username === knowledge.uploaderName
     },
     add() {
-      this.$dialog(
-        TaskForm,
-        // component props
-        {
-          record: {},
-          on: {
-            ok() {},
-            cancel() {},
-            close() {},
-          },
-        },
-        // modal props
-        {
-          title: '新增',
-          width: 700,
-          centered: true,
-          maskClosable: false,
-          // confirmLoading: true,
-        }
-      )
+      this.modalTitle = '新建'
+      this.selectedItem = {}
+      this.visible = true
     },
     edit(record) {
-      this.$dialog(
-        TaskForm,
-        // component props
-        {
-          record,
-          on: {
-            ok() {
-              // alert('edit')
-            },
-            cancel() {},
-            close() {},
-          },
-        },
-        // modal props
-        {
-          title: '操作',
-          width: 700,
-          centered: true,
-          maskClosable: false,
-        }
-      )
+      this.modalTitle = '编辑'
+      this.selectedItem = record
+      this.visible = true
     },
-    deleteKB(knowledge) {
+    handlePageChange(current) {
+      console.log('handlePageChange called, current page: ', current)
+      this.currentPage = current
+    },
+    handlePageSizeChange(current, pageSize) {
+      this.pageSize = pageSize
+    },
+    handleOk() {
+      console.log('repositories this.$refs.taskForm', this.$refs.taskForm)
+      this.confirmLoading = true
+      this.$refs.taskForm
+        .handleSubmit()
+        .then((response) => {
+          this.visible = false
+          this.confirmLoading = false
+
+          if (!this.selectedItem.knowledgeId) {
+            this.deleteLoading.push(false)
+          }
+        })
+        .catch((error) => {
+          this.visible = false
+          this.confirmLoading = false
+        })
+    },
+    handleCancel() {
+      this.visible = false
+    },
+    deleteKB(knowledge, index) {
+      this.$set(this.deleteLoading, index, true)
       this.deleteTeamKB({
         username: this.username,
         teamId: this.teamId,
         knowledgeId: knowledge.knowledgeId,
       })
-        .then((response) =>
+        .then((response) => {
           this.$notification.success({
             message: '成功删除团队知识库',
           })
-        )
+          this.deleteLoading.splice(index, 1)
+        })
         .catch((error) =>
           this.$notification.error({
             message: '删除知识库失败',
@@ -222,12 +247,13 @@ export default {
           message: '成功获取团队知识库',
           description: '成功获取团队知识库',
         })
+        this.deleteLoading = new Array(response.data.knowledgeBase).fill(false)
       })
       .catch((error) => {
         console.log('queryTeamKB reject')
         this.$notification.error({
           message: '获取团队知识库失败',
-          description: '`${error.name}: ${error.message}`',
+          description: `${error.name}: ${error.message}`,
         })
       })
   },

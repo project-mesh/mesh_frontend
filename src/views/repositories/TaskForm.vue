@@ -22,9 +22,9 @@
         ]"
       />
     </a-form-item>
-    <a-form-item label="简介" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <!-- <a-form-item label="简介" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-textarea v-decorator="['description']"></a-textarea>
-    </a-form-item>
+    </a-form-item> -->
   </a-form>
 </template>
 
@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     ...mapActions(['createTeamKB', 'updateTeamKB']),
-    onOk() {
+    handleSubmit() {
       return new Promise((resolve, reject) => {
         const {
           form: { validateFields },
@@ -94,25 +94,6 @@ export default {
           }
         })
       }).catch((error) => console.log('error occured in TaskForm: ', error))
-    },
-    onCancel() {
-      console.log('监听了 modal cancel 事件')
-      return new Promise((resolve) => {
-        resolve(true)
-      })
-    },
-    handleSubmit() {
-      // const {
-      //   form: { validateFields },
-      // } = this
-      // console.log('validateFields!')
-      // this.visible = true
-      // validateFields((errors, values) => {
-      //   if (!errors) {
-      //     console.log('values', values)
-      //   }
-      // })
-      console.log('handle submit call')
     },
   },
 }

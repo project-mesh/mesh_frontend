@@ -163,6 +163,7 @@ const teamInfo = {
       return new Promise((resolve, reject) => {
         sendRequest('queryTeamKB', requestData)
           .then((response) => {
+            console.log('queryTeamKB success')
             commit('SET_TEAMKB', response.data.knowledgeBase)
             resolve(response)
           })
