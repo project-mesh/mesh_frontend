@@ -34,17 +34,15 @@ const updateKB = (isProjectKB) => (data) => {
     (knowledge) => knowledge.knowledgeId === data.knowledgeId
   )
 
-  console.log('mock updateKB ', knowledge)
-
   Object.keys(data).forEach((key) => {
     if (knowledge[key]) knowledge[key] = data[key]
   })
-  console.log('after mock updateKB ', teamKB)
+
   return utils.builder({ knowledge })
 }
 
 const deleteKB = (isProjectKB) => (data) => {
-  const knowledgeIndex = (isProjectKB ? projectKB : teamKB).find(
+  const knowledgeIndex = (isProjectKB ? projectKB : teamKB).findIndex(
     (knowledge) => knowledge.knowledgeId === data.knowledgeId
   )
 

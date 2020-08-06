@@ -161,13 +161,6 @@ export default {
 
       return formatedData
     },
-    teamKBInCurrentPage() {
-      const start = (this.currentPage - 1) * this.pageSize
-      const len = Math.min(this.teamKBWithFormatedCreateTime.length - start, this.pageSize)
-
-      console.log(`start: ${start}, len: ${len}`)
-      return this.teamKBWithFormatedCreateTime.slice(start, len)
-    },
   },
   methods: {
     ...mapActions(['queryTeamKB', 'queryTeam', 'deleteTeamKB']),
@@ -185,14 +178,12 @@ export default {
       this.visible = true
     },
     handlePageChange(current) {
-      console.log('handlePageChange called, current page: ', current)
       this.currentPage = current
     },
     handlePageSizeChange(current, pageSize) {
       this.pageSize = pageSize
     },
     handleOk() {
-      console.log('repositories this.$refs.taskForm', this.$refs.taskForm)
       this.confirmLoading = true
       this.$refs.taskForm
         .handleSubmit()
@@ -242,7 +233,6 @@ export default {
 
     this.queryTeamKB({ username: this.username, teamId: this.teamId })
       .then((response) => {
-        console.log('queryTeamKB resolve')
         this.$notification.success({
           message: '成功获取团队知识库',
           description: '成功获取团队知识库',
@@ -250,7 +240,6 @@ export default {
         this.deleteLoading = new Array(response.data.knowledgeBase).fill(false)
       })
       .catch((error) => {
-        console.log('queryTeamKB reject')
         this.$notification.error({
           message: '获取团队知识库失败',
           description: `${error.name}: ${error.message}`,
