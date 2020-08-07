@@ -36,19 +36,14 @@
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
         </a-list-item-meta>
         <div slot="actions">
-          <a-button type="link" @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">
+          <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">
             编辑
-          </a-button>
+          </a>
         </div>
         <div slot="actions">
-          <a-button
-            :loading="deleteLoading[index]"
-            type="link"
-            @click="deleteKB(item, index)"
-            :disabled="!isTeamAdminOrUploader(item)"
-          >
-            删除
-          </a-button>
+          <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
+            <a :disabled="!isTeamAdminOrUploader(item) || deleteLoading[index]">删除</a>
+          </a-popconfirm>
         </div>
         <!-- <div slot="actions">
           <a-dropdown>
