@@ -122,7 +122,7 @@ export default {
 }
 </style>
 
-<style scoped>
+<style>
 .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value,
 .ant-fullcalendar-selected-day .ant-fullcalendar-value {
   background: none !important;
