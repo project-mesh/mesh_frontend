@@ -1,5 +1,5 @@
 <template>
-  <a-card style="margin-top: 24px;" :bordered="false" title="知识库">
+  <a-card style="margin-top: 24px;" :bordered="false" title="知识库" :loading="cardLoading">
     <div class="operate">
       <a-button type="dashed" icon="plus" block @click="add">
         添加
@@ -141,6 +141,7 @@ export default {
       pageSize: 10,
       currentPage: 1,
       deleteLoading: [],
+      cardLoading: true,
     }
   },
   computed: {
@@ -239,6 +240,9 @@ export default {
           message: '获取团队知识库失败',
           description: `${error.name}: ${error.message}`,
         })
+      })
+      .finally(() => {
+        this.cardLoading = false
       })
   },
 }
