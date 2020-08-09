@@ -17,7 +17,7 @@ module.exports = {
   rules: {
     'no-console': 'warn',
     'no-debugger': isProd ? 'warn' : 'off',
-    'prettier/prettier': 'error',
+    'prettier/prettier': 'off',
     'vue/eqeqeq': ['error', 'smart'],
     'vue/no-unused-components': 1,
     'no-unused-vars': isProd ? 'error' : 'warn',

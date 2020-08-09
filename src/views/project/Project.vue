@@ -55,6 +55,22 @@
             </a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item label="项目负责人">
+          <a-select
+            v-decorator="[
+              'projAuthority',
+              { rules: [{ required: true, message: '请选择项目负责人!' }] },
+            ]"
+            placeholder="选择项目管理员"
+          >
+            <a-select-option value="1">
+              xxx
+            </a-select-option>
+            <a-select-option value="2">
+              yyy
+            </a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="项目封面">
           <a-upload
             action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -90,9 +106,9 @@
     </div>
     <div v-if="!listVisible">
       <div>
-        <a-list type="flex" :grid="{ gutter: 24, column: 5 }" :data-source="data" class="card-row">
+        <a-list type="flex" :grid="{ gutter: 16, column: 4 }" :data-source="data" class="card-row">
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
-            <a-card hoverable style="width: 250px; overflow: hidden;">
+            <a-card hoverable style="width: 100%; overflow: hidden;">
               <img slot="cover" alt="example" :src="item.imgUrl" class="card-img" />
 
               <template slot="actions" class="ant-card-actions">
@@ -113,106 +129,105 @@
 </template>
 
 <script>
-import store from '../../store'
-
-const data = [
-  {
-    title: 'Ant Design Title 1',
-    manager: '周杰伦',
-  },
-  {
-    title: 'Ant Design Title 2',
-    manager: '蔡徐坤',
-  },
-  {
-    title: 'Ant Design Title 3',
-    manager: '郭麒麟',
-  },
-  {
-    title: 'Ant Design Title 4',
-    manager: '吴亦凡',
-  },
-]
-//图片转 base64
-function getBase64(img, callback) {
-  const reader = new FileReader()
-  reader.addEventListener('load', () => callback(reader.result))
-  reader.readAsDataURL(img)
-}
-export default {
-  name: 'Project',
-  methods: {
-    showListView() {
-      console.log('显示列表')
-      this.listVisible = true
+  import store from '../../store'
+  const data = [
+    {
+      title: 'Ant Design Title 1',
+      manager: '周杰伦',
     },
-    showCardView() {
-      console.log('显示卡片')
-      this.listVisible = false
+    {
+      title: 'Ant Design Title 2',
+      manager: '蔡徐坤',
     },
-    handleCancel() {
-      this.previewVisible = false
+    {
+      title: 'Ant Design Title 3',
+      manager: '郭麒麟',
     },
-    async handlePreview(file) {
-      if (!file.url && !file.preview) {
-        file.preview = await getBase64(file.originFileObj)
+    {
+      title: 'Ant Design Title 4',
+      manager: '吴亦凡',
+    },
+  ]
+  //图片转 base64
+  function getBase64(img, callback) {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => callback(reader.result))
+    reader.readAsDataURL(img)
+  }
+  export default {
+    name: 'Project',
+    methods: {
+      showListView() {
+        console.log('显示列表')
+        this.listVisible = true
+      },
+      showCardView() {
+        console.log('显示卡片')
+        this.listVisible = false
+      },
+      handleCancel() {
+        this.previewVisible = false
+      },
+      async handlePreview(file) {
+        if (!file.url && !file.preview) {
+          file.preview = await getBase64(file.originFileObj)
+        }
+        this.previewImage = file.url || file.preview
+        this.previewVisible = true
+      },
+      handleChange({ fileList }) {
+        this.fileList = fileList
+      },
+    },
+    data() {
+      return {
+        listVisible: false, //是否显示列表 true显示列表 false显示卡片
+        data,
+        createProjForm: false, //显示创建项目的表单
+        previewVisible: false,
+        previewImage: '',
+        fileList: [],
       }
-      this.previewImage = file.url || file.preview
-      this.previewVisible = true
     },
-    handleChange({ fileList }) {
-      this.fileList = fileList
+    beforeMount: function () {
+      let defaultTeamName = store.getters.teamName
+      store.dispatch({
+        type: 'GetTeamInfo',
+        teamName: defaultTeamName,
+      })
+      this.data = store.getters.projects
     },
-  },
-  data() {
-    return {
-      listVisible: false, //是否显示列表 true显示列表 false显示卡片
-      data,
-      createProjForm: false, //显示创建项目的表单
-      previewVisible: false,
-      previewImage: '',
-      fileList: [],
-    }
-  },
-  beforeMount: function () {
-    let defaultTeamName = store.getters.teamName
-    store.dispatch({
-      type: 'GetTeamInfo',
-      teamName: defaultTeamName,
-    })
-    this.data = store.getters.projects
-  },
-}
+  }
 </script>
 
 <style scoped>
-.change-view {
-  width: 100%;
-  display: flex;
-  right: 20px;
-  justify-content: space-between;
-}
-.card-row {
-  height: 500px;
-  margin-top: 20px;
-}
-.card-img {
-  width: 250px;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.card-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.search-and-create {
-  display: flex;
-  justify-content: space-between;
-}
-.search-box {
-  margin-right: 10px;
-}
+  .change-view {
+    width: 100%;
+    display: flex;
+    right: 20px;
+    justify-content: space-between;
+  }
+  .card-row {
+    height: 500px;
+    margin-top: 20px;
+  }
+  .card-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .card-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .search-and-create {
+    display: flex;
+    justify-content: space-between;
+  }
+  .search-box {
+    margin-right: 10px;
+  }
 </style>
