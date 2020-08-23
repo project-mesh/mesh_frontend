@@ -1,22 +1,32 @@
 <template>
   <a-dropdown :placement="bottomRight">
-    <a-badge :count="notifications.length" dot>
-      <a-icon type="notification" />
-    </a-badge>
+    <span>
+      <a-badge :count="notifications.length" dot>
+        <a-icon type="notification" />
+      </a-badge>
+    </span>
     <template v-if="notifications.length" v-slot:overlay>
-      <a-collapse :bordered="false">
-        <template #expandIcon="props">
-          <a-icon type="caret-right" :rotate="props.isActive ? 90 : 0" />
-        </template>
-        <a-collapse-panel
+      <a-menu class="ant-pro-drop-down menu">
+        <a-menu-item
           v-for="notification in notificationsDisplay"
           :key="notification.notificationId"
-          :header="notification.title"
-          :style="customStyle"
         >
-          <p>{{ notification.description }}</p>
-        </a-collapse-panel>
-      </a-collapse>
+          <a-popover trigger="hover" placement="leftTop" overlay-style="padding: 0;">
+            <template slot="content">
+              <a-card :title="notification.title" :bordered="false">
+                <p>描述：{{ notification.description }}</p>
+                <p>创建时间：{{ notification.createTime }}</p>
+                <template slot="actions" class="ant-card-actions">
+                  <a-icon key="setting" type="setting" />
+                  <a-icon key="edit" type="edit" />
+                  <a-icon key="ellipsis" type="ellipsis" />
+                </template>
+              </a-card>
+            </template>
+            <div>{{ notification.title }}</div>
+          </a-popover>
+        </a-menu-item>
+      </a-menu>
     </template>
   </a-dropdown>
 </template>
@@ -30,6 +40,7 @@ export default {
     return {
       customStyle: {
         background: '#fff',
+        // width: '700px',
       },
     }
   },
@@ -38,7 +49,7 @@ export default {
     notificationsDisplay() {
       const formatedData = JSON.parse(JSON.stringify(this.notifications))
       formatedData.forEach((notification) => {
-        notification.createTimeDisplay = formatDateByPattern(
+        notification.createTime = formatDateByPattern(
           new Date(Number(notification.createTime)),
           'yyyy-MM-dd hh:mm'
         )
@@ -55,8 +66,8 @@ export default {
     //   .then(() => {
     //     this.$notification.success({
     //       message: '成功获取通知',
-    //       description: '成功获取团队知识库',
     //     })
+    //     console.log(this.notifications.length)
     //   })
     //   .catch((error) => {
     //     this.$notification.error({
@@ -68,4 +79,13 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.ant-pro-drop-down {
+  /deep/ .action {
+    margin-right: 8px;
+  }
+  /deep/ .ant-dropdown-menu-item {
+    min-width: 300px;
+  }
+}
+</style>

@@ -3,6 +3,7 @@ import router from './router'
 import '@/components/NProgress/nprogress.less' // progress bar custom style
 import storage from 'store'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import notification from 'ant-design-vue/es/notification'
 import store from './store'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -45,10 +46,10 @@ function handle(to, from, next) {
         // next({ path: redirect })
         if (to.path === redirect) {
           // set the replace: true so the navigation will not leave a history record
-          next({ ...to, replace: true })
+          tryJumpToHomepage(next, { ...to, replace: true })
         } else {
           // 跳转到目的路由
-          next({ path: redirect })
+          tryJumpToHomepage(next, { path: redirect })
         }
       })
     } else {
@@ -57,12 +58,38 @@ function handle(to, from, next) {
       console.log('看这里！！！！！', to)
       if (menuItem in menuQueryMap && Object.keys(to.query).length === 0) {
         let query = menuQueryMap[menuItem]()
-        next({ ...to, query: query, replace: true })
+        tryJumpToHomepage(next, { ...to, query: query, replace: true })
       } else {
-        next()
+        tryJumpToHomepage(next)
       }
     }
   }
+}
+
+function tryJumpToHomepage(next, route) {
+  const promises = [store.dispatch('queryNotification', { username: store.getters.username })]
+  if (store.getters.preference.preferenceTeam) {
+    const requestData = {
+      username: store.getters.username,
+      teamId: store.getters.preference.preferenceTeam,
+    }
+    promises.push(
+      store.dispatch('queryTeam', requestData),
+      store.dispatch('queryTeamKB', requestData)
+    )
+  }
+
+  Promise.all(promises)
+    .then(() => {
+      route ? next(route) : next()
+    })
+    .catch((error) => {
+      notification.error({
+        message: '请求用户信息失败，请重试',
+        description: `${error.name}: ${error.message}`,
+      })
+      next(false)
+    })
 }
 
 router.beforeEach((to, from, next) => {

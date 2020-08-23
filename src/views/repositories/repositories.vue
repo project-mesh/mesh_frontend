@@ -141,7 +141,7 @@ export default {
       pageSize: 10,
       currentPage: 1,
       deleteLoading: [],
-      cardLoading: true,
+      cardLoading: false,
     }
   },
   computed: {
@@ -222,28 +222,27 @@ export default {
   },
   mounted() {
     // for test
-    this.queryTeam({ username: this.username, teamId: this.teamId })
-      .then((response) => console.log(response))
-      .catch((error) => console.error(error))
-    // for test
-
-    this.queryTeamKB({ username: this.username, teamId: this.teamId })
-      .then((response) => {
-        this.$notification.success({
-          message: '成功获取团队知识库',
-          description: '成功获取团队知识库',
-        })
-        this.deleteLoading = new Array(response.data.knowledgeBase).fill(false)
-      })
-      .catch((error) => {
-        this.$notification.error({
-          message: '获取团队知识库失败',
-          description: `${error.name}: ${error.message}`,
-        })
-      })
-      .finally(() => {
-        this.cardLoading = false
-      })
+    // this.queryTeam({ username: this.username, teamId: this.teamId })
+    //   .then((response) => console.log(response))
+    //   .catch((error) => console.error(error))
+    // // for test
+    // this.queryTeamKB({ username: this.username, teamId: this.teamId })
+    //   .then((response) => {
+    //     this.$notification.success({
+    //       message: '成功获取团队知识库',
+    //       description: '成功获取团队知识库',
+    //     })
+    //     this.deleteLoading = new Array(response.data.knowledgeBase).fill(false)
+    //   })
+    //   .catch((error) => {
+    //     this.$notification.error({
+    //       message: '获取团队知识库失败',
+    //       description: `${error.name}: ${error.message}`,
+    //     })
+    //   })
+    //   .finally(() => {
+    //     this.cardLoading = false
+    //   })
   },
 }
 </script>

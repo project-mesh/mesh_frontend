@@ -1,37 +1,34 @@
 <template>
-  <div id="components-dropdown-demo-placement">
-    <a-dropdown>
-      <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-        {{ teamName }}
-        <a-icon type="down" />
-      </a>
-      <a-menu slot="overlay">
-        <a-menu-item>
-          <a href="javascript:;">1st menu item</a>
-        </a-menu-item>
-        <a-menu-item>
-          <a href="javascript:;">2nd menu item</a>
-        </a-menu-item>
-        <a-menu-item>
-          <a href="javascript:;">3rd menu item</a>
-        </a-menu-item>
-      </a-menu>
-    </a-dropdown>
-  </div>
+  <a-dropdown placement="bottomRight">
+    <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+      {{ teamName }}
+      <a-icon type="down" />
+    </a>
+    <a-menu slot="overlay" class="ant-pro-drop-down menu">
+      <a-menu-item v-for="team in teams" :key="team.teamId">
+        <a href="javascript:;">{{ team.teamName }}</a>
+      </a-menu-item>
+    </a-menu>
+  </a-dropdown>
 </template>
 
 <script>
-  export default {
-    name: 'TeamSelector',
-    data() {
-      return {
-        teamName: '数据库课程团队',
-      }
-    },
-  }
+import { mapGetters } from 'vuex'
+
+export default {
+  name: 'TeamSelector',
+  computed: {
+    ...mapGetters(['teamName', 'teams']),
+  },
+}
 </script>
-<style>
-  #components-dropdown-demo-placement {
-    margin-left: 120px;
+<style lang="less" scoped>
+.ant-pro-drop-down {
+  /deep/ .action {
+    margin-right: 8px;
   }
+  /deep/ .ant-dropdown-menu-item {
+    min-width: 160px;
+  }
+}
 </style>
