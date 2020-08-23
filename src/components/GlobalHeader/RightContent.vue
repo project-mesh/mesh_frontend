@@ -1,5 +1,6 @@
 <template>
   <div :class="wrpCls">
+    <notification-dropdown />
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
     <select-lang :class="prefixCls" />
   </div>
@@ -8,12 +9,14 @@
 <script>
 import SelectLang from '@/components/SelectLang'
 import AvatarDropdown from './AvatarDropdown'
+import NotificationDropdown from './NotificationDropdown'
 
 export default {
   name: 'RightContent',
   components: {
     AvatarDropdown,
     SelectLang,
+    NotificationDropdown,
   },
   props: {
     prefixCls: {

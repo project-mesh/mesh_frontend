@@ -48,15 +48,14 @@ export default {
   },
   methods: {
     handleToCenter() {
-      this.$router.push({ path: '/account/center' })
+      this.$router.push({ path: '/me' })
     },
     handleToSettings() {
-      this.$router.push({ path: '/account/settings' })
+      this.$router.push({ path: '/me' })
     },
     handleLogout(e) {
       Modal.confirm({
-        title: this.$t('layouts.usermenu.dialog.title'),
-        content: this.$t('layouts.usermenu.dialog.content'),
+        title: '您确定要退出吗？',
         onOk: () =>
           // return new Promise((resolve, reject) => {
           //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)

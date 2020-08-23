@@ -59,6 +59,7 @@ const user = {
     },
     Logout({ commit, state }) {
       commit('SET_TOKEN', '')
+      commit('SET_ROLE', '')
       storage.remove(ACCESS_TOKEN)
     },
   },
