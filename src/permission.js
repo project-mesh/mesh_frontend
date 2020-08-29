@@ -46,10 +46,10 @@ function handle(to, from, next) {
         // next({ path: redirect })
         if (to.path === redirect) {
           // set the replace: true so the navigation will not leave a history record
-          tryJumpToHomepage(next, { ...to, replace: true })
+          tryJump(next, { ...to, replace: true })
         } else {
           // 跳转到目的路由
-          tryJumpToHomepage(next, { path: redirect })
+          tryJump(next, { path: redirect })
         }
       })
     } else {
@@ -58,38 +58,51 @@ function handle(to, from, next) {
       console.log('看这里！！！！！', to)
       if (menuItem in menuQueryMap && Object.keys(to.query).length === 0) {
         let query = menuQueryMap[menuItem]()
-        tryJumpToHomepage(next, { ...to, query: query, replace: true })
+        tryJump(next, { ...to, query: query, replace: true })
       } else {
-        tryJumpToHomepage(next)
+        tryJump(next)
       }
     }
   }
 }
 
-function tryJumpToHomepage(next, route) {
-  const promises = [store.dispatch('queryNotification', { username: store.getters.username })]
-  if (store.getters.preference.preferenceTeam) {
+function tryJump(next, route) {
+  const promises = []
+  if (!store.getters.notifications || store.getters.notifications.length === 0) {
+    promises.push(
+      store.dispatch('queryNotification', {
+        username: store.getters.username,
+      })
+    )
+  }
+
+  if (!store.getters.teamId && store.getters.preference.preferenceTeam) {
     const requestData = {
       username: store.getters.username,
       teamId: store.getters.preference.preferenceTeam,
     }
+
     promises.push(
       store.dispatch('queryTeam', requestData),
       store.dispatch('queryTeamKB', requestData)
     )
   }
 
-  Promise.all(promises)
-    .then(() => {
-      route ? next(route) : next()
-    })
-    .catch((error) => {
-      notification.error({
-        message: '请求用户信息失败，请重试',
-        description: `${error.name}: ${error.message}`,
+  if (promises.length) {
+    Promise.all(promises)
+      .then(() => {
+        route ? next(route) : next()
       })
-      next(false)
-    })
+      .catch((error) => {
+        notification.error({
+          message: '请求用户信息失败，请重试',
+          description: `${error.name}: ${error.message}`,
+        })
+        next(false)
+      })
+  } else {
+    route ? next(route) : next()
+  }
 }
 
 router.beforeEach((to, from, next) => {

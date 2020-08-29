@@ -195,18 +195,18 @@ export default {
     }
   },
   mounted: function () {
-    console.log('in Project Page, query is: ', this.$route.query)
-    let teamId = this.$route.query.teamId
-    this.queryTeam({ teamId: teamId, username: store.getters.username })
-      .then((response) => {
-        console.log('更新页面数据！', store.getters.teamProjects)
-      })
-      .catch((err) => {
-        this.$notification.error({
-          message: '获取项目数据失败',
-          description: err,
-        })
-      })
+    // console.log('in Project Page, query is: ', this.$route.query)
+    // let teamId = this.$route.query.teamId
+    // this.queryTeam({ teamId: teamId, username: store.getters.username })
+    //   .then((response) => {
+    //     console.log('更新页面数据！', store.getters.teamProjects)
+    //   })
+    //   .catch((err) => {
+    //     this.$notification.error({
+    //       message: '获取项目数据失败',
+    //       description: err,
+    //     })
+    //   })
   },
 }
 </script>

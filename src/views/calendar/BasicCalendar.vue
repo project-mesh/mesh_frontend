@@ -4,7 +4,11 @@
     <a-calendar>
       <ul slot="dateCellRender" slot-scope="value" class="events">
         <li v-for="item in getDayData(value)" :key="item.taskId">
-          <a-checkbox :checked="item.isFinished" @click="return false">
+          <a-checkbox
+            :disabled="![item.principal, teamAdminName].includes(username)"
+            :checked="item.isFinished"
+            @click="return false"
+          >
             {{ item.taskName }}
           </a-checkbox>
           <div id="projectName">项目：{{ item.projectName }}</div>
@@ -12,7 +16,11 @@
       </ul>
       <ul slot="monthCellRender" slot-scope="value" class="events">
         <li v-for="item in getMonthData(value)" :key="item.taskId">
-          <a-checkbox :checked="item.isFinished" @click="return false">
+          <a-checkbox
+            :disabled="![item.principal, teamAdminName].includes(username)"
+            :checked="item.isFinished"
+            @click="return false"
+          >
             {{ item.taskName }}
           </a-checkbox>
           <div id="projectName">项目：{{ item.projectName }}</div>
@@ -32,7 +40,7 @@ import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 
 export default {
-  computed: mapGetters(['teamTasks', 'username', 'teamId']),
+  computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName']),
   methods: {
     ...mapActions(['queryTeamTasks']),
     // getListData(value) {

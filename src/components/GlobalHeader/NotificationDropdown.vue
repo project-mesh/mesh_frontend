@@ -1,5 +1,5 @@
 <template>
-  <a-dropdown :placement="bottomRight">
+  <a-dropdown placement="bottomRight">
     <span>
       <a-badge :count="notifications.length" dot>
         <a-icon type="notification" />
@@ -11,20 +11,8 @@
           v-for="notification in notificationsDisplay"
           :key="notification.notificationId"
         >
-          <a-popover trigger="hover" placement="leftTop" overlay-style="padding: 0;">
-            <template slot="content">
-              <a-card :title="notification.title" :bordered="false">
-                <p>描述：{{ notification.description }}</p>
-                <p>创建时间：{{ notification.createTime }}</p>
-                <template slot="actions" class="ant-card-actions">
-                  <a-icon key="setting" type="setting" />
-                  <a-icon key="edit" type="edit" />
-                  <a-icon key="ellipsis" type="ellipsis" />
-                </template>
-              </a-card>
-            </template>
-            <div>{{ notification.title }}</div>
-          </a-popover>
+          <span class="title">{{ notification.title }}</span>
+          <a><a-icon type="close" /></a>
         </a-menu-item>
       </a-menu>
     </template>
@@ -86,6 +74,13 @@ export default {
   }
   /deep/ .ant-dropdown-menu-item {
     min-width: 300px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
+}
+
+.title {
+  flex: 1;
 }
 </style>

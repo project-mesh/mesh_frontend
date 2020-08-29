@@ -5,20 +5,38 @@
       <a-icon type="down" />
     </a>
     <a-menu slot="overlay" class="ant-pro-drop-down menu">
-      <a-menu-item v-for="team in teams" :key="team.teamId">
-        <a href="javascript:;">{{ team.teamName }}</a>
+      <a-menu-item v-for="team in teams" :key="team.teamId" @click="handleTeamChange(team)">
+        {{ team.teamName }}
       </a-menu-item>
     </a-menu>
   </a-dropdown>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'TeamSelector',
   computed: {
-    ...mapGetters(['teamName', 'teams']),
+    ...mapGetters(['username', 'teamName', 'teams', 'teamId']),
+  },
+  methods: {
+    ...mapActions(['queryTeam', 'queryTeamKB']),
+    handleTeamChange(team) {
+      const requestData = {
+        username: this.username,
+        teamId: team.teamId,
+      }
+      const promises = [this.queryTeam(requestData), this.queryTeamKB(requestData)]
+      Promise.all(promises)
+        .then(() => this.$router.push('/'))
+        .catch((error) => {
+          this.$notification.error({
+            message: '请求团队信息失败，请重试',
+            description: `${error.name}: ${error.message}`,
+          })
+        })
+    },
   },
 }
 </script>

@@ -35,7 +35,7 @@
 <script>
 import { SettingDrawer, updateTheme } from '@ant-design-vue/pro-layout'
 import { i18nRender } from '@/locales'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
 
 import defaultSettings from '@/config/defaultSettings'
@@ -91,6 +91,7 @@ export default {
       // 动态主路由
       mainMenu: (state) => state.permission.addRouters,
     }),
+    ...mapGetters(['preference']),
   },
   created() {
     const routes = this.mainMenu.find((item) => item.path === '/')
@@ -114,9 +115,13 @@ export default {
       })
     }
 
-    // first update color
-    // TIPS: THEME COLOR HANDLER!! PLEASE CHECK THAT!!
+    if (this.preference.preferenceColor)
+      this.settings.primaryColor = this.preference.preferenceColor
+    if (this.preference.preferenceLayout) this.settings.layout = this.preference.preferenceLayout
+
     if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
+      // first update color
+      // TIPS: THEME COLOR HANDLER!! PLEASE CHECK THAT!!
       updateTheme(this.settings.primaryColor)
     }
   },
