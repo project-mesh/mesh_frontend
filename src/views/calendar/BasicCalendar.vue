@@ -1,7 +1,12 @@
 <template>
   <div id="calendar">
     <span id="calendarTitle">日历</span>
-    <a-calendar>
+    <span id="calendarConfig">
+      <a-button @click="refreshCalendar">
+        回到本月
+      </a-button>
+    </span>
+    <a-calendar :key="calendarID">
       <ul slot="dateCellRender" slot-scope="value" class="events">
         <li v-for="item in getDayData(value)" :key="item.taskId">
           <a-checkbox
@@ -26,12 +31,6 @@
           <div id="projectName">项目：{{ item.projectName }}</div>
         </li>
       </ul>
-      <!-- <template slot="monthCellRender" slot-scope="value">
-        <div v-if="getMonthData(value)" class="notes-month">
-          <section>{{ getMonthData(value) }}月</section>
-          <span>宜：摸鱼</span>
-        </div>
-      </template> -->
     </a-calendar>
   </div>
 </template>
@@ -40,34 +39,14 @@ import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 
 export default {
+  data() {
+    return {
+      calendarID: +new Date(),
+    }
+  },
   computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName']),
   methods: {
     ...mapActions(['queryTeamTasks']),
-    // getListData(value) {
-    //   let listData
-    //   switch (value.date()) {
-    //     case 1:
-    //       listData = [{ type: true, content: '预习摸鱼', projectName: '摸鱼大业' }]
-    //       break
-    //     case 2:
-    //       listData = [{ type: false, content: '复习摸鱼', projectName: '摸鱼大业' }]
-    //       break
-    //     case 3:
-    //       listData = [
-    //         { type: false, content: '放弃摸鱼', projectName: '摸鱼大业' },
-    //         { type: false, content: '开始摸鱼', projectName: '摸鱼大业' },
-    //       ]
-    //       break
-    //     default:
-    //   }
-    //   return listData || []
-    // },
-
-    // getMonthData(value) {
-    //   if (value.month() !== 12) {
-    //     return value.month()
-    //   }
-    // },
 
     getListData(value, granularity) {
       const listData = this.teamTasks.filter((task) => {
@@ -84,6 +63,11 @@ export default {
 
     getDayData(value) {
       return this.getListData(value, 'day')
+    },
+
+    // 这个方法用来重置 calendar 控件为初始状态。参见 https://segmentfault.com/a/1190000016629544
+    refreshCalendar() {
+      return (this.calendarID = +new Date())
     },
   },
 
@@ -128,11 +112,23 @@ export default {
   font-size: 80%;
   font-weight: lighter;
 }
+#calendarTitle {
+  display: block;
+}
+#calendarConfig {
+  display: block;
+  text-align: right;
+  padding-right: 16px;
+}
 </style>
 
 <style>
+/* 这段代码改成style scoped会无效 */
 .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value,
 .ant-fullcalendar-selected-day .ant-fullcalendar-value {
   background: none !important;
+}
+.ant-fullcalendar-header .ant-radio-group {
+  display: none;
 }
 </style>
