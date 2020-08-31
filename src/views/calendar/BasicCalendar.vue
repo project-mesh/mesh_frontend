@@ -2,33 +2,52 @@
   <div id="calendar">
     <span id="calendarTitle">日历</span>
     <span id="calendarConfig">
+      <a-checkbox @change="onOnlyNotFinishedChange">
+        仅显示未完成
+      </a-checkbox>
+      <a-checkbox @change="onOnlyViewMineChange">
+        只看我的
+      </a-checkbox>
       <a-button @click="refreshCalendar">
         回到本月
       </a-button>
+      <a-select
+        id="programSelector"
+        default-value="_allProjects"
+        style="width: 120px;"
+        @change="handleSelectedProjectChange"
+      >
+        <a-select-option value="_allProjects">
+          所有项目
+        </a-select-option>
+        <a-select-option
+          v-for="item in teamProjects"
+          :key="item.projectName"
+          :value="item.projectName"
+        >
+          {{ item.projectName }}
+        </a-select-option>
+      </a-select>
     </span>
     <a-calendar :key="calendarID">
       <ul slot="dateCellRender" slot-scope="value" class="events">
         <li v-for="item in getDayData(value)" :key="item.taskId">
-          <a-checkbox
-            :disabled="![item.principal, teamAdminName].includes(username)"
-            :checked="item.isFinished"
-            @click="return false"
+          <template
+            v-if="
+              (item.principal === username || !onlyViewMine) &&
+              (!item.isFinished || !onlyNotFinished) &&
+              (item.projectName === selectedProject || selectedProject === '_allProjects')
+            "
           >
-            {{ item.taskName }}
-          </a-checkbox>
-          <div id="projectName">项目：{{ item.projectName }}</div>
-        </li>
-      </ul>
-      <ul slot="monthCellRender" slot-scope="value" class="events">
-        <li v-for="item in getMonthData(value)" :key="item.taskId">
-          <a-checkbox
-            :disabled="![item.principal, teamAdminName].includes(username)"
-            :checked="item.isFinished"
-            @click="return false"
-          >
-            {{ item.taskName }}
-          </a-checkbox>
-          <div id="projectName">项目：{{ item.projectName }}</div>
+            <a-checkbox
+              :disabled="![item.principal, teamAdminName].includes(username)"
+              :checked="item.isFinished"
+              @change="return false"
+            >
+              {{ item.taskName }}
+            </a-checkbox>
+            <div id="projectName">项目：{{ item.projectName }}</div>
+          </template>
         </li>
       </ul>
     </a-calendar>
@@ -42,9 +61,12 @@ export default {
   data() {
     return {
       calendarID: +new Date(),
+      onlyViewMine: false,
+      onlyNotFinished: false,
+      selectedProject: '_allProjects',
     }
   },
-  computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName']),
+  computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName', 'teamProjects']),
   methods: {
     ...mapActions(['queryTeamTasks']),
 
@@ -65,6 +87,17 @@ export default {
       return this.getListData(value, 'day')
     },
 
+    onOnlyNotFinishedChange(e) {
+      this.onlyNotFinished = e.target.checked
+    },
+
+    onOnlyViewMineChange(e) {
+      this.onlyViewMine = e.target.checked
+    },
+
+    handleSelectedProjectChange(value) {
+      this.selectedProject = value
+    },
     // 这个方法用来重置 calendar 控件为初始状态。参见 https://segmentfault.com/a/1190000016629544
     refreshCalendar() {
       return (this.calendarID = +new Date())
@@ -118,7 +151,11 @@ export default {
 #calendarConfig {
   display: block;
   text-align: right;
-  padding-right: 16px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #e3e3e3;
+}
+#programSelector {
+  margin-left: 0.5em;
 }
 </style>
 
