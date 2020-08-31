@@ -1,9 +1,7 @@
 <template>
-  <a-card style="margin-top: 24px;" :bordered="false" title="知识库" :loading="cardLoading">
+  <a-card style="margin-top: 24px" :bordered="false" title="知识库" :loading="cardLoading">
     <div class="operate">
-      <a-button type="dashed" icon="plus" block @click="add">
-        添加
-      </a-button>
+      <a-button type="dashed" icon="plus" block @click="add">添加</a-button>
     </div>
 
     <a-modal
@@ -36,9 +34,7 @@
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
         </a-list-item-meta>
         <div slot="actions">
-          <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">
-            编辑
-          </a>
+          <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">编辑</a>
         </div>
         <div slot="actions">
           <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">

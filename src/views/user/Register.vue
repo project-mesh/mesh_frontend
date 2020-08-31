@@ -34,7 +34,7 @@
               :show-info="false"
               :stroke-color="passwordLevelColor"
             />
-            <div style="margin-top: 10px;">
+            <div style="margin-top: 10px">
               <span>请至少输入 6 个字符。请不要使用容易被猜到的密码。</span>
             </div>
           </div>
@@ -87,9 +87,7 @@
         >
           注册
         </a-button>
-        <router-link class="login" :to="{ name: 'login' }">
-          使用已有账户登录
-        </router-link>
+        <router-link class="login" :to="{ name: 'login' }">使用已有账户登录</router-link>
       </a-form-item>
     </a-form>
   </div>

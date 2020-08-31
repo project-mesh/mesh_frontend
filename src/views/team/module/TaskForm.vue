@@ -7,7 +7,7 @@
     </a-form-item>
     <a-form-item label="开始时间" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-date-picker
-        style="width: 100%;"
+        style="width: 100%"
         value-format="YYYY-MM-DD HH:mm"
         v-decorator="['startAt', { rules: [{ required: true, message: '请选择开始时间' }] }]"
       />

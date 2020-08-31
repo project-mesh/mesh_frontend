@@ -1,9 +1,7 @@
 <template>
   <a-result :is-success="true" :content="false" :title="email" :sub-title="description">
     <template #extra>
-      <a-button size="large" style="margin-left: 8px;" @click="goHomeHandle">
-        返回首页
-      </a-button>
+      <a-button size="large" style="margin-left: 8px" @click="goHomeHandle">返回首页</a-button>
     </template>
   </a-result>
 </template>

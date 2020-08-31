@@ -42,12 +42,8 @@
             ]"
             placeholder="公有/私有"
           >
-            <a-select-option value="public">
-              公开
-            </a-select-option>
-            <a-select-option value="private">
-              私密
-            </a-select-option>
+            <a-select-option value="public">公开</a-select-option>
+            <a-select-option value="private">私密</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="项目封面">
@@ -60,13 +56,11 @@
           >
             <div v-if="fileList.length < 1">
               <a-icon type="plus" />
-              <div class="ant-upload-text">
-                Upload
-              </div>
+              <div class="ant-upload-text">Upload</div>
             </div>
           </a-upload>
           <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-            <img alt="example" style="width: 100%;" :src="previewImage" />
+            <img alt="example" style="width: 100%" :src="previewImage" />
           </a-modal>
         </a-form-item>
       </a-form>
@@ -92,7 +86,7 @@
           class="card-row"
         >
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
-            <a-card hoverable style="width: 250px; overflow: hidden;">
+            <a-card hoverable style="width: 250px; overflow: hidden">
               <img slot="cover" alt="example" :src="item.projectLogo" class="card-img" />
 
               <template slot="actions" class="ant-card-actions">

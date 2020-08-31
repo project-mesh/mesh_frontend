@@ -1,11 +1,11 @@
 <template>
-  <a-card style="margin-top: 24px;" :bordered="false" :title="teamName">
+  <a-card style="margin-top: 24px" :bordered="false" :title="teamName">
     <div slot="extra">
       <a-radio-group v-model="status"></a-radio-group>
     </div>
 
     <div class="operate">
-      <a-button type="dashed" style="width: 100%;" icon="plus" @click="add">创建团队</a-button>
+      <a-button type="dashed" style="width: 100%" icon="plus" @click="add">创建团队</a-button>
     </div>
 
     <a-list size="large">
