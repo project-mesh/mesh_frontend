@@ -80,7 +80,9 @@
             :bordered="false"
             title="概览报表"
             :style="{ height: '100%' }"
-          ></a-card>
+          >
+            <ve-wordcloud :data="performerData"></ve-wordcloud>
+          </a-card>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -101,12 +103,16 @@ export default {
         color: '#1890ff',
       },
     }
+    this.wordCloudSettings = {
+      shape: 'cardioid',
+    }
     return {
       performeRingVisible: true, //第一个表格显示环状图true 直方图 false
       finishHistogramVisible: true, //显示直方图true 折线图 false
       performerData: {
         columns: ['principal', 'count'],
         rows: [
+          { principal: '虞姬', count: 1393 },
           { principal: '虞姬', count: 1393 },
           { principal: '蔡文姬', count: 3530 },
           { principal: '白起', count: 2923 },
