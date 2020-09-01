@@ -72,11 +72,14 @@
           </a-card>
         </a-col>
         <a-col :sm="24" :md="10" class="col">
-          <a-statistic
-            title="Active Users"
-            :value="projectMembers.length"
-            style="margin-right: 50px"
-          />
+          <a-card
+            class="antd-pro-pages-dashboard-analysis-salesCard"
+            :bordered="false"
+            title="概览报表"
+            :style="{ height: '100%' }"
+          >
+            <ve-wordcloud :data="performerData"></ve-wordcloud>
+          </a-card>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -101,6 +104,9 @@ export default {
       itemStyle: {
         color: '#1890ff',
       },
+    }
+    this.wordCloudSettings = {
+      shape: 'cardioid',
     }
     return {
       performeRingVisible: true, //第一个表格显示环状图true 直方图 false
