@@ -21,6 +21,7 @@ const projectTasks = {
       return new Promise((resolve, reject) => {
         sendRequest('queryProjectTasks', requestData)
           .then((response) => {
+            console.log('In queryProjectTasks, response', response)
             let subTasks = response.data.tasks.map((obj) => {
               let newObj = obj.subTasks.map((subObj) => {
                 subObj.parentTaskId = obj.taskId

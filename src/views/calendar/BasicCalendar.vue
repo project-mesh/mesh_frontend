@@ -38,8 +38,10 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
+import teamMixin from '@/utils/mixins/teamMixin'
 
 export default {
+  mixins: [teamMixin],
   computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName']),
   methods: {
     ...mapActions(['queryTeamTasks']),
@@ -88,7 +90,7 @@ export default {
   },
 
   mounted() {
-    this.queryTeamTasks({ username: this.username, teamId: this.teamId })
+    this.queryTeamTasks({ username: this.username, teamId: this.$route.query.teamId })
       .then((response) => {
         this.$notification.success({
           description: '成功获取团队任务',

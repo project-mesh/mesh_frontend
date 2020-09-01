@@ -73,6 +73,8 @@
 import TaskForm from '@/views/repositories/TaskForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import { mapGetters, mapActions } from 'vuex'
+import teamMixin from '@/utils/mixins/teamMixin'
+
 /*
 {
   "error_code": 0,
@@ -126,6 +128,7 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'Repositories',
   components: { TaskForm },
+  mixins: [teamMixin],
   data() {
     return {
       // data,

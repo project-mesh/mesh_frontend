@@ -3,7 +3,7 @@ import router from './router'
 import '@/components/NProgress/nprogress.less' // progress bar custom style
 import storage from 'store'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import notification from 'ant-design-vue/es/notification'
+// import notification from 'ant-design-vue/es/notification'
 import store from './store'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -42,68 +42,80 @@ function handle(to, from, next) {
       // alert('hello')
       store.dispatch('GenerateRoutes', { role }).then(() => {
         router.addRoutes(store.getters.addRouters)
-        const redirect = decodeURIComponent(from.query.redirect || to.path)
-        // next({ path: redirect })
-        if (to.path === redirect) {
-          // set the replace: true so the navigation will not leave a history record
-          tryJump(next, { ...to, replace: true })
-        } else {
-          // 跳转到目的路由
-          tryJump(next, { path: redirect })
-        }
+        // const redirect = decodeURIComponent(from.query.redirect || to.path)
+        // // next({ path: redirect })
+        // if (to.path === redirect) {
+        //   // set the replace: true so the navigation will not leave a history record
+        //   console.log('to.path: ', to.path, 'to.redirect: ', to.redirect)
+        //   tryJump(next, { ...to, replace: true })
+        // } else {
+        //   console.log('222222')
+
+        //   // 跳转到目的路由
+        //   tryJump(next, { path: redirect })
+        // }
+        // tryJump(to, next, { ...to })
+        next({ ...to, replace: true })
       })
     } else {
       let menuItem = to.path.split('/').pop()
-      console.log('打印：menuItem: ')
+      // console.log('打印：menuItem: ')
       console.log('看这里！！！！！', to)
       if (menuItem in menuQueryMap && Object.keys(to.query).length === 0) {
         let query = menuQueryMap[menuItem]()
-        tryJump(next, { ...to, query: query, replace: true })
+        // tryJump(to, next, { ...to, query })
+        next({ ...to, query })
       } else {
-        tryJump(next)
+        next()
       }
     }
   }
 }
 
-function tryJump(next, route) {
-  const promises = []
-  if (!store.getters.notifications || store.getters.notifications.length === 0) {
-    promises.push(
-      store.dispatch('queryNotification', {
-        username: store.getters.username,
-      })
-    )
-  }
+// function tryJump(to, next, route) {
+//   const promises = []
+//   if (!store.getters.notifications || store.getters.notifications.length === 0) {
+//     promises.push(
+//       store.dispatch('queryNotification', {
+//         username: store.getters.username,
+//       })
+//     )
+//   }
 
-  if (!store.getters.teamId && store.getters.preference.preferenceTeam) {
-    const requestData = {
-      username: store.getters.username,
-      teamId: store.getters.preference.preferenceTeam,
-    }
+//   if (
+//     (to.query && to.query.teamId && to.query.teamId !== store.getters.teamId) ||
+//     (!store.getters.teamId && store.getters.preference.preferenceTeam)
+//   ) {
+//     const requestData = {
+//       username: store.getters.username,
+//       teamId: store.getters.preference.preferenceTeam,
+//     }
 
-    promises.push(
-      store.dispatch('queryTeam', requestData),
-      store.dispatch('queryTeamKB', requestData)
-    )
-  }
+//     if (to.query && to.query.teamId) requestData.teamId = to.query.teamId
 
-  if (promises.length) {
-    Promise.all(promises)
-      .then(() => {
-        route ? next(route) : next()
-      })
-      .catch((error) => {
-        notification.error({
-          message: '请求用户信息失败，请重试',
-          description: `${error.name}: ${error.message}`,
-        })
-        next(false)
-      })
-  } else {
-    route ? next(route) : next()
-  }
-}
+//     promises.push(
+//       store.dispatch('queryTeam', requestData),
+//       store.dispatch('queryTeamKB', requestData)
+//     )
+//   }
+
+//   if (promises.length) {
+//     console.log('?????????????????????????????', to.query.teamId)
+//     Promise.all(promises)
+//       .then(() => {
+//         route ? next(route) : next()
+//       })
+//       .catch((error) => {
+//         notification.error({
+//           message: '请求用户信息失败，请重试',
+//           description: `${error.name}: ${error.message}`,
+//         })
+//         next(false)
+//       })
+//   } else {
+//     route ? next(route) : next()
+//   }
+// }
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar

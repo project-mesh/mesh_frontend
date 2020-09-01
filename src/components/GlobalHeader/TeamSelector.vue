@@ -23,19 +23,12 @@ export default {
   methods: {
     ...mapActions(['queryTeam', 'queryTeamKB']),
     handleTeamChange(team) {
-      const requestData = {
-        username: this.username,
-        teamId: team.teamId,
-      }
-      const promises = [this.queryTeam(requestData), this.queryTeamKB(requestData)]
-      Promise.all(promises)
-        .then(() => this.$router.push('/'))
-        .catch((error) => {
-          this.$notification.error({
-            message: '请求团队信息失败，请重试',
-            description: `${error.name}: ${error.message}`,
-          })
-        })
+      this.$router.push({
+        name: 'projectList',
+        query: {
+          teamId: team.teamId,
+        },
+      })
     },
   },
 }

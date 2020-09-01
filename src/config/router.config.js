@@ -20,7 +20,7 @@ export const asyncRouterMap = [
         path: '/project',
         name: 'project',
         redirect: '/project/list',
-        component: () => import('@/views/project/Project'),
+        component: RouteView,
         hideChildrenInMenu: true,
         meta: {
           title: '项目',
@@ -33,7 +33,8 @@ export const asyncRouterMap = [
             path: '/project/list',
             name: 'projectList',
             // TODO: 修改成对应页面
-            component: () => import('@/views/exception/404'),
+            // component: () => import('@/views/project/Project'),
+            component: () => import('@/views/project/Project'),
             meta: {
               keepAlive: true,
             },
@@ -42,10 +43,12 @@ export const asyncRouterMap = [
           {
             path: '/project/detail',
             name: 'projectDetail',
-            redirect: '/project/detail/task-list',
+            // redirect: '/project/detail/statistics',
             // TODO: 修改成对应页面
-            component: () => import('@/views/exception/404'),
-            meta: {},
+            component: RouteView,
+            meta: {
+              keepAlive: true,
+            },
             children: [
               // 任务列表
               {
@@ -69,12 +72,14 @@ export const asyncRouterMap = [
               },
               // 统计
               {
-                path: '/project/detail/statistics',
+                path: 'statistics',
                 name: 'statistics',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
+                component: () => import('@/views/statistics/Statistics'),
                 meta: {
+                  title: '统计',
                   keepAlive: true,
+                  icon: 'bar-chart',
                 },
               },
               // 项目知识库
@@ -101,6 +106,19 @@ export const asyncRouterMap = [
           },
         ],
       },
+
+      //             //暂时用作statics统计页面路由
+      //       {
+      //         path: '/statistics',
+      //         name: 'statistics',
+      //         component: () => import('@/views/statistics/Statistics'),
+      //         hideChildrenInMenu: true,
+      //         meta: {
+      //           title: '统计',
+      //           keepAlive: true,
+      //           icon: 'bar-chart',
+      //         },
+      //       },
 
       // 团队知识库
       {

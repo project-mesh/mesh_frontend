@@ -54,6 +54,7 @@ import TaskForm from './module/TaskForm'
 import ChangeForm from './module/ChangeForm'
 import Info from './components/Info'
 import { mapGetters } from 'vuex'
+import teamMixin from '@/utils/mixins/teamMixin'
 
 // const data = []
 // data.push({
@@ -138,6 +139,7 @@ export default {
     TaskForm,
     Info,
   },
+  mixins: [teamMixin],
   data() {
     return {
       // data,

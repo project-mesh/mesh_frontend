@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   theme: [
     {
       key: 'dark',

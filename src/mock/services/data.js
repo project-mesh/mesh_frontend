@@ -1,6 +1,7 @@
 import Mock from 'mockjs2'
 import md5 from 'md5'
 import themePluginConfig from '../../../config/themePluginConfig'
+const fs = require('fs')
 
 const random = Mock.Random
 
@@ -288,7 +289,7 @@ for (let i = 0; i < projects.length; ++i) {
 
 // console.log('In data, proMem', projectMembers)
 
-for (let i = 0; i < 100; ++i) {
+for (let i = 0; i < 300; ++i) {
   const len = projectMembers.length
   const member = projectMembers[random.natural(0, len - 1)]
   const teamId = projects.find((prj) => prj.projectId === member.projectId).teamId
@@ -306,13 +307,15 @@ for (let i = 0; i < 100; ++i) {
     })
   )
 
+  const taskStatus = ['开发中', '已完成', '已逾期']
+
   tasks.push(
     Mock.mock({
       projectId: member.projectId,
       taskId: '@id',
       taskName: '@name',
       isFinished: false,
-      status: '开发中',
+      'status|1': taskStatus,
       priority: random.natural(1, 3),
       createTime: Date.now(),
       deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
@@ -369,7 +372,7 @@ for (let i = 0; i < projects.length; ++i) {
   }
 }
 
-// console.log('In data, users: ', users)
+console.log(tasks)
 
 export {
   bulletins,

@@ -72,7 +72,7 @@
           <a-list-item-meta>
             <div slot="title">{{ item.projectName }}</div>
             <div slot="description">{{ item.adminName }}</div>
-            <a slot="description">进入项目</a>
+            <a slot="description" @click="tryJumpToProjectDetail(item.projectId)">进入项目</a>
           </a-list-item-meta>
         </a-list-item>
       </a-list>
@@ -86,7 +86,11 @@
           class="card-row"
         >
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
-            <a-card hoverable style="width: 250px; overflow: hidden">
+            <a-card
+              hoverable
+              style="width: 250px; overflow: hidden"
+              @click="tryJumpToProjectDetail(item.projectId)"
+            >
               <img slot="cover" alt="example" :src="item.projectLogo" class="card-img" />
 
               <template slot="actions" class="ant-card-actions">
@@ -110,6 +114,7 @@
 import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
+import teamMixin from '@/utils/mixins/teamMixin'
 
 //图片转 base64
 function getBase64(img, callback) {
@@ -119,9 +124,18 @@ function getBase64(img, callback) {
 }
 export default {
   name: 'Project',
+  mixins: [teamMixin],
   computed: mapGetters(['teamProjects']),
+  watch: {
+    ['$route.query.teamId']() {
+      this.loadTeamInfo()
+    },
+  },
   methods: {
     ...mapActions(['queryTeam', 'createTeam']),
+    tryJumpToProjectDetail(projectId) {
+      this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
+    },
     showListView() {
       console.log('显示列表')
       this.listVisible = true
@@ -188,20 +202,30 @@ export default {
       form: this.$form.createForm(this),
     }
   },
-  mounted: function () {
-    // console.log('in Project Page, query is: ', this.$route.query)
-    // let teamId = this.$route.query.teamId
-    // this.queryTeam({ teamId: teamId, username: store.getters.username })
-    //   .then((response) => {
-    //     console.log('更新页面数据！', store.getters.teamProjects)
-    //   })
-    //   .catch((err) => {
-    //     this.$notification.error({
-    //       message: '获取项目数据失败',
-    //       description: err,
-    //     })
-    //   })
+  activated() {
+    console.log('activated')
   },
+  mounted() {
+    console.log('mounted')
+  },
+  beforeRouteEnter(to, from, next) {
+    console.log('before router enter')
+    next()
+  },
+  // mounted: function () {
+  //   console.log('in Project Page, query is: ', this.$route.query)
+  //   let teamId = this.$route.query.teamId
+  //   this.queryTeam({ teamId: teamId, username: store.getters.username })
+  //     .then((response) => {
+  //       console.log('更新页面数据！', store.getters.teamProjects)
+  //     })
+  //     .catch((err) => {
+  //       this.$notification.error({
+  //         message: '获取项目数据失败',
+  //         description: err,
+  //       })
+  //     })
+  // },
 }
 </script>
 
