@@ -109,8 +109,13 @@
         <a-list type="flex" :grid="{ gutter: 16, column: 4 }" :data-source="data" class="card-row">
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
             <a-card hoverable style="width: 100%; overflow: hidden;">
-              <img slot="cover" alt="example" :src="item.imgUrl" class="card-img" />
-
+              <img
+                style="height: 400px; width: 400px; overflow: hidden;"
+                slot="cover"
+                alt="example"
+                :src="item.imgUrl"
+                class="card-img"
+              />
               <template slot="actions" class="ant-card-actions">
                 <a-icon key="setting" type="setting" />
                 <a-icon key="edit" type="edit" />

@@ -34,17 +34,19 @@ const teamInfo = {
           {
             projectName: '项目二',
             projectAdmin: 'Jerry',
-            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+            imgUrl:
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQF_otYR406rysdDfn_qHYY3h-0HmIFX6z8eg&usqp=CAU',
           },
           {
             projectName: '项目二',
             projectAdmin: 'Jerry',
-            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+            imgUrl: 'https://inews.gtimg.com/newsapp_match/0/3502863982/0',
           },
           {
             projectName: '项目二',
-            projectAdmin: 'Jerry',
-            imgUrl: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
+            projectAdmin: 'Kun',
+            imgUrl:
+              'https://images.uncyc.org/zh-tw/6/66/%E4%BA%9E%E6%B4%B2%E8%88%9E%E7%8E%8B%E8%94%A1%E5%BE%90%E5%9D%A4.png',
           },
           {
             projectName: '项目二',
