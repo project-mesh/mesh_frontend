@@ -1,56 +1,91 @@
 <template>
-  <div id="calendar">
-    <span id="calendarTitle">日历</span>
-    <span id="calendarConfig">
-      <a-checkbox @change="onOnlyNotFinishedChange">
-        仅显示未完成
-      </a-checkbox>
-      <a-checkbox @change="onOnlyViewMineChange">
-        只看我的
-      </a-checkbox>
-      <a-button @click="refreshCalendar">
-        回到本月
-      </a-button>
-      <a-select
-        id="programSelector"
-        default-value="_allProjects"
-        style="width: 120px;"
-        @change="handleSelectedProjectChange"
-      >
-        <a-select-option value="_allProjects">
-          所有项目
-        </a-select-option>
-        <a-select-option
-          v-for="item in teamProjects"
-          :key="item.projectName"
-          :value="item.projectName"
+  <div>
+    <div id="calendar">
+      <span id="calendarTitle">日历</span>
+      <span id="calendarConfig">
+        <a-checkbox @change="onOnlyNotFinishedChange">
+          仅显示未完成
+        </a-checkbox>
+        <a-checkbox @change="onOnlyViewMineChange">
+          只看我负责的
+        </a-checkbox>
+        <a-select
+          id="programSelector"
+          default-value="_allProjects"
+          style="width: 120px;"
+          @change="handleSelectedProjectChange"
         >
-          {{ item.projectName }}
-        </a-select-option>
-      </a-select>
-    </span>
-    <a-calendar :key="calendarID">
-      <ul slot="dateCellRender" slot-scope="value" class="events">
-        <li v-for="item in getDayData(value)" :key="item.taskId">
-          <template
-            v-if="
-              (item.principal === username || !onlyViewMine) &&
-              (!item.isFinished || !onlyNotFinished) &&
-              (item.projectName === selectedProject || selectedProject === '_allProjects')
-            "
+          <a-select-option value="_allProjects">
+            所有项目
+          </a-select-option>
+          <a-select-option
+            v-for="item in teamProjects"
+            :key="item.projectName"
+            :value="item.projectName"
           >
-            <a-checkbox
-              :disabled="![item.principal, teamAdminName].includes(username)"
-              :checked="item.isFinished"
-              @change="return false"
+            {{ item.projectName }}
+          </a-select-option>
+        </a-select>
+        <a-button @click="refreshCalendar">
+          回到本月
+        </a-button>
+      </span>
+      <a-calendar :key="calendarID">
+        <ul slot="dateCellRender" slot-scope="value" class="events">
+          <li v-for="item in getDayData(value)" :key="item.taskId">
+            <template
+              v-if="
+                (item.principal === username || !onlyViewMine) &&
+                (!item.isFinished || !onlyNotFinished) &&
+                (item.projectName === selectedProject || selectedProject === '_allProjects')
+              "
             >
-              {{ item.taskName }}
-            </a-checkbox>
-            <div id="projectName">项目：{{ item.projectName }}</div>
-          </template>
-        </li>
-      </ul>
-    </a-calendar>
+              <a-checkbox
+                :disabled="![item.principal, teamAdminName].includes(username)"
+                :checked="item.isFinished"
+                @change="onProjectFinishedChange"
+                :value="[item.taskId, item.projectId]"
+              ></a-checkbox>
+              <div @click="handleClickOnProject(item)" id="projectCheckbox">
+                {{ item.taskName }}
+              </div>
+              <div @click="handleClickOnProject(item)" id="projectName">
+                项目：{{ item.projectName }}
+              </div>
+            </template>
+          </li>
+        </ul>
+      </a-calendar>
+    </div>
+    <a-modal width="100" v-model="viewTaskForm" title="任务详情" centered footer="">
+      <a-breadcrumb>
+        <a-breadcrumb-item>{{ selectedTask.projectName }}</a-breadcrumb-item>
+        <a-breadcrumb-item>{{ selectedTask.status }}</a-breadcrumb-item>
+      </a-breadcrumb>
+      <a-descriptions id="taskDescription" bordered>
+        <a-descriptions-item label="任务名">
+          {{ selectedTask.taskName }}
+        </a-descriptions-item>
+        <a-descriptions-item label="截止日期">
+          {{ selectedTask.deadline }}
+        </a-descriptions-item>
+        <a-descriptions-item label="创建者">
+          {{ selectedTask.founder }}
+        </a-descriptions-item>
+        <a-descriptions-item label="是否完成">
+          {{ selectedTask.isFinished ? '已完成' : '未完成' }}
+        </a-descriptions-item>
+        <a-descriptions-item label="创建日期">
+          {{ formatTimestamp(selectedTask.createTime) }}
+        </a-descriptions-item>
+        <a-descriptions-item label="负责人">
+          {{ selectedTask.principal }}
+        </a-descriptions-item>
+        <a-descriptions-item label="任务描述">
+          {{ selectedTask.description }}
+        </a-descriptions-item>
+      </a-descriptions>
+    </a-modal>
   </div>
 </template>
 <script>
@@ -64,12 +99,17 @@ export default {
       onlyViewMine: false,
       onlyNotFinished: false,
       selectedProject: '_allProjects',
+      viewTaskForm: false,
+      selectedTask: [],
     }
   },
   computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName', 'teamProjects']),
   methods: {
-    ...mapActions(['queryTeamTasks']),
-
+    ...mapActions(['queryTeamTasks', 'updateTask']),
+    //点击切换任务是否完成（还没写）
+    onProjectFinishedChange(e) {
+      console.log(e)
+    },
     getListData(value, granularity) {
       const listData = this.teamTasks.filter((task) => {
         const date = moment(task.deadline, 'YYYY-MM-DD')
@@ -98,12 +138,34 @@ export default {
     handleSelectedProjectChange(value) {
       this.selectedProject = value
     },
+    handleClickOnProject(item) {
+      this.viewTaskForm = true
+      this.selectedTask = item
+      console.log(item)
+    },
     // 这个方法用来重置 calendar 控件为初始状态。参见 https://segmentfault.com/a/1190000016629544
     refreshCalendar() {
       return (this.calendarID = +new Date())
     },
+    formatTimestamp(time) {
+      let formatDate = new Date(time)
+      let year = formatDate.getFullYear()
+      let month = formatDate.getMonth() + 1
+      let date = formatDate.getDate()
+      let currentDate = year + '-'
+      if (month >= 10) {
+        currentDate += month + '-'
+      } else {
+        currentDate += '0' + month + '-'
+      }
+      if (date >= 10) {
+        currentDate += date
+      } else {
+        currentDate += '0' + date
+      }
+      return currentDate
+    },
   },
-
   mounted() {
     this.queryTeamTasks({ username: this.username, teamId: this.teamId })
       .then((response) => {
@@ -148,6 +210,9 @@ export default {
 #calendarTitle {
   display: block;
 }
+#projectCheckbox {
+  display: inline;
+}
 #calendarConfig {
   display: block;
   text-align: right;
@@ -155,7 +220,10 @@ export default {
   border-bottom: 1px solid #e3e3e3;
 }
 #programSelector {
-  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+#taskDescription {
+  margin: 1em;
 }
 </style>
 
