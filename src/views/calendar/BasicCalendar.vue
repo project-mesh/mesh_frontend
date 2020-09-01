@@ -58,7 +58,7 @@
       </a-calendar>
     </div>
     <a-modal width="100" v-model="viewTaskForm" title="任务详情" centered footer="">
-      <a-breadcrumb>
+      <a-breadcrumb separator=">">
         <a-breadcrumb-item>{{ selectedTask.projectName }}</a-breadcrumb-item>
         <a-breadcrumb-item>{{ selectedTask.status }}</a-breadcrumb-item>
       </a-breadcrumb>
@@ -109,10 +109,15 @@ export default {
   },
   computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName', 'teamProjects']),
   methods: {
-    ...mapActions(['queryTeamTasks', 'updateTask']),
+    ...mapActions(['queryTeamTasks', 'updateProjectTask']),
     //点击切换任务是否完成（还没写）
     onProjectFinishedChange(e) {
-      console.log(e)
+      this.updateProjectTask({
+        username: this.username,
+        projectId: e.target.value[0],
+        taskId: e.target.value[1],
+        isFinished: e.target.checked,
+      })
     },
     getListData(value, granularity) {
       const listData = this.teamTasks.filter((task) => {
@@ -159,7 +164,6 @@ export default {
     handleClickOnProject(item) {
       this.viewTaskForm = true
       this.selectedTask = item
-      console.log(item)
     },
     // 这个方法用来重置 calendar 控件为初始状态。参见 https://segmentfault.com/a/1190000016629544
     refreshCalendar() {
