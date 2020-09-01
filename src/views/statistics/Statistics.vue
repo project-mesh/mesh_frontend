@@ -75,8 +75,12 @@
           </a-card>
         </a-col>
         <a-col :sm="24" :md="10" class="col">
-          <a-statistic title="Active Users" :value="112893" style="margin-right: 50px;" />
-          <a-statistic title="Account Balance (CNY)" :precision="2" :value="112893" />
+          <a-card
+            class="antd-pro-pages-dashboard-analysis-salesCard"
+            :bordered="false"
+            title="概览报表"
+            :style="{ height: '100%' }"
+          ></a-card>
         </a-col>
       </a-row>
     </a-layout-content>
