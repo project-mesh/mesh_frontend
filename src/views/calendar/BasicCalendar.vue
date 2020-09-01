@@ -62,6 +62,10 @@
         <a-breadcrumb-item>{{ selectedTask.projectName }}</a-breadcrumb-item>
         <a-breadcrumb-item>{{ selectedTask.status }}</a-breadcrumb-item>
       </a-breadcrumb>
+      <div id="taskPriorityView">
+        <a-icon type="warning" />
+        <span>任务优先级：{{ getTextTaskPriority(selectedTask.priority) }}</span>
+      </div>
       <a-descriptions id="taskDescription" bordered>
         <a-descriptions-item label="任务名">
           {{ selectedTask.taskName }}
@@ -119,6 +123,20 @@ export default {
       return listData || []
     },
 
+    getTextTaskPriority(priorityNumber) {
+      switch (priorityNumber) {
+        case 0:
+          return '极低'
+        case 1:
+          return '普通'
+        case 2:
+          return '较高'
+        case 3:
+          return '极高'
+        default:
+          return '未知优先级'
+      }
+    },
     getMonthData(value) {
       return this.getListData(value, 'month')
     },
@@ -224,6 +242,10 @@ export default {
 }
 #taskDescription {
   margin: 1em;
+}
+#taskPriorityView {
+  text-align: right;
+  margin-right: 1em;
 }
 </style>
 
