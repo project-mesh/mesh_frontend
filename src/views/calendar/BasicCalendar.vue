@@ -3,21 +3,15 @@
     <div id="calendar">
       <span id="calendarTitle">日历</span>
       <span id="calendarConfig">
-        <a-checkbox @change="onOnlyNotFinishedChange">
-          仅显示未完成
-        </a-checkbox>
-        <a-checkbox @change="onOnlyViewMineChange">
-          只看我负责的
-        </a-checkbox>
+        <a-checkbox @change="onOnlyNotFinishedChange">仅显示未完成</a-checkbox>
+        <a-checkbox @change="onOnlyViewMineChange">只看我负责的</a-checkbox>
         <a-select
           id="programSelector"
           default-value="_allProjects"
           style="width: 120px;"
           @change="handleSelectedProjectChange"
         >
-          <a-select-option value="_allProjects">
-            所有项目
-          </a-select-option>
+          <a-select-option value="_allProjects">所有项目</a-select-option>
           <a-select-option
             v-for="item in teamProjects"
             :key="item.projectName"
@@ -26,9 +20,7 @@
             {{ item.projectName }}
           </a-select-option>
         </a-select>
-        <a-button @click="refreshCalendar">
-          回到本月
-        </a-button>
+        <a-button @click="refreshCalendar">回到本月</a-button>
       </span>
       <a-calendar :key="calendarID">
         <ul slot="dateCellRender" slot-scope="value" class="events">
@@ -110,14 +102,30 @@ export default {
   computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName', 'teamProjects']),
   methods: {
     ...mapActions(['queryTeamTasks', 'updateProjectTask']),
-    //点击切换任务是否完成（还没写）
+    //点击切换任务是否完成
     onProjectFinishedChange(e) {
+      let taskUpdated = this.teamTasks.find(
+        (currentTask) =>
+          currentTask.taskId === e.target.value[0] && currentTask.projectId === e.target.value[1]
+      )
+      taskUpdated.isFinished = e.target.checked
       this.updateProjectTask({
         username: this.username,
-        projectId: e.target.value[0],
-        taskId: e.target.value[1],
+        taskId: e.target.value[0],
+        projectId: e.target.value[1],
         isFinished: e.target.checked,
       })
+        .then(() => {
+          this.$notification.success({
+            description: '设置任务状态成功',
+          })
+        })
+        .catch((error) => {
+          this.$notification.error({
+            message: '设置任务状态失败',
+            description: `${error.name}: ${error.message}`,
+          })
+        })
     },
     getListData(value, granularity) {
       const listData = this.teamTasks.filter((task) => {
@@ -189,8 +197,8 @@ export default {
     },
   },
   mounted() {
-    this.queryTeamTasks({ username: this.username, teamId: this.teamId })
-      .then((response) => {
+    this.queryTeamTasks({ username: this.username, teamId: this.$route.query.teamId })
+      .then(() => {
         this.$notification.success({
           description: '成功获取团队任务',
         })
