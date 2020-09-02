@@ -38,8 +38,11 @@
                 @change="onProjectFinishedChange"
                 :value="[item.taskId, item.projectId]"
               ></a-checkbox>
-              <div @click="handleClickOnProject(item)" id="projectCheckbox">
+              <div @click="handleClickOnProject(item)" id="taskCheckbox">
                 {{ item.taskName }}
+              </div>
+              <div @click="handleClickOnProject(item)" id="taskPriciple">
+                {{ item.principal }}
               </div>
               <div @click="handleClickOnProject(item)" id="projectName">
                 项目：{{ item.projectName }}
@@ -232,6 +235,12 @@ export default {
   font-weight: bold;
   font-size: 125%;
 }
+#taskPriciple {
+  text-align: center;
+  font-size: 80%;
+  font-weight: lighter;
+  display: inline;
+}
 #projectName {
   text-align: center;
   font-size: 80%;
@@ -240,7 +249,7 @@ export default {
 #calendarTitle {
   display: block;
 }
-#projectCheckbox {
+#taskCheckbox {
   display: inline;
 }
 #calendarConfig {
