@@ -21,7 +21,7 @@ export const asyncRouterMap = [
         name: 'project',
         redirect: '/project/list',
         component: () => import('@/views/project/Project'),
-        hideChildrenInMenu: true,
+        hideChildrenInMenu: false,
         meta: {
           title: '项目',
           keepAlive: true,
@@ -42,62 +42,11 @@ export const asyncRouterMap = [
           {
             path: '/project/detail',
             name: 'projectDetail',
-            redirect: '/project/detail/task-list',
             // TODO: 修改成对应页面
             component: () => import('@/views/exception/404'),
-            meta: {},
-            children: [
-              // 任务列表
-              {
-                path: '/project/detail/task-list',
-                name: 'taskList',
-                // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
-                meta: {
-                  keepAlive: true,
-                },
-              },
-              // 任务看板
-              {
-                path: '/project/detail/task-board',
-                name: 'taskBoard',
-                // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
-                meta: {
-                  keepAlive: true,
-                },
-              },
-              // 统计
-              {
-                path: '/project/detail/statistics',
-                name: 'statistics',
-                // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
-                meta: {
-                  keepAlive: true,
-                },
-              },
-              // 项目知识库
-              {
-                path: '/project/detail/repositories',
-                name: 'projectRepo',
-                // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
-                meta: {
-                  keepAlive: true,
-                },
-              },
-              // 公告
-              {
-                path: '/project/detail/bulletin',
-                name: 'bulletin',
-                // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
-                meta: {
-                  keepAlive: true,
-                },
-              },
-            ],
+            meta: {
+              keepAlive: true,
+            },
           },
         ],
       },
@@ -140,14 +89,20 @@ export const asyncRouterMap = [
 
       // 我的页面
       {
-        path: '/me',
-        name: 'me',
+        path: '/account',
+        component: RouteView,
+        redirect: '/account/center',
+        name: 'account',
         // TODO: 修改成对应页面
-        component: () => import('@/views/exception/404'),
-        meta: {
-          title: '我的',
-          icon: 'user',
-        },
+        meta: { title: '个人页', icon: 'user', keepAlive: true, permission: [ 'user' ] },
+        children: [
+          {
+            path: '/account/center',
+            name: 'center',
+            component: () => import('@/views/account/center'),
+            meta: { title: '个人中心', keepAlive: true, permission: [ 'user' ] }
+          },
+      ]
       },
     ],
   },

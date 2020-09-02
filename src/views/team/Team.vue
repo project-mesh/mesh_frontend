@@ -6,10 +6,10 @@
     </div>
 
     <div class="operate">
-      <a-button type="dashed" style="width: 100%" icon="plus" @click="add">创建团队</a-button>
+      <a-button type="dashed" style="width: 100%" icon="plus" @click="add">新增人员</a-button>
     </div>
 
-    <a-list size="large" :pagination="{showSizeChanger: false, showQuickJumper: true, pageSize: 5, total: 50}">
+    <a-list size="large" :pagination="{showSizeChanger: false, showQuickJumper: false, pageSize: 10, total: 10}">
       <a-list-item :key="index" v-for="(item, index) in data">
         <a-list-item-meta >
           <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
@@ -33,9 +33,7 @@
             <span>标签</span>
             <p>{{ item.startAt }}</p>
           </div>
-          <div class="list-content-item">
-            <a-progress :percent="item.progress.value" :status="!item.progress.status ? null : item.progress.status" style="width: 180px" />
-          </div>
+
         </div>
       </a-list-item>
     </a-list>
@@ -91,26 +89,6 @@
     startAt: '摸鱼小组长',
     progress: {
       value: 30
-    }
-  })
-  data.push({
-    title: 'Bootstrap',
-    avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-    owner: '组长',
-    startAt: '摸鱼小组长',
-    progress: {
-      status: 'exception',
-      value: 100
-    }
-  })
-  data.push({
-    title: 'Bootstrap',
-    avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-    owner: '组长',
-    startAt: '摸鱼小组长',
-    progress: {
-      status: 'exception',
-      value: 100
     }
   })
   data.push({
@@ -247,5 +225,8 @@
   }
   .ant-list-item-meta-content{
     width:150px
+  }
+  div.list-content-item{
+    margin-left: 200px;
   }
 </style>

@@ -51,5 +51,6 @@ export {
   TagSelect,
   StandardFormRow,
   ArticleListContent,
-  Dialog,
+
+  Dialog
 }
