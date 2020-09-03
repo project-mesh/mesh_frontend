@@ -22,4 +22,26 @@ const getProjects = (queryParams) => {
   return utils.builder({ project })
 }
 
+const createProject = (data) => {
+  const newProject = Mock.mock({
+    teamId: '',
+    projectId: '@id',
+    projectName: '@name',
+    projectLogo: '@image',
+    description: '@paragraph',
+    adminName: '',
+    isPublic: 'true',
+    createTime: Date.now(),
+  })
+
+  Object.keys(data).forEach((key) => {
+    if (key in newProject) newProject[key] = data[key]
+  })
+
+  projects.push(newProject)
+
+  return utils.builder({ project: newProject })
+}
+
 Mock.mock(/\/project/, 'get', utils.functionFactory(getProjects))
+Mock.mock(/\/project/, 'post', utils.functionFactory(createProject))

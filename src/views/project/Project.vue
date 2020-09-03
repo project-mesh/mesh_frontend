@@ -19,7 +19,11 @@
         <div class="search-box">
           <a-input-search placeholder="输入要查找的项目" enter-button @search="onSearch" />
         </div>
-        <a-button type="primary" @click="() => (createProjForm = true)">
+        <a-button
+          :disabled="username !== teamAdminName"
+          type="primary"
+          @click="() => (createProjForm = true)"
+        >
           创建新项目
           <a-icon type="folder-add" />
         </a-button>
@@ -53,13 +57,18 @@
         <a-form-item label="项目负责人">
           <a-select
             v-decorator="[
-              'projAuthority',
+              'projAdmin',
               { rules: [{ required: true, message: '请选择项目负责人!' }] },
             ]"
             placeholder="选择项目管理员"
           >
-            <a-select-option value="1">xxx</a-select-option>
-            <a-select-option value="2">yyy</a-select-option>
+            <a-select-option
+              v-for="member in teamMembers"
+              :key="member.username"
+              :value="member.username"
+            >
+              {{ member.username }}
+            </a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="项目封面">
@@ -146,14 +155,14 @@ function getBase64(img, callback) {
 export default {
   name: 'Project',
   mixins: [teamMixin],
-  computed: mapGetters(['teamProjects', 'preference']),
+  computed: mapGetters(['teamProjects', 'preference', 'username', 'teamAdminName', 'teamMembers']),
   watch: {
     ['$route.query.teamId']() {
       this.loadTeamInfo()
     },
   },
   methods: {
-    ...mapActions(['queryTeam', 'createTeam', 'updatePreferenceShowMode']),
+    ...mapActions(['queryTeam', 'createProject', 'updatePreferenceShowMode']),
     tryJumpToProjectDetail(projectId) {
       this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
     },
@@ -197,11 +206,11 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          this.createTeam({
+          this.createProject({
             username: store.getters.username,
             teamId: store.getters.teamId,
             projectName: values.projName,
-            adminName: '',
+            adminName: values.projAdmin,
             isPublic: values.projAuthority !== 'private',
           })
             .then((response) => {
@@ -234,10 +243,6 @@ export default {
       fileList: [],
       form: this.$form.createForm(this),
     }
-  },
-  beforeRouteEnter(to, from, next) {
-    console.log('before router enter')
-    next()
   },
   mounted: function () {
     this.listVisible = this.preference.preferenceShowMode !== 'card'

@@ -69,10 +69,10 @@ const teamInfo = {
       //   },
       // ]
     },
-    ADD_PROJECTS: (state, project) => {
+    ADD_PROJECT: (state, project) => {
       state.teamProjects.push(project)
     },
-    REMOVE_PROJECTS: (state, projectId) => {
+    REMOVE_PROJECT: (state, projectId) => {
       state.teamProjects.filter((item) => {
         return item.projectId !== projectId
       })
