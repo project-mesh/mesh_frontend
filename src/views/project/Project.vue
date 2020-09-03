@@ -46,6 +46,18 @@
             <a-select-option value="private">私密</a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item label="项目负责人">
+          <a-select
+            v-decorator="[
+              'projAuthority',
+              { rules: [{ required: true, message: '请选择项目负责人!' }] },
+            ]"
+            placeholder="选择项目管理员"
+          >
+            <a-select-option value="1">xxx</a-select-option>
+            <a-select-option value="2">yyy</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="项目封面">
           <a-upload
             action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -81,18 +93,23 @@
       <div>
         <a-list
           type="flex"
-          :grid="{ gutter: 24, column: 5 }"
+          :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4 }"
           :data-source="teamProjects"
           class="card-row"
         >
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
             <a-card
               hoverable
-              style="width: 250px; overflow: hidden"
+              style="width: 100%; overflow: hidden"
               @click="tryJumpToProjectDetail(item.projectId)"
             >
-              <img slot="cover" alt="example" :src="item.projectLogo" class="card-img" />
-
+              <img
+                style="height: 400px; overflow: hidden; object-fit: cover"
+                slot="cover"
+                alt="example"
+                :src="item.projectLogo"
+                class="card-img"
+              />
               <template slot="actions" class="ant-card-actions">
                 <a-icon key="setting" type="setting" />
                 <a-icon key="edit" type="edit" />
@@ -241,7 +258,7 @@ export default {
   margin-top: 20px;
 }
 .card-img {
-  width: 250px;
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
