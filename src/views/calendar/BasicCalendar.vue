@@ -52,7 +52,15 @@
         </ul>
       </a-calendar>
     </div>
-    <a-modal width="60" v-model="viewTaskForm" title="任务详情" centered>
+    <a-modal
+      v-model="viewTaskForm"
+      title="任务详情"
+      centered
+      width="1000px"
+      :closable="false"
+      @ok="viewTaskForm = false"
+      @cancel="viewTaskForm = false"
+    >
       <a-breadcrumb separator=">">
         <a-breadcrumb-item>
           <router-link
@@ -61,7 +69,7 @@
             {{ selectedTask.projectName }}
           </router-link>
         </a-breadcrumb-item>
-        <a-breadcrumb-item>{{ selectedTask.status }}</a-breadcrumb-item>
+        <a-breadcrumb-item>{{ selectedTask.taskName }}</a-breadcrumb-item>
       </a-breadcrumb>
       <div id="taskPriorityView">
         <a-icon type="warning" />

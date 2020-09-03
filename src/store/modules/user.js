@@ -57,10 +57,50 @@ const user = {
           })
       })
     },
-    Logout({ commit, state }) {
+    Logout({ commit }) {
       commit('SET_TOKEN', '')
       commit('SET_ROLE', '')
       storage.remove(ACCESS_TOKEN)
+    },
+    updatePreferenceColor({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceColor', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', res.data.preference)
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceTeam({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceTeam', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', res.data.preference)
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceShowMode({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceShowMode', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', res.data.preference)
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceLayout({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceLayout', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', res.data.preference)
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
     },
   },
 }

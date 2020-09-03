@@ -35,7 +35,7 @@
 <script>
 import { SettingDrawer, updateTheme } from '@ant-design-vue/pro-layout'
 import { i18nRender } from '@/locales'
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import { SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
 
 import defaultSettings from '@/config/defaultSettings'
@@ -91,7 +91,7 @@ export default {
       // 动态主路由
       mainMenu: (state) => state.permission.addRouters,
     }),
-    ...mapGetters(['preference']),
+    ...mapGetters(['preference', 'username']),
   },
   created() {
     const routes = this.mainMenu.find((item) => item.path === '/')
@@ -126,6 +126,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['updatePreferenceColor', 'updatePreferenceLayout']),
     i18nRender,
     handleMediaQuery(val) {
       this.query = val
@@ -157,7 +158,18 @@ export default {
             this.settings.fixSiderbar = false
             this.settings.contentWidth = true
           }
+          this.updatePreferenceLayout({ username: this.username, preferenceLayout: value }).then(
+            () => {
+              console.log('update preferenceLayout success')
+            }
+          )
           break
+        case 'primaryColor':
+          this.updatePreferenceColor({ username: this.username, preferenceColor: value }).then(
+            () => {
+              console.log('update preferenceColor success')
+            }
+          )
       }
     },
     logoRender() {

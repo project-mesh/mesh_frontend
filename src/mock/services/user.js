@@ -26,4 +26,19 @@ const login = (data) => {
   })
 }
 
+const updatePreference = (data) => {
+  const { preference } = users.find((user) => user.username === data.username)
+
+  Object.keys(data).forEach((key) => {
+    if (key in preference) preference[key] = data[key]
+  })
+
+  console.log('preference Updated, ', preference)
+
+  return utils.builder({
+    preference,
+  })
+}
+
 Mock.mock(/\/login/, 'post', utils.functionFactory(login))
+Mock.mock(/\/preference/, 'post', utils.functionFactory(updatePreference))

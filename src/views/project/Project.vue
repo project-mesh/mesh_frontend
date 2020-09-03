@@ -1,12 +1,16 @@
 <template>
   <div>
     <div class="change-view">
-      <a-radio-group default-value="b" button-style="solid">
-        <a-radio-button value="a" @click="showListView()">
+      <a-radio-group
+        default-value="card"
+        :value="listVisible ? 'list' : 'card'"
+        button-style="solid"
+      >
+        <a-radio-button value="list" @click="showListView()">
           <a-icon type="unordered-list" />
           列表视图
         </a-radio-button>
-        <a-radio-button value="b" @click="showCardView()">
+        <a-radio-button value="card" @click="showCardView()">
           卡片视图
           <a-icon type="appstore" />
         </a-radio-button>
@@ -142,24 +146,36 @@ function getBase64(img, callback) {
 export default {
   name: 'Project',
   mixins: [teamMixin],
-  computed: mapGetters(['teamProjects']),
+  computed: mapGetters(['teamProjects', 'preference']),
   watch: {
     ['$route.query.teamId']() {
       this.loadTeamInfo()
     },
   },
   methods: {
-    ...mapActions(['queryTeam', 'createTeam']),
+    ...mapActions(['queryTeam', 'createTeam', 'updatePreferenceShowMode']),
     tryJumpToProjectDetail(projectId) {
       this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
     },
     showListView() {
       console.log('显示列表')
       this.listVisible = true
+      this.updatePreferenceShowMode({
+        username: this.username,
+        preferenceShowMode: 'list',
+      }).then(() => {
+        console.log('update preferenceShowMode success')
+      })
     },
     showCardView() {
       console.log('显示卡片')
       this.listVisible = false
+      this.updatePreferenceShowMode({
+        username: this.username,
+        preferenceShowMode: 'card',
+      }).then(() => {
+        console.log('update preferenceShowMode success')
+      })
     },
     handleCancel() {
       this.previewVisible = false
@@ -219,30 +235,13 @@ export default {
       form: this.$form.createForm(this),
     }
   },
-  activated() {
-    console.log('activated')
-  },
-  mounted() {
-    console.log('mounted')
-  },
   beforeRouteEnter(to, from, next) {
     console.log('before router enter')
     next()
   },
-  // mounted: function () {
-  //   console.log('in Project Page, query is: ', this.$route.query)
-  //   let teamId = this.$route.query.teamId
-  //   this.queryTeam({ teamId: teamId, username: store.getters.username })
-  //     .then((response) => {
-  //       console.log('更新页面数据！', store.getters.teamProjects)
-  //     })
-  //     .catch((err) => {
-  //       this.$notification.error({
-  //         message: '获取项目数据失败',
-  //         description: err,
-  //       })
-  //     })
-  // },
+  mounted: function () {
+    this.listVisible = this.preference.preferenceShowMode !== 'card'
+  },
 }
 </script>
 

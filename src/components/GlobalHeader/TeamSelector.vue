@@ -21,8 +21,13 @@ export default {
     ...mapGetters(['username', 'teamName', 'teams', 'teamId']),
   },
   methods: {
-    ...mapActions(['queryTeam', 'queryTeamKB']),
-    handleTeamChange(team) {
+    ...mapActions(['queryTeam', 'queryTeamKB', 'updatePreferenceTeam']),
+    async handleTeamChange(team) {
+      this.updatePreferenceTeam({ username: this.username, preferenceTeam: team.teamId }).then(
+        () => {
+          console.log('update preferenceTeam success')
+        }
+      )
       this.$router.push({
         name: 'projectList',
         query: {

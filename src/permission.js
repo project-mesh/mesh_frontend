@@ -55,7 +55,9 @@ function handle(to, from, next) {
         //   tryJump(next, { path: redirect })
         // }
         // tryJump(to, next, { ...to })
-        next({ ...to, replace: true })
+        if (!to.query || !to.query.teamId)
+          next({ ...to, query: { teamId: store.getters.preference.preferenceTeam }, replace: true })
+        else next({ ...to, replace: true })
       })
     } else {
       let menuItem = to.path.split('/').pop()
