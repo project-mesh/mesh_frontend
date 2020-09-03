@@ -17,6 +17,12 @@ const projectTasks = {
   },
 
   actions: {
+    queryTasks: ({ commit }, { username, teamId, projectId }) => {
+      return Promise.all([
+        store.dispatch('queryProjectTasks', { username, projectId }),
+        store.dispatch('queryTeamTasks', { username, teamId }),
+      ])
+    },
     queryProjectTasks: ({ commit }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('queryProjectTasks', requestData)
@@ -43,7 +49,7 @@ const projectTasks = {
           })
       })
     },
-    createProjectTasks: ({ commit }, requestData) => {
+    createTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('createTask', requestData)
           .then((response) => {
@@ -51,15 +57,18 @@ const projectTasks = {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
-              store.dispatch('queryProjectTasks', newRequestData)
+              newRequestData.teamId = rootGetters.teamId
+              store.dispatch('queryTasks', newRequestData)
             }
           })
+          .then(() => resolve())
           .catch((error) => {
             console.log('error from createProjectTasks is:', error)
+            reject(error)
           })
       })
     },
-    createProjectSubTasks: ({ commit }, requestData) => {
+    createSubTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('createSubTask', requestData)
           .then((response) => {
@@ -67,16 +76,18 @@ const projectTasks = {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
-              store.dispatch('queryProjectTasks', newRequestData)
+              newRequestData.teamId = rootGetters.teamId
+              store.dispatch('queryTasks', newRequestData)
             }
           })
+          .then(() => resolve())
           .catch((error) => {
             console.log('error from createSubProjectTasks is:', error)
+            reject(error)
           })
-        resolve()
       })
     },
-    updateProjectTask: ({ commit }, requestData) => {
+    updateTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('updateTask', requestData)
           .then((response) => {
@@ -84,16 +95,18 @@ const projectTasks = {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
-              store.dispatch('queryProjectTasks', newRequestData)
+              newRequestData.teamId = rootGetters.teamId
+              store.dispatch('queryTasks', newRequestData)
             }
           })
+          .then(() => resolve())
           .catch((error) => {
             console.log('error from updateProjectTasks is:', error)
+            reject(error)
           })
-        resolve()
       })
     },
-    updateProjectSubTask: ({ commit }, requestData) => {
+    updateSubTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('updateSubTask', requestData)
           .then((response) => {
@@ -101,16 +114,18 @@ const projectTasks = {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
-              store.dispatch('queryProjectTasks', newRequestData)
+              newRequestData.teamId = rootGetters.teamId
+              store.dispatch('queryTasks', newRequestData)
             }
           })
+          .then(() => resolve())
           .catch((error) => {
             console.log('error from updateProjectSubTasks is:', error)
+            reject(error)
           })
-        resolve()
       })
     },
-    deleteProjectTask: ({ commit }, requestData) => {
+    deleteTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('deleteTask', requestData)
           .then((response) => {
@@ -118,16 +133,18 @@ const projectTasks = {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
-              store.dispatch('queryProjectTasks', newRequestData)
+              newRequestData.teamId = rootGetters.teamId
+              store.dispatch('queryTasks', newRequestData)
             }
           })
+          .then(() => resolve())
           .catch((error) => {
             console.log('error from deleteProjectTasks is:', error)
+            reject(error)
           })
-        resolve()
       })
     },
-    deleteProjectSubTask: ({ commit }, requestData) => {
+    deleteSubTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('deleteSubTask', requestData)
           .then((response) => {
@@ -135,13 +152,15 @@ const projectTasks = {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
-              store.dispatch('queryProjectTasks', newRequestData)
+              newRequestData.teamId = rootGetters.teamId
+              store.dispatch('queryTasks', newRequestData)
             }
           })
+          .then(() => resolve())
           .catch((error) => {
             console.log('error from deleteProjectSubTasks is:', error)
+            reject(error)
           })
-        resolve()
       })
     },
   },

@@ -307,23 +307,25 @@ for (let i = 0; i < 300; ++i) {
     })
   )
 
-  const taskStatus = ['开发中', '已完成', '已逾期']
+  const newTask = Mock.mock({
+    projectId: member.projectId,
+    taskId: '@id',
+    taskName: '@name',
+    'isFinished|1': true,
+    priority: random.natural(1, 3),
+    createTime: Date.now(),
+    deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
+    description: '@paragraph',
+    founder: '@name',
+    principal: member.username,
+  })
 
-  tasks.push(
-    Mock.mock({
-      projectId: member.projectId,
-      taskId: '@id',
-      taskName: '@name',
-      isFinished: false,
-      'status|1': taskStatus,
-      priority: random.natural(1, 3),
-      createTime: Date.now(),
-      deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
-      description: '@paragraph',
-      founder: '@name',
-      principal: member.username,
-    })
-  )
+  if (newTask.isFinished) newTask.status = '已完成'
+  else if (new Date(newTask.deadline + ' 24:00:00').getTime() < Date.now())
+    newTask.status = '已逾期'
+  else newTask.status = '开发中'
+
+  tasks.push(newTask)
 }
 
 for (let i = 0; i < 200; ++i) {

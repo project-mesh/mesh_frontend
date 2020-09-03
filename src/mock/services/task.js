@@ -29,5 +29,21 @@ const getTeamTasks = (queryParams) => {
   return utils.builder({ tasks: resTasks })
 }
 
+//这个函数只更新了data.isFinished（给日历页面用的），正经写法我不清楚咋写，待修改 by xzc
+const updateProjectTasks = (data) => {
+  const currentTask = tasks.find(
+    (currentTask) => currentTask.taskId === data.taskId && currentTask.projectId === data.projectId
+  )
+  currentTask.isFinished = data.isFinished
+
+  if (currentTask.isFinished) currentTask.status = '已完成'
+  else if (new Date(currentTask.deadline + ' 24:00:00').getTime() < Date.now())
+    currentTask.status = '已逾期'
+  else currentTask.status = '开发中'
+
+  return utils.builder({ task: currentTask })
+}
+
 Mock.mock(/\/task\/team/, 'get', utils.functionFactory(getTeamTasks))
 Mock.mock(/\/task\/project/, 'get', utils.functionFactory(getProjectTasks))
+Mock.mock(/\/task/, 'patch', utils.functionFactory(updateProjectTasks))
