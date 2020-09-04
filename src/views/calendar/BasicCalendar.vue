@@ -52,15 +52,7 @@
         </ul>
       </a-calendar>
     </div>
-    <a-modal
-      v-model="viewTaskForm"
-      title="任务详情"
-      centered
-      width="1000px"
-      :closable="false"
-      @ok="viewTaskForm = false"
-      @cancel="viewTaskForm = false"
-    >
+    <a-modal v-model="viewTaskForm" title="任务详情" centered width="1000px" footer="">
       <a-breadcrumb separator=">">
         <a-breadcrumb-item>
           <router-link
