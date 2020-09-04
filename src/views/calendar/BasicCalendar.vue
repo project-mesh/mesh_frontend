@@ -65,7 +65,10 @@
       </a-breadcrumb>
       <div id="taskPriorityView">
         <a-icon type="warning" />
-        <span>任务优先级：{{ getTextTaskPriority(selectedTask.priority) }}</span>
+        <span>任务优先级：</span>
+        <span :style="{ color: priorityColor(selectedTask.priority) }">
+          {{ getTextTaskPriority(selectedTask.priority) }}
+        </span>
       </div>
       <a-descriptions id="taskDescription" bordered>
         <a-descriptions-item label="任务名">
@@ -78,7 +81,7 @@
           {{ selectedTask.founder }}
         </a-descriptions-item>
         <a-descriptions-item label="任务状态">
-          {{ selectedTask.status }}
+          <a-badge :status="badgeStatus(selectedTask.status)" :text="selectedTask.status" />
         </a-descriptions-item>
         <a-descriptions-item label="创建日期">
           {{ formatTimestamp(selectedTask.createTime) }}
@@ -119,7 +122,6 @@ export default {
         (currentTask) =>
           currentTask.taskId === e.target.value[0] && currentTask.projectId === e.target.value[1]
       )
-      taskUpdated.isFinished = e.target.checked
       this.updateTask({
         username: this.username,
         taskId: e.target.value[0],
@@ -130,6 +132,7 @@ export default {
           this.$notification.success({
             description: '设置任务状态成功',
           })
+          taskUpdated.isFinished = e.target.checked
         })
         .catch((error) => {
           this.$notification.error({
@@ -161,6 +164,20 @@ export default {
           return '未知优先级'
       }
     },
+    priorityColor(priorityNumber) {
+      switch (priorityNumber) {
+        case 0:
+          return 'blue'
+        case 1:
+          return 'green'
+        case 2:
+          return 'orange'
+        case 3:
+          return 'red'
+        default:
+          return 'black'
+      }
+    },
     getMonthData(value) {
       return this.getListData(value, 'month')
     },
@@ -187,6 +204,11 @@ export default {
     // 这个方法用来重置 calendar 控件为初始状态。参见 https://segmentfault.com/a/1190000016629544
     refreshCalendar() {
       return (this.calendarID = +new Date())
+    },
+    badgeStatus(text) {
+      if (text === '已完成') return 'success'
+      else if (text === '开发中') return 'processing'
+      else return 'error'
     },
     formatTimestamp(time) {
       let formatDate = new Date(time)
