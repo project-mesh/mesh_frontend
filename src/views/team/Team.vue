@@ -266,4 +266,7 @@ export default {
 .ant-list-item-meta-content {
   width: 150px;
 }
+div.list-content-item {
+  margin-left: 200px;
+}
 </style>

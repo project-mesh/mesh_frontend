@@ -156,7 +156,7 @@ const users = [
       preferenceShowMode: 'card',
       preferenceTeam: '数据库',
       preferenceColor: '#1890ff',
-      preferenceLayout: 'topmenu',
+      preferenceLayout: 'sidemenu',
     },
     role: 'user',
   },
@@ -169,7 +169,7 @@ const users = [
       preferenceShowMode: 'card',
       preferenceTeam: '数据库',
       preferenceColor: '#1890ff',
-      preferenceLayout: 'topmenu',
+      preferenceLayout: 'sidemenu',
     },
     role: 'admin',
   },
@@ -373,8 +373,6 @@ for (let i = 0; i < projects.length; ++i) {
     )
   }
 }
-
-console.log(tasks)
 
 export {
   bulletins,

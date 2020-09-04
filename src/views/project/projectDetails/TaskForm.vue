@@ -1,28 +1,32 @@
 <template>
   <a-form @submit="handleSubmit" :form="form">
-    <a-form-item label="团队名称" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-item label="标题" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-input
-        v-decorator="['title', { rules: [{ required: true, message: '请输入任务名称' }] }]"
+        v-decorator="[
+          'title',
+          {
+            initialValue: record.bulletinName,
+            rules: [{ required: false, message: '请输入任务名称' }],
+          },
+        ]"
       />
     </a-form-item>
-    <a-form-item label="职位" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-select v-decorator="['owner', { rules: [{ required: true, message: '请选择开始时间' }] }]">
-        <a-select-option :value="0">组长</a-select-option>
-        <a-select-option :value="1">管理员</a-select-option>
-        <a-select-option :value="2">成员</a-select-option>
-      </a-select>
-    </a-form-item>
-    <a-form-item label="标签" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-textarea v-decorator="['description']"></a-textarea>
+    <a-form-item label="内容" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-textarea
+        v-decorator="[
+          'description',
+          {
+            initialValue: record.description,
+          },
+        ]"
+      ></a-textarea>
     </a-form-item>
   </a-form>
 </template>
 
 <script>
 import pick from 'lodash.pick'
-
 const fields = ['title', 'startAt', 'owner', 'description']
-
 export default {
   name: 'TaskForm',
   props: {
@@ -74,3 +78,14 @@ export default {
   },
 }
 </script>
+<style lang="less">
+div.ant-modal-body {
+  height: 300px;
+}
+form.ant-form.ant-form-horizontal {
+  height: 250px;
+}
+textarea#description.ant-input {
+  height: 200px;
+}
+</style>

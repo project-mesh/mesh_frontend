@@ -34,7 +34,7 @@ export const asyncRouterMap = [
             name: 'projectList',
             // TODO: 修改成对应页面
             // component: () => import('@/views/project/Project'),
-            component: () => import('@/views/project/Project'),
+            component: () => import('@/views/project/ProjectList'),
             meta: {
               keepAlive: true,
             },
@@ -45,7 +45,7 @@ export const asyncRouterMap = [
             name: 'projectDetail',
             // redirect: '/project/detail/statistics',
             // TODO: 修改成对应页面
-            component: RouteView,
+            component: () => import('@/views/project/ProjectDetail'),
             meta: {
               keepAlive: true,
             },
@@ -75,7 +75,7 @@ export const asyncRouterMap = [
                 path: 'statistics',
                 name: 'statistics',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/statistics/Statistics'),
+                component: () => import('@/views/project/projectDetails/Statistics'),
                 meta: {
                   title: '统计',
                   keepAlive: true,
@@ -94,10 +94,10 @@ export const asyncRouterMap = [
               },
               // 公告
               {
-                path: '/project/detail/bulletin',
-                name: 'bulletin',
+                path: '/project/detail/bulletins',
+                name: 'bulletins',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
+                component: () => import('@/views/project/projectDetails/Bulletins'),
                 meta: {
                   keepAlive: true,
                 },
