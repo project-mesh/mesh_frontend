@@ -73,8 +73,8 @@ const apiMap = {
     url: '/preference/color',
     method: 'post',
   },
-  prefeneceLayout: {
-    url: '/prefenece/layout',
+  preferenceLayout: {
+    url: '/preference/layout',
     method: 'post',
   },
   createProject: {

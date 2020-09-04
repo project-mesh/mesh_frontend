@@ -1,26 +1,47 @@
 <template>
-  <a-card style="margin-top: 24px;" :bordered="false" title="知识库">
+  <a-card style="margin-top: 24px" :bordered="false" title="知识库" :loading="cardLoading">
     <div class="operate">
-      <a-button type="dashed" style="width: 100%;" icon="plus" @click="add">添加</a-button>
+      <a-button type="dashed" icon="plus" block @click="add">添加</a-button>
     </div>
+
+    <a-modal
+      :width="700"
+      centered
+      :visible="visible"
+      :confirm-loading="confirmLoading"
+      :title="modalTitle"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
+      <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
+    </a-modal>
 
     <a-list
       size="large"
+      :data-source="teamKBWithFormatedCreateTime"
       :pagination="{
         showSizeChanger: true,
         showQuickJumper: true,
-        pageSize: 5,
-        total: 50,
+        pageSize: pageSize,
+        total: teamKBWithFormatedCreateTime.length,
+        current: currentPage,
+        onChange: handlePageChange,
+        onShowSizeChange: handlePageSizeChange,
       }"
     >
-      <a-list-item :key="index" v-for="(item, index) in teamKBWithFormatedCreateTime">
-        <a-list-item-meta :description="item.hyperlink">
-          <a slot="title" href="404">{{ item.knowledgeName }}</a>
+      <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
+        <a-list-item-meta :title="item.knowledgeName">
+          <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
         </a-list-item-meta>
         <div slot="actions">
-          <a @click="edit(item)">编辑</a>
+          <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">编辑</a>
         </div>
         <div slot="actions">
+          <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
+            <a :disabled="!isTeamAdminOrUploader(item) || deleteLoading[index]">删除</a>
+          </a-popconfirm>
+        </div>
+        <!-- <div slot="actions">
           <a-dropdown>
             <a-menu slot="overlay">
               <a-menu-item><a @click="edit(item)">编辑</a></a-menu-item>
@@ -31,7 +52,7 @@
               <a-icon type="down" />
             </a>
           </a-dropdown>
-        </div>
+        </div> -->
         <div class="list-content">
           <div class="list-content-item">
             <span>上传人</span>
@@ -52,6 +73,8 @@
 import TaskForm from '@/views/repositories/TaskForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import { mapGetters, mapActions } from 'vuex'
+import teamMixin from '@/utils/mixins/teamMixin'
+
 /*
 {
   "error_code": 0,
@@ -104,15 +127,24 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Repositories',
-  components: {},
+  components: { TaskForm },
+  mixins: [teamMixin],
   data() {
     return {
       // data,
       status: 'all',
+      selectedItem: {},
+      visible: false,
+      confirmLoading: false,
+      modalTitle: '新建',
+      pageSize: 10,
+      currentPage: 1,
+      deleteLoading: [],
+      cardLoading: false,
     }
   },
   computed: {
-    ...mapGetters(['teamKB', 'username', 'teamId']),
+    ...mapGetters(['teamKB', 'username', 'teamId', 'teamAdminName']),
     teamKBWithFormatedCreateTime() {
       const formatedData = JSON.parse(JSON.stringify(this.teamKB))
       formatedData.forEach((knowledge) => {
@@ -126,70 +158,90 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryTeamKB']),
+    ...mapActions(['queryTeamKB', 'queryTeam', 'deleteTeamKB']),
+    isTeamAdminOrUploader(knowledge) {
+      return this.username === this.teamAdminName || this.username === knowledge.uploaderName
+    },
     add() {
-      this.$dialog(
-        TaskForm,
-        // component props
-        {
-          record: {},
-          on: {
-            ok() {
-              alert('add')
-            },
-            cancel() {},
-            close() {},
-          },
-        },
-        // modal props
-        {
-          title: '新增',
-          width: 700,
-          centered: true,
-          maskClosable: false,
-        }
-      )
+      this.modalTitle = '新建'
+      this.selectedItem = {}
+      this.visible = true
     },
     edit(record) {
-      this.$dialog(
-        TaskForm,
-        // component props
-        {
-          record,
-          on: {
-            ok() {
-              alert('edit')
-            },
-            cancel() {},
-            close() {},
-          },
-        },
-        // modal props
-        {
-          title: '操作',
-          width: 700,
-          centered: true,
-          maskClosable: false,
-        }
-      )
+      this.modalTitle = '编辑'
+      this.selectedItem = record
+      this.visible = true
+    },
+    handlePageChange(current) {
+      this.currentPage = current
+    },
+    handlePageSizeChange(current, pageSize) {
+      this.pageSize = pageSize
+    },
+    handleOk() {
+      this.confirmLoading = true
+      this.$refs.taskForm
+        .handleSubmit()
+        .then((response) => {
+          this.visible = false
+          this.confirmLoading = false
+
+          if (!this.selectedItem.knowledgeId) {
+            this.deleteLoading.push(false)
+          }
+        })
+        .catch((error) => {
+          this.visible = false
+          this.confirmLoading = false
+        })
+    },
+    handleCancel() {
+      this.visible = false
+    },
+    deleteKB(knowledge, index) {
+      this.$set(this.deleteLoading, index, true)
+      this.deleteTeamKB({
+        username: this.username,
+        teamId: this.teamId,
+        knowledgeId: knowledge.knowledgeId,
+      })
+        .then((response) => {
+          this.$notification.success({
+            message: '成功删除团队知识库',
+          })
+          this.deleteLoading.splice(index, 1)
+        })
+        .catch((error) =>
+          this.$notification.error({
+            message: '删除知识库失败',
+            description: error.message,
+          })
+        )
     },
   },
   mounted() {
-    this.queryTeamKB({ username: this.username, teamId: this.teamId })
-      .then((response) => {
-        console.log('queryTeamKB resolve')
-        this.$notification.success({
-          message: '成功获取团队知识库',
-          description: '成功获取团队知识库',
-        })
-      })
-      .catch((error) => {
-        console.log('queryTeamKB reject')
-        this.$notification.error({
-          message: '获取团队知识库失败',
-          description: '`${error.name}: ${error.message}`',
-        })
-      })
+    // for test
+    // this.queryTeam({ username: this.username, teamId: this.teamId })
+    //   .then((response) => console.log(response))
+    //   .catch((error) => console.error(error))
+    // // for test
+    // this.queryTeamKB({ username: this.username, teamId: this.teamId })
+    //   .then((response) => {
+    //     this.$notification.success({
+    //       message: '成功获取团队知识库',
+    //       description: '成功获取团队知识库',
+    //     })
+    //     this.deleteLoading = new Array(response.data.knowledgeBase).fill(false)
+    //   })
+    //   .catch((error) => {
+    //     this.$notification.error({
+    //       message: '获取团队知识库失败',
+    //       description: `${error.name}: ${error.message}`,
+    //     })
+    //   })
+    //   .finally(() => {
+    //     this.cardLoading = false
+    //   })
   },
 }
 </script>

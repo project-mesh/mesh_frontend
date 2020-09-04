@@ -1,12 +1,16 @@
 <template>
   <div>
     <div class="change-view">
-      <a-radio-group default-value="b" button-style="solid">
-        <a-radio-button value="a" @click="showListView()">
+      <a-radio-group
+        default-value="card"
+        :value="listVisible ? 'list' : 'card'"
+        button-style="solid"
+      >
+        <a-radio-button value="list" @click="showListView()">
           <a-icon type="unordered-list" />
           列表视图
         </a-radio-button>
-        <a-radio-button value="b" @click="showCardView()">
+        <a-radio-button value="card" @click="showCardView()">
           卡片视图
           <a-icon type="appstore" />
         </a-radio-button>
@@ -15,7 +19,11 @@
         <div class="search-box">
           <a-input-search placeholder="输入要查找的项目" enter-button @search="onSearch" />
         </div>
-        <a-button type="primary" @click="() => (createProjForm = true)">
+        <a-button
+          :disabled="username !== teamAdminName"
+          type="primary"
+          @click="() => (createProjForm = true)"
+        >
           创建新项目
           <a-icon type="folder-add" />
         </a-button>
@@ -42,11 +50,24 @@
             ]"
             placeholder="公有/私有"
           >
-            <a-select-option value="public">
-              公开
-            </a-select-option>
-            <a-select-option value="private">
-              私密
+            <a-select-option value="public">公开</a-select-option>
+            <a-select-option value="private">私密</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="项目负责人">
+          <a-select
+            v-decorator="[
+              'projAdmin',
+              { rules: [{ required: true, message: '请选择项目负责人!' }] },
+            ]"
+            placeholder="选择项目管理员"
+          >
+            <a-select-option
+              v-for="member in teamMembers"
+              :key="member.username"
+              :value="member.username"
+            >
+              {{ member.username }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -60,13 +81,11 @@
           >
             <div v-if="fileList.length < 1">
               <a-icon type="plus" />
-              <div class="ant-upload-text">
-                Upload
-              </div>
+              <div class="ant-upload-text">Upload</div>
             </div>
           </a-upload>
           <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-            <img alt="example" style="width: 100%;" :src="previewImage" />
+            <img alt="example" style="width: 100%" :src="previewImage" />
           </a-modal>
         </a-form-item>
       </a-form>
@@ -78,7 +97,7 @@
           <a-list-item-meta>
             <div slot="title">{{ item.projectName }}</div>
             <div slot="description">{{ item.adminName }}</div>
-            <a slot="description">进入项目</a>
+            <a slot="description" @click="tryJumpToProjectDetail(item.projectId)">进入项目</a>
           </a-list-item-meta>
         </a-list-item>
       </a-list>
@@ -87,14 +106,23 @@
       <div>
         <a-list
           type="flex"
-          :grid="{ gutter: 24, column: 5 }"
+          :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4 }"
           :data-source="teamProjects"
           class="card-row"
         >
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
-            <a-card hoverable style="width: 250px; overflow: hidden;">
-              <img slot="cover" alt="example" :src="item.projectLogo" class="card-img" />
-
+            <a-card
+              hoverable
+              style="width: 100%; overflow: hidden"
+              @click="tryJumpToProjectDetail(item.projectId)"
+            >
+              <img
+                style="height: 400px; overflow: hidden; object-fit: cover"
+                slot="cover"
+                alt="example"
+                :src="item.projectLogo"
+                class="card-img"
+              />
               <template slot="actions" class="ant-card-actions">
                 <a-icon key="setting" type="setting" />
                 <a-icon key="edit" type="edit" />
@@ -116,6 +144,7 @@
 import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
+import teamMixin from '@/utils/mixins/teamMixin'
 
 //图片转 base64
 function getBase64(img, callback) {
@@ -125,16 +154,37 @@ function getBase64(img, callback) {
 }
 export default {
   name: 'Project',
-  computed: mapGetters(['teamProjects']),
+  mixins: [teamMixin],
+  computed: mapGetters(['teamProjects', 'preference', 'username', 'teamAdminName', 'teamMembers']),
+  watch: {
+    ['$route.query.teamId']() {
+      this.loadTeamInfo()
+    },
+  },
   methods: {
-    ...mapActions(['queryTeam', 'createTeam']),
+    ...mapActions(['queryTeam', 'createProject', 'updatePreferenceShowMode']),
+    tryJumpToProjectDetail(projectId) {
+      this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
+    },
     showListView() {
       console.log('显示列表')
       this.listVisible = true
+      this.updatePreferenceShowMode({
+        username: this.username,
+        preferenceShowMode: 'list',
+      }).then(() => {
+        console.log('update preferenceShowMode success')
+      })
     },
     showCardView() {
       console.log('显示卡片')
       this.listVisible = false
+      this.updatePreferenceShowMode({
+        username: this.username,
+        preferenceShowMode: 'card',
+      }).then(() => {
+        console.log('update preferenceShowMode success')
+      })
     },
     handleCancel() {
       this.previewVisible = false
@@ -156,11 +206,11 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          this.createTeam({
+          this.createProject({
             username: store.getters.username,
             teamId: store.getters.teamId,
             projectName: values.projName,
-            adminName: '',
+            adminName: values.projAdmin,
             isPublic: values.projAuthority !== 'private',
           })
             .then((response) => {
@@ -195,18 +245,7 @@ export default {
     }
   },
   mounted: function () {
-    console.log('in Project Page, query is: ', this.$route.query)
-    let teamId = this.$route.query.teamId
-    this.queryTeam({ teamId: teamId, username: store.getters.username })
-      .then((response) => {
-        console.log('更新页面数据！', store.getters.teamProjects)
-      })
-      .catch((err) => {
-        this.$notification.error({
-          message: '获取项目数据失败',
-          description: err,
-        })
-      })
+    this.listVisible = this.preference.preferenceShowMode !== 'card'
   },
 }
 </script>
@@ -223,7 +262,7 @@ export default {
   margin-top: 20px;
 }
 .card-img {
-  width: 250px;
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;

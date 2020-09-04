@@ -16,7 +16,7 @@
             v-if="isLoginError"
             type="error"
             show-icon
-            style="margin-bottom: 24px;"
+            style="margin-bottom: 24px"
             message="账户或密码错误（admin/ant.design )"
           />
           <a-form-item>
@@ -54,7 +54,7 @@
         </a-tab-pane>
       </a-tabs>
 
-      <a-form-item style="margin-top: 24px;">
+      <a-form-item style="margin-top: 24px">
         <a-button
           size="large"
           type="primary"

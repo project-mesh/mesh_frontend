@@ -46,10 +46,10 @@ const user = {
             commit('SET_TOKEN', token)
             commit('SET_USERNAME', response.data.username)
             commit('SET_ROLE', response.data.role)
-            commit('SET_AVATAR', response.data.profile)
+            commit('SET_AVATAR', response.data.avatar)
             commit('SET_TEAMS', response.data.teams)
             commit('SET_PREFERENCE', response.data.preference)
-            commit('SET_TEAMID', response.data.preference.preferenceTeam)
+            // commit('SET_TEAMID', response.data.preference.preferenceTeam)
             resolve(response)
           })
           .catch((error) => {
@@ -57,9 +57,50 @@ const user = {
           })
       })
     },
-    Logout({ commit, state }) {
+    Logout({ commit }) {
       commit('SET_TOKEN', '')
+      commit('SET_ROLE', '')
       storage.remove(ACCESS_TOKEN)
+    },
+    updatePreferenceColor({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceColor', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', res.data.preference)
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceTeam({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceTeam', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', res.data.preference)
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceShowMode({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceShowMode', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', res.data.preference)
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceLayout({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceLayout', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', res.data.preference)
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
     },
   },
 }
