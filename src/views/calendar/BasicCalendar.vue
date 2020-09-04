@@ -74,7 +74,7 @@
         <a-descriptions-item label="任务名">
           {{ selectedTask.taskName }}
         </a-descriptions-item>
-        <a-descriptions-item label="截止日期">
+        <a-descriptions-item label="截止时间">
           {{ selectedTask.deadline }}
         </a-descriptions-item>
         <a-descriptions-item label="创建者">
@@ -83,7 +83,7 @@
         <a-descriptions-item label="任务状态">
           <a-badge :status="badgeStatus(selectedTask.status)" :text="selectedTask.status" />
         </a-descriptions-item>
-        <a-descriptions-item label="创建日期">
+        <a-descriptions-item label="创建时间">
           {{ formatTimestamp(selectedTask.createTime) }}
         </a-descriptions-item>
         <a-descriptions-item label="负责人">
@@ -215,17 +215,13 @@ export default {
       let year = formatDate.getFullYear()
       let month = formatDate.getMonth() + 1
       let date = formatDate.getDate()
+      let hour = formatDate.getHours()
+      let minute = formatDate.getMinutes()
       let currentDate = year + '-'
-      if (month >= 10) {
-        currentDate += month + '-'
-      } else {
-        currentDate += '0' + month + '-'
+      function add0(m) {
+        return m < 10 ? '0' + m : m
       }
-      if (date >= 10) {
-        currentDate += date
-      } else {
-        currentDate += '0' + date
-      }
+      currentDate += add0(month) + '-' + add0(date) + ' ' + add0(hour) + ':' + add0(minute)
       return currentDate
     },
   },
