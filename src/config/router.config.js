@@ -26,6 +26,7 @@ export const asyncRouterMap = [
           title: '项目',
           keepAlive: true,
           icon: 'project',
+          permission: ['user'],
         },
         children: [
           // 团队项目列表页，选择某个项目后跳转到对应项目详情页
@@ -37,17 +38,22 @@ export const asyncRouterMap = [
             component: () => import('@/views/project/ProjectList'),
             meta: {
               keepAlive: true,
+              title: '项目列表',
+              permission: ['user'],
             },
           },
           // 项目详情页
           {
             path: '/project/detail',
             name: 'projectDetail',
+            hideChildrenInMenu: true,
             // redirect: '/project/detail/statistics',
             // TODO: 修改成对应页面
             component: () => import('@/views/project/ProjectDetail'),
             meta: {
               keepAlive: true,
+              title: '项目详情',
+              permission: ['user'],
             },
             children: [
               // 任务列表
