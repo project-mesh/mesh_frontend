@@ -52,15 +52,7 @@
         </ul>
       </a-calendar>
     </div>
-    <a-modal
-      v-model="viewTaskForm"
-      title="任务详情"
-      centered
-      width="1000px"
-      :closable="false"
-      @ok="viewTaskForm = false"
-      @cancel="viewTaskForm = false"
-    >
+    <a-modal v-model="viewTaskForm" title="任务详情" centered width="1000px" footer="">
       <a-breadcrumb separator=">">
         <a-breadcrumb-item>
           <router-link
@@ -73,22 +65,25 @@
       </a-breadcrumb>
       <div id="taskPriorityView">
         <a-icon type="warning" />
-        <span>任务优先级：{{ getTextTaskPriority(selectedTask.priority) }}</span>
+        <span>任务优先级：</span>
+        <span :style="{ color: priorityColor(selectedTask.priority) }">
+          {{ getTextTaskPriority(selectedTask.priority) }}
+        </span>
       </div>
       <a-descriptions id="taskDescription" bordered>
         <a-descriptions-item label="任务名">
           {{ selectedTask.taskName }}
         </a-descriptions-item>
-        <a-descriptions-item label="截止日期">
+        <a-descriptions-item label="截止时间">
           {{ selectedTask.deadline }}
         </a-descriptions-item>
         <a-descriptions-item label="创建者">
           {{ selectedTask.founder }}
         </a-descriptions-item>
         <a-descriptions-item label="任务状态">
-          {{ selectedTask.status }}
+          <a-badge :status="badgeStatus(selectedTask.status)" :text="selectedTask.status" />
         </a-descriptions-item>
-        <a-descriptions-item label="创建日期">
+        <a-descriptions-item label="创建时间">
           {{ formatTimestamp(selectedTask.createTime) }}
         </a-descriptions-item>
         <a-descriptions-item label="负责人">
@@ -127,7 +122,6 @@ export default {
         (currentTask) =>
           currentTask.taskId === e.target.value[0] && currentTask.projectId === e.target.value[1]
       )
-      taskUpdated.isFinished = e.target.checked
       this.updateTask({
         username: this.username,
         taskId: e.target.value[0],
@@ -138,6 +132,7 @@ export default {
           this.$notification.success({
             description: '设置任务状态成功',
           })
+          taskUpdated.isFinished = e.target.checked
         })
         .catch((error) => {
           this.$notification.error({
@@ -169,6 +164,20 @@ export default {
           return '未知优先级'
       }
     },
+    priorityColor(priorityNumber) {
+      switch (priorityNumber) {
+        case 0:
+          return 'blue'
+        case 1:
+          return 'green'
+        case 2:
+          return 'orange'
+        case 3:
+          return 'red'
+        default:
+          return 'black'
+      }
+    },
     getMonthData(value) {
       return this.getListData(value, 'month')
     },
@@ -196,22 +205,23 @@ export default {
     refreshCalendar() {
       return (this.calendarID = +new Date())
     },
+    badgeStatus(text) {
+      if (text === '已完成') return 'success'
+      else if (text === '开发中') return 'processing'
+      else return 'error'
+    },
     formatTimestamp(time) {
       let formatDate = new Date(time)
       let year = formatDate.getFullYear()
       let month = formatDate.getMonth() + 1
       let date = formatDate.getDate()
+      let hour = formatDate.getHours()
+      let minute = formatDate.getMinutes()
       let currentDate = year + '-'
-      if (month >= 10) {
-        currentDate += month + '-'
-      } else {
-        currentDate += '0' + month + '-'
+      function add0(m) {
+        return m < 10 ? '0' + m : m
       }
-      if (date >= 10) {
-        currentDate += date
-      } else {
-        currentDate += '0' + date
-      }
+      currentDate += add0(month) + '-' + add0(date) + ' ' + add0(hour) + ':' + add0(minute)
       return currentDate
     },
   },
