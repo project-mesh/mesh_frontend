@@ -3,19 +3,21 @@
     size="large"
     :pagination="{ showSizeChanger: false, showQuickJumper: false, pageSize: 10, total: 10 }"
   >
-    <a-list-item v-for="bulletin in bulletins" :key="bulletin.bulletinId">
-      <a-list-item-meta>
+    <a-list-item v-for="bulletin in bulletinWithFormatedCreateTime" :key="bulletin.bulletinId">
+      <a-list-item-meta :description="bulletin.description">
         <a slot="title">{{ bulletin.bulletinName }}</a>
       </a-list-item-meta>
       <div slot="actions">
         <a-menu-item><a @click="modify(bulletin)">详情</a></a-menu-item>
       </div>
+      <div>{{ bulletin.createTimeDisplay }}</div>
     </a-list-item>
   </a-list>
 </template>
 
 <script>
 import TaskForm from './TaskForm'
+import { formatDateByPattern } from '@/utils/dateUtil'
 import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
 import { mapGetters } from 'vuex'
@@ -30,6 +32,17 @@ export default {
   },
   computed: {
     ...mapGetters(['bulletins']),
+    bulletinWithFormatedCreateTime() {
+      const formatedData = JSON.parse(JSON.stringify(this.bulletins))
+      formatedData.forEach((bulletin) => {
+        bulletin.createTimeDisplay = formatDateByPattern(
+          new Date(Number(bulletin.createTime)),
+          'yyyy-MM-dd hh:mm'
+        )
+      })
+
+      return formatedData
+    },
   },
   methods: {
     modify(bulletin) {
