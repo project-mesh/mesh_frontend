@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card style="margin-top: 24px;" :bordered="false" title="任务">
+    <a-card style="margin-top: 24px" :bordered="false" title="任务">
       <a-list
         size="large"
         :pagination="{
@@ -42,7 +42,7 @@
               <a-progress
                 :percent="item.progress.value"
                 :status="!item.progress.status ? null : item.progress.status"
-                style="width: 180px;"
+                style="width: 180px"
               />
             </div>
           </div>

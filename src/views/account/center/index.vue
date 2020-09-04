@@ -3,7 +3,7 @@
     <a-row :gutter="24">
       <a-col :md="24" :lg="24">
         <a-card
-          style="width: 100%;"
+          style="width: 100%"
           :bordered="false"
           :tab-list="tabListNoTitle"
           :active-tab-key="noTitleKey"

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card style="margin-top: 24px;" :bordered="false" title="公告">
+    <a-card style="margin-top: 24px" :bordered="false" title="公告">
       <a-list
         size="large"
         :pagination="{

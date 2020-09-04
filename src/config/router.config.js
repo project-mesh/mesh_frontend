@@ -156,16 +156,53 @@ export const asyncRouterMap = [
         },
       },
 
-      // 我的页面
+      // account
       {
-        path: '/me',
-        name: 'me',
-        // TODO: 修改成对应页面
-        component: () => import('@/views/exception/404'),
+        path: '/account',
+        component: RouteView,
+        redirect: '/account/center',
+        name: 'account',
         meta: {
-          title: '我的',
+          title: '个人页',
           icon: 'user',
+          keepAlive: true,
+          permission: ['user'],
         },
+        children: [
+          {
+            path: '/account/center',
+            name: 'center',
+            component: () => import('@/views/account/center'),
+            meta: { title: '个人中心', keepAlive: true, permission: ['user'] },
+          },
+          {
+            path: '/account/settings',
+            name: 'settings',
+            component: () => import('@/views/account/settings/Index'),
+            meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
+            redirect: '/account/settings/base',
+            hideChildrenInMenu: true,
+            children: [
+              {
+                path: '/account/settings/base',
+                name: 'BaseSettings',
+                component: () => import('@/views/account/settings/BaseSetting'),
+                meta: { title: '基本设置', hidden: true, permission: ['user'] },
+              },
+              {
+                path: '/account/settings/custom',
+                name: 'CustomSettings',
+                component: () => import('@/views/account/settings/Custom'),
+                meta: {
+                  title: '个性化设置',
+                  hidden: true,
+                  keepAlive: true,
+                  permission: ['user'],
+                },
+              },
+            ],
+          },
+        ],
       },
     ],
   },
@@ -215,3 +252,21 @@ export const constantRouterMap = [
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
   },
 ]
+
+// /**
+//  * 账户信息路由
+//  * @type { *[] }
+//  */
+// export const accountRouterMap = [
+//   // 我的页面
+//   {
+//     path: '/me',
+//     name: 'me',
+//     // TODO: 修改成对应页面
+//     component: () => import('@/views/account/settings/index'),
+//     meta: {
+//       title: '我的',
+//       icon: 'user',
+//     },
+//   },
+// ]

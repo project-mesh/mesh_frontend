@@ -15,7 +15,7 @@
 
           <a-form-item>
             <a-button type="primary">保存</a-button>
-            <a-button class="operate" style="margin-left: 8px;" @click="add">修改密码</a-button>
+            <a-button class="operate" style="margin-left: 8px" @click="add">修改密码</a-button>
           </a-form-item>
         </a-form>
       </a-col>

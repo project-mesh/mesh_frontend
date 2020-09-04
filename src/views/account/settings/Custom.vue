@@ -6,9 +6,7 @@
           <a>风格配色</a>
         </template>
         <template v-slot:description>
-          <span>
-            整体风格配色设置
-          </span>
+          <span>整体风格配色设置</span>
         </template>
       </a-list-item-meta>
       <template v-slot:actions>
