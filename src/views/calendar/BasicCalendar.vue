@@ -226,18 +226,14 @@ export default {
     },
   },
   mounted() {
-    this.queryTeamTasks({ username: this.username, teamId: this.$route.query.teamId })
-      .then(() => {
-        this.$notification.success({
-          description: '成功获取团队任务',
-        })
-      })
-      .catch((error) => {
+    this.queryTeamTasks({ username: this.username, teamId: this.$route.query.teamId }).catch(
+      (error) => {
         this.$notification.error({
           message: '获取团队任务失败',
           description: `${error.name}: ${error.message}`,
         })
-      })
+      }
+    )
   },
 }
 </script>
