@@ -1,7 +1,6 @@
 import Mock from 'mockjs2'
 import md5 from 'md5'
 import themePluginConfig from '../../../config/themePluginConfig'
-const fs = require('fs')
 
 const random = Mock.Random
 

@@ -20,6 +20,7 @@
       size="large"
       :columns="columns"
       :data-source="teamKBWithFormatedCreateTime"
+      :row-key="rowKey"
       :pagination="{
         showSizeChanger: true,
         showQuickJumper: true,
@@ -51,7 +52,7 @@ import teamMixin from '@/utils/mixins/teamMixin'
 
 /*
 {
-  "error_code": 0,
+  "err_code": 0,
   "data": {
     "isSuccess": true,
     "msg": "",
@@ -176,6 +177,9 @@ export default {
     isTeamAdminOrUploader(knowledge) {
       return this.username === this.teamAdminName || this.username === knowledge.uploaderName
     },
+    rowKey(knowledge) {
+      return knowledge.knowledgeId
+    },
     add() {
       this.modalTitle = '新建'
       this.selectedItem = {}
@@ -196,15 +200,10 @@ export default {
       this.confirmLoading = true
       this.$refs.taskForm
         .handleSubmit()
-        .then((response) => {
-          this.visible = false
-          this.confirmLoading = false
-
-          if (!this.selectedItem.knowledgeId) {
-            this.deleteLoading.push(false)
-          }
+        .catch((err) => {
+          console.error('In teamRepo, update team KB failed, ', err)
         })
-        .catch((error) => {
+        .finally(() => {
           this.visible = false
           this.confirmLoading = false
         })
@@ -219,16 +218,16 @@ export default {
         teamId: this.teamId,
         knowledgeId: knowledge.knowledgeId,
       })
-        .then((response) => {
+        .then((res) => {
           this.$notification.success({
             message: '成功删除团队知识库',
           })
           this.deleteLoading.splice(index, 1)
         })
-        .catch((error) =>
-          this.$notification.error({
+        .catch((err) =>
+          this.$notification.err({
             message: '删除知识库失败',
-            description: error.message,
+            description: err.message,
           })
         )
     },
@@ -236,21 +235,21 @@ export default {
   mounted() {
     // for test
     // this.queryTeam({ username: this.username, teamId: this.teamId })
-    //   .then((response) => console.log(response))
-    //   .catch((error) => console.error(error))
+    //   .then((res) => console.log(res))
+    //   .catch((err) => console.err(err))
     // // for test
     // this.queryTeamKB({ username: this.username, teamId: this.teamId })
-    //   .then((response) => {
+    //   .then((res) => {
     //     this.$notification.success({
     //       message: '成功获取团队知识库',
     //       description: '成功获取团队知识库',
     //     })
-    //     this.deleteLoading = new Array(response.data.knowledgeBase).fill(false)
+    //     this.deleteLoading = new Array(res.data.knowledgeBase).fill(false)
     //   })
-    //   .catch((error) => {
-    //     this.$notification.error({
+    //   .catch((err) => {
+    //     this.$notification.err({
     //       message: '获取团队知识库失败',
-    //       description: `${error.name}: ${error.message}`,
+    //       description: `${err.name}: ${err.message}`,
     //     })
     //   })
     //   .finally(() => {

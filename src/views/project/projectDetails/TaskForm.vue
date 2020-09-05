@@ -2,17 +2,19 @@
   <a-form @submit="handleSubmit" :form="form">
     <a-form-item label="标题" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-input
+        :disabled="username !== projectAdminName"
         v-decorator="[
           'title',
           {
             initialValue: record.bulletinName,
-            rules: [{ required: false, message: '请输入任务名称' }],
+            rules: [{ required: true, message: '请输入任务名称' }],
           },
         ]"
       />
     </a-form-item>
     <a-form-item label="内容" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-textarea
+        :disabled="username !== projectAdminName"
         v-decorator="[
           'description',
           {
@@ -26,7 +28,9 @@
 
 <script>
 import pick from 'lodash.pick'
-const fields = ['title', 'startAt', 'owner', 'description']
+import { mapGetters, mapActions } from 'vuex'
+
+// const fields = ['title', 'startAt', 'owner', 'description']
 export default {
   name: 'TaskForm',
   props: {
@@ -48,31 +52,37 @@ export default {
       form: this.$form.createForm(this),
     }
   },
-  mounted() {
-    this.record && this.form.setFieldsValue(pick(this.record, fields))
+  computed: {
+    ...mapGetters(['username', 'projectAdminName']),
   },
+  // mounted() {
+  //   this.record && this.form.setFieldsValue(pick(this.record, fields))
+  // },
   methods: {
-    onOk() {
-      console.log('监听了 modal ok 事件')
-      return new Promise((resolve) => {
-        resolve(true)
-      })
-    },
-    onCancel() {
-      console.log('监听了 modal cancel 事件')
-      return new Promise((resolve) => {
-        resolve(true)
-      })
-    },
+    ...mapActions(['updateBulletin']),
     handleSubmit() {
-      const {
-        form: { validateFields },
-      } = this
-      this.visible = true
-      validateFields((errors, values) => {
-        if (!errors) {
-          console.log('values', values)
-        }
+      return new Promise((resolve, reject) => {
+        if (this.username !== this.projectAdminName) resolve()
+
+        const {
+          form: { validateFields },
+        } = this
+        this.visible = true
+        validateFields((errors, values) => {
+          if (!errors) {
+            console.log('values', values)
+
+            const requestData = {
+              username: this.username,
+              bulletinId: this.record.bulletinId,
+              projectId: this.record.projectId,
+              bulletinName: values.title,
+              description: values.description,
+            }
+
+            this.updateBulletin(requestData).then(resolve).catch(reject)
+          } else reject(errors)
+        })
       })
     },
   },

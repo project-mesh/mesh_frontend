@@ -82,8 +82,8 @@ const projectInfo = {
     queryProject({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('queryProject', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess) {
               const { project } = data
               commit('SET_PROJECT_ID', project.projectId)
@@ -94,16 +94,16 @@ const projectInfo = {
               commit('SET_MEMBERS', project.members)
               commit('SET_VISIBILITY', project.isPublic)
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     updateProject({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('updateProject', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess) {
               const { project } = data
               if (project.projectId === requestData.projectId) {
@@ -116,16 +116,16 @@ const projectInfo = {
                 commit('SET_VISIBILITY', project.isPublic)
               }
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     deleteProject({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('deleteProject', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess) {
               if (requestData.projectId === state.projectId) {
                 commit('SET_PROJECT_ID', '')
@@ -139,150 +139,161 @@ const projectInfo = {
 
               commit('REMOVE_PROJECT', requestData.projectId, { root: true })
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     createProject({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('createProject', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess) {
               const { project } = data
               commit('ADD_PROJECT', project, { root: true })
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     inviteNewProjectMember({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('inviteNewProjectMember', requestData)
-          .then((response) => resolve(response))
-          .catch((error) => reject(error))
+          .then((res) => resolve(res))
+          .catch((err) => reject(err))
       })
     },
     joinProject({ commit, rootGetters }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('joinProject', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess) {
               const { project } = data
 
               if (requestData.teamId === rootGetters.teamId)
                 commit('ADD_PROJECT', project, { root: true })
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     queryBulletin({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('queryBulletin', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess && requestData.projectId === state.projectId) {
               commit('SET_BULLETINS', data.bulletins)
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     createBulletin({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('createBulletin', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess && requestData.projectId === state.projectId) {
               commit('ADD_BULLETIN', data.bulletin)
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => {
+            reject(err)
+          })
       })
     },
     deleteBulletin({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('deleteBulletin', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            console.log('response in deleteBulletin: ', res)
+            const { data } = res
             if (data.isSuccess) {
               commit('REMOVE_BULLETIN', requestData.bulletinId)
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => {
+            console.error('error in deleteBulletin: ', err)
+            reject(err)
+          })
       })
     },
-    updatedBulletin({ commit }, requestData) {
+    updateBulletin({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
-        sendRequest('updatedBulletin', requestData)
-          .then((response) => {
-            const { data } = response
+        sendRequest('updateBulletin', requestData)
+          .then((res) => {
+            console.log('response in updateBulletin: ', res)
+            const { data } = res
             if (data.isSuccess) {
-              commit('REMOVE_BULLETIN', data.bulletin)
+              commit('UPDATE_BULLETIN', data.bulletin)
+              console.log('updated bulletins: ', state.bulletins)
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => {
+            console.error('error in updateBulletin: ', err)
+            reject(err)
+          })
       })
     },
     queryProjectKB({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('queryProjectKB', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess && requestData.projectId === state.projectId) {
               commit('SET_KNOWLEDGEBASE', data.knowledgeBase)
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     createProjectKB({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('createProjectKB', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess && requestData.projectId === state.projectId) {
               commit('ADD_KNOWLEDGE', data.knowledge)
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     deleteProjectKB({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('deleteProjectKB', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess) {
               commit('REMOVE_KNOWLEDGE', requestData.knowledgeId)
             }
             resolve(resolve)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
     updateProjectKB({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('updateProjectKB', requestData)
-          .then((response) => {
-            const { data } = response
+          .then((res) => {
+            const { data } = res
             if (data.isSuccess) {
               commit('UPDATE_KNOWLEDGE', data.knowledge)
             }
-            resolve(response)
+            resolve(res)
           })
-          .catch((error) => reject(error))
+          .catch((err) => reject(err))
       })
     },
   },

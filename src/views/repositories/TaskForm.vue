@@ -32,7 +32,7 @@
 import pick from 'lodash.pick'
 import { mapActions, mapGetters } from 'vuex'
 
-const fields = ['title', 'startAt', 'owner', 'description']
+// const fields = ['title', 'startAt', 'owner', 'description']
 
 export default {
   name: 'TaskForm',
@@ -64,9 +64,9 @@ export default {
       return this.isCreateForm ? 'createTeamKB' : 'updateTeamKB'
     },
   },
-  mounted() {
-    this.record && this.form.setFieldsValue(pick(this.record, fields))
-  },
+  // mounted() {
+  //   this.record && this.form.setFieldsValue(pick(this.record, fields))
+  // },
   methods: {
     ...mapActions(['createTeamKB', 'updateTeamKB']),
     handleSubmit() {
