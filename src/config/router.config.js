@@ -1,6 +1,5 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout } from '@/layouts'
-import store from '../store'
 
 const RouteView = {
   name: 'RouteView',
