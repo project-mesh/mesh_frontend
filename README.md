@@ -1,30 +1,25 @@
-English | [简体中文](./README.zh-CN.md)
-
-<h1 align="center">Ant Design Vue Pro</h1>
+<h1 align="center">Mesh</h1>
 <div align="center">
-An out-of-box UI solution for enterprise applications as a Vue boilerplate. based on  <a href="https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/" target="_blank">Ant Design of Vue</a>
+基于 AntD Vue Pro 构建的项目管理工具（前端部分）
 </div>
 
 <div align="center">
 
 [![License](https://img.shields.io/npm/l/package.json.svg?style=flat)](https://github.com/vueComponent/ant-design-vue-pro/blob/master/LICENSE)
-[![Release](https://img.shields.io/github/release/vueComponent/ant-design-vue-pro.svg?style=flat)](https://github.com/vueComponent/ant-design-vue-pro/releases/latest)
-[![Travis branch](https://travis-ci.org/vueComponent/ant-design-vue-pro.svg?branch=master)](https://travis-ci.org/vueComponent/ant-design-vue-pro)
+[![Build Status](https://dev.azure.com/moreonenight/mesh/_apis/build/status/project-mesh.mesh_frontend%20(1)?branchName=master)](https://dev.azure.com/moreonenight/mesh/_build/latest?definitionId=2&branchName=master)
 
 </div>
 
-- Preview: https://preview.pro.antdv.com
-- Home Page: https://pro.antdv.com
-- Documentation: https://pro.antdv.com/docs/getting-started
-- ChangeLog: https://pro.antdv.com/docs/changelog
-- FAQ: https://pro.antdv.com/docs/faq
+- 预览网址：https://meshproject.me
+- **注意：由于项目前后端目前尚未对接，前述预览网页使用了 Mock.js 来展示数据，测试用用户名 test，密码 test**
+- **注意：在向 master 分支 push 代码后，前述网址也会在大约几分钟后自动更新。master 分支出现绿色对号表示更新完成**
 
-Overview
+项目界面总览
 ----
 
-![dashboard](https://static-2.loacg.com/open/static/github/SP1.png)
+![overview](mesh_preview.png)
 
-### Env and dependencies
+### 环境与依赖
 
 - node
 - yarn
@@ -36,66 +31,48 @@ Overview
 - [@antv/g2](https://antv.alipay.com/zh-cn/index.html) - AntV G2
 - [Viser-vue](https://viserjs.github.io/docs.html#/viser/guide/installation)  - Antv/G2 of Vue
 
-> Note:  [Yarn](https://yarnpkg.com/) package management is recommended, the exact same version loaded with the demo site of this project (yarn.lock) . but you can also use npm
+> 注意：推荐使用 [Yarn](https://yarnpkg.com/) 进行包管理，但也可以使用 npm
 
 
-### Project setup
+### 项目设置
 
-- Clone repo
+- 克隆仓库
 ```bash
 git clone https://github.com/vueComponent/ant-design-vue-pro.git
 cd ant-design-vue-pro
 ```
 
-- Install dependencies
+- 安装依赖
 ```
 yarn install
 ```
 
-- Compiles and hot-reloads for development
+- 编译并运行测试环境
 ```
 yarn run serve
 ```
 
-- Compiles and minifies for production
+- 为生产环境编译
 ```
 yarn run build
 ```
 
-- Lints and fixes files
+- 修复文法错误
 ```
 yarn run lint
 ```
 
+## 浏览器支持
 
-### Other
-
-- **IMPORTANT : About Issue feedback !! when opening Issue read [Issue / PR Contributing](https://github.com/vueComponent/ant-design-vue-pro/issues/90)**
-
-- [Vue-cli3](https://cli.vuejs.org/guide/) used by the project.
-
-- Disable Eslint (not recommended): remove `eslintConfig`  field in `package.json`  and `vue.config.js` field `lintOnSave: false`
-
-- Load on Demand `/src/main.js` L14, in `import './core/lazy_use'`, `import './core/use''`. more [load-on-demand.md](./docs/load-on-demand.md)
-
-- Customize Theme:  [Custom Theme Config (@kokoroli)](https://github.com/kokoroli/antd-awesome/blob/master/docs/Ant_Design_%E6%A0%B7%E5%BC%8F%E8%A6%86%E7%9B%96.md)
-
-- I18n: [locales (@musnow)](./src/locales/index.js)
-
-- Production env `mock` is disabled. use `src/mock/index.js`
-
-- pls use `release` version
-
-## Browsers support
-
-Modern browsers and IE10.
+支持 IE10 和现代浏览器。
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
 | --- | --- | --- | --- | --- |
-| IE10, Edge | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
+| IE10, Edge | 最新的 2 个版本 | 最新的 2 个版本 | 最新的 2 个版本 | 最新的 2 个版本 |
 
 
-## Contributors
+## 项目贡献者
 
-This project exists thanks to all the people who contribute. 
-<a href="https://github.com/vueComponent/ant-design-vue-pro/graphs/contributors"><img src="https://opencollective.com/ant-design-pro-vue/contributors.svg?width=890&button=false" /></a>
+本项目能够存在需要感谢所有参与了项目的用户。
+
+![contributers](mesh_contributor.png)

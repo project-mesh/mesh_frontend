@@ -1,7 +1,10 @@
 import { isIE } from '@/utils/util'
 
 // 判断环境不是 prod 或者 preview 是 true 时，加载 mock 服务
-if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
+// 在前后端对接前暂时允许在生产环境下使用 Mock.js
+//if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true')
+// eslint-disable-next-line no-constant-condition
+if (true) {
   if (isIE()) {
     console.error('[mesh] ERROR: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.')
   }
