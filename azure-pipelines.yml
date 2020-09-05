@@ -16,10 +16,10 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    yarn install
-    yarn remove @vue/cli-plugin-eslint
-    yarn run build
-  displayName: 'yarn install and build'
+    npm install
+    npm uninstall @vue/cli-plugin-eslint
+    npm run build
+  displayName: 'npm install and build'
   
 - task: CopyFiles@2
   inputs:
