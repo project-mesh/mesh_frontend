@@ -93,7 +93,7 @@
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="teamProjects">
         <a-list-item slot="renderItem" slot-scope="item">
-          <img slot="extra" width="100" height="100" alt="logo" :src="item.projectLogo" />
+          <img slot="extra" width="100" height="100%" alt="logo" :src="item.projectLogo" />
           <a-list-item-meta>
             <div slot="title">{{ item.projectName }}</div>
             <div slot="description">{{ item.adminName }}</div>
