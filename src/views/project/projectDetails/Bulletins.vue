@@ -14,7 +14,7 @@
     <a-list
       size="large"
       :data-source="bulletinWithFormatedCreateTime"
-      :pagination="{ showSizeChanger: false, showQuickJumper: false, pageSize: 10, total: 10 }"
+      :pagination="pagination(bulletinWithFormatedCreateTime)"
     >
       <a-list-item slot="renderItem" slot-scope="bulletin, index" :key="bulletin.bulletinId">
         <a-list-item-meta :description="bulletin.description">
@@ -38,13 +38,14 @@ import TaskForm from './TaskForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
+import paginationMixin from '@/utils/mixins/paginationMixin'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
     TaskForm,
   },
-  mixins: [teamMixin, projectMixin],
+  mixins: [teamMixin, projectMixin, paginationMixin],
   data() {
     return {
       visible: false,

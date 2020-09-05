@@ -360,7 +360,7 @@ for (let i = 0; i < 500; ++i) {
 }
 
 for (let i = 0; i < projects.length; ++i) {
-  for (let j = 0; j < 10; ++j) {
+  for (let j = 0; j < 15; ++j) {
     bulletins.push(
       Mock.mock({
         projectId: projects[i].projectId,

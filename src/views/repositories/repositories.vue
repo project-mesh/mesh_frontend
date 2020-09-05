@@ -21,17 +21,9 @@
       :columns="columns"
       :data-source="teamKBWithFormatedCreateTime"
       :row-key="rowKey"
-      :pagination="{
-        showSizeChanger: true,
-        showQuickJumper: true,
-        pageSize: pageSize,
-        total: teamKBWithFormatedCreateTime.length,
-        current: currentPage,
-        onChange: handlePageChange,
-        onShowSizeChange: handlePageSizeChange,
-      }"
+      :pagination="pagination(teamKBWithFormatedCreateTime)"
     >
-      <a slot="hyperlink" slot-scope="link, item" href="link">{{ item.hyperlink }}</a>
+      <a slot="hyperlink" slot-scope="link, item" :href="`http://${link}`">{{ item.hyperlink }}</a>
       <span slot="action" slot-scope="text, item, index">
         <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">编辑</a>
         <a-divider type="vertical" />
@@ -49,6 +41,7 @@ import TaskForm from '@/views/repositories/TaskForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
+import paginationMixin from '@/utils/mixins/paginationMixin'
 
 /*
 {
@@ -142,7 +135,7 @@ const columns = [
 export default {
   name: 'Repositories',
   components: { TaskForm },
-  mixins: [teamMixin],
+  mixins: [teamMixin, paginationMixin],
   data() {
     return {
       // data,
@@ -152,8 +145,6 @@ export default {
       visible: false,
       confirmLoading: false,
       modalTitle: '新建',
-      pageSize: 10,
-      currentPage: 1,
       deleteLoading: [],
       cardLoading: false,
     }
@@ -189,12 +180,6 @@ export default {
       this.modalTitle = '编辑'
       this.selectedItem = record
       this.visible = true
-    },
-    handlePageChange(current) {
-      this.currentPage = current
-    },
-    handlePageSizeChange(current, pageSize) {
-      this.pageSize = pageSize
     },
     handleOk() {
       this.confirmLoading = true
