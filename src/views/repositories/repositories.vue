@@ -1,5 +1,5 @@
 <template>
-  <a-card style="margin-top: 24px" :bordered="false" title="知识库" :loading="cardLoading">
+  <a-card style="margin-top: 24px" :bordered="false" title=" " :loading="cardLoading">
     <div class="operate">
       <a-button type="dashed" icon="plus" block @click="add">添加</a-button>
     </div>
