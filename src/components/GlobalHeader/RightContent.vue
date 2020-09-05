@@ -1,7 +1,7 @@
 <template>
   <div :class="wrpCls">
-    <team-selector :class="prefixCls" />
-    <span :class="prefixCls">
+    <team-selector v-if="role === 'user'" :class="prefixCls" />
+    <span v-if="role === 'user'" :class="prefixCls">
       <a-badge :count="notifications.length" dot>
         <a-icon type="notification" />
       </a-badge>
@@ -49,7 +49,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['notifications']),
+    ...mapGetters(['notifications', 'role']),
     wrpCls() {
       return {
         'ant-pro-global-header-index-right': true,

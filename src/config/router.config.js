@@ -190,13 +190,13 @@ export const asyncRouterMap = [
             children: [
               {
                 path: '/account/settings/base',
-                name: 'BaseSettings',
+                name: 'baseSettings',
                 component: () => import('@/views/account/settings/BaseSetting'),
                 meta: { title: '基本设置', hidden: true, permission: ['user'] },
               },
               {
                 path: '/account/settings/custom',
-                name: 'CustomSettings',
+                name: 'customSettings',
                 component: () => import('@/views/account/settings/Custom'),
                 meta: {
                   title: '个性化设置',

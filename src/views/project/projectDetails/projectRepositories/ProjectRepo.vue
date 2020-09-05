@@ -1,7 +1,14 @@
 <template>
   <a-card :bordered="false" :loading="cardLoading">
-    <div class="operate">
+    <!-- <div class="operate">
       <a-button type="dashed" icon="plus" block @click="add">添加</a-button>
+    </div> -->
+
+    <div class="operate" slot="extra">
+      <div class="search-box">
+        <a-input-search v-model="filterText" placeholder="输入要查找的条目" />
+      </div>
+      <a-button type="primary" icon="plus" @click="add">添加</a-button>
     </div>
 
     <a-modal
@@ -16,11 +23,7 @@
       <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
     </a-modal>
 
-    <a-list
-      size="large"
-      :data-source="projectKBWithFormatedCreateTime"
-      :pagination="pagination(projectKBWithFormatedCreateTime)"
-    >
+    <a-list size="large" :data-source="filteredProjects" :pagination="pagination(filteredProjects)">
       <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
         <a-list-item-meta :title="item.knowledgeName">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
@@ -30,7 +33,7 @@
         </div>
         <div slot="actions">
           <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
-            <a :disabled="!isProjectAdminOrUploader(item) || deleteLoading[index]">删除</a>
+            <a :disabled="!isProjectAdminOrUploader(item)">删除</a>
           </a-popconfirm>
         </div>
         <!-- <div slot="actions">
@@ -116,8 +119,8 @@ export default {
       visible: false,
       confirmLoading: false,
       modalTitle: '新建',
-      deleteLoading: [],
       cardLoading: false,
+      filterText: '',
     }
   },
   computed: {
@@ -132,6 +135,13 @@ export default {
       })
 
       return formatedData
+    },
+    filteredProjects() {
+      return this.projectKBWithFormatedCreateTime.filter(
+        (knowledge) =>
+          knowledge.knowledgeName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase()) ||
+          knowledge.hyperlink.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
+      )
     },
   },
   methods: {
@@ -168,7 +178,6 @@ export default {
       this.visible = false
     },
     deleteKB(knowledge, index) {
-      this.$set(this.deleteLoading, index, true)
       this.deleteProjectKB({
         username: this.username,
         projectId: this.projectId,
@@ -178,7 +187,6 @@ export default {
           this.$notification.success({
             message: '成功删除项目知识库',
           })
-          this.deleteLoading.splice(index, 1)
         })
         .catch((err) =>
           this.$notification.err({
@@ -195,6 +203,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.operate {
+  display: flex;
+  align-items: center;
+}
+
+.search-box {
+  margin-right: 10px;
+}
+
 .ant-avatar-lg {
   width: 48px;
   height: 48px;
