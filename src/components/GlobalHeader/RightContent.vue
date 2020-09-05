@@ -3,7 +3,6 @@
     <team-selector :class="prefixCls" />
     <notification-dropdown :class="prefixCls" />
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
-    <select-lang :class="prefixCls" />
   </div>
 </template>
 
@@ -17,7 +16,6 @@ export default {
   name: 'RightContent',
   components: {
     AvatarDropdown,
-    SelectLang,
     NotificationDropdown,
     TeamSelector,
   },

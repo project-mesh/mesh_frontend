@@ -48,10 +48,10 @@ export default {
   },
   methods: {
     handleToCenter() {
-      this.$router.push({ path: '/me' })
+      this.$router.push({ path: '/account/center' })
     },
     handleToSettings() {
-      this.$router.push({ path: '/me' })
+      this.$router.push({ path: '/account/settings/base' })
     },
     handleLogout() {
       Modal.confirm({
