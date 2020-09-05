@@ -1,5 +1,5 @@
 <template>
-  <a-card style="margin-top: 24px" :bordered="false" title="知识库" :loading="cardLoading">
+  <a-card :bordered="false" :loading="cardLoading">
     <div class="operate">
       <a-button type="dashed" icon="plus" block @click="add">添加</a-button>
     </div>
@@ -18,19 +18,19 @@
 
     <a-list
       size="large"
-      :data-source="teamKBWithFormatedCreateTime"
-      :pagination="pagination(teamKBWithFormatedCreateTime)"
+      :data-source="projectKBWithFormatedCreateTime"
+      :pagination="pagination(projectKBWithFormatedCreateTime)"
     >
       <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
         <a-list-item-meta :title="item.knowledgeName">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
         </a-list-item-meta>
         <div slot="actions">
-          <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">编辑</a>
+          <a @click="edit(item)" :disabled="!isProjectAdminOrUploader(item)">编辑</a>
         </div>
         <div slot="actions">
           <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
-            <a :disabled="!isTeamAdminOrUploader(item) || deleteLoading[index]">删除</a>
+            <a :disabled="!isProjectAdminOrUploader(item) || deleteLoading[index]">删除</a>
           </a-popconfirm>
         </div>
         <!-- <div slot="actions">
@@ -62,66 +62,12 @@
 
 <script>
 // 演示如何使用 this.$dialog 封装 modal 组件
-import TaskForm from '@/views/repositories/TaskForm'
+import TaskForm from './TaskForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
+import projectMixin from '@/utils/mixins/projectMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
-
-/*
-{
-  "err_code": 0,
-  "data": {
-    "isSuccess": true,
-    "msg": "",
-    "knowledgeBase": [
-      {
-        "knowledgeId": "asgsdfvgdxzvzsd",
-        "knowledgeName": "项目地址",
-        "hyperlink": "xxxx",
-        "uploaderName": "王新宇",
-        "createTime": "1595215568570"
-      }
-    ]
-  }
-}
-*/
-
-// const data = []
-// data.push({
-//   knowledgeName: '谷歌',
-//   hyperlink: 'www.google.com',
-//   uploaderName: '付晓晓',
-//   createTime: '1595215568570',
-// })
-// data.push({
-//   knowledgeName: '百度',
-//   hyperlink: 'www.baidu.com',
-//   uploaderName: '付晓晓',
-//   createTime: '1595215561593',
-// })
-// data.push({
-//   knowledgeName: '必应',
-//   hyperlink: 'www.bing.com',
-//   uploaderName: '付晓晓',
-//   createTime: '1595215561593',
-// })
-// data.push({
-//   knowledgeName: '百度',
-//   hyperlink: 'www.baidu.com',
-//   uploaderName: '付晓晓',
-//   createTime: '1595215561593',
-// })
-
-// for (const item of data) {
-//   const fullDate = new Date(Number(item.createTime))
-//   item.createTimeDisplay = formatDateByPattern(fullDate, 'yyyy-MM-dd hh:mm')
-// }
-
-//  dataIndex: 'name',
-//     key: 'name',
-//     slots: { title: 'customTitle' },
-//     scopedSlots: { customRender: 'name' },
 
 const columns = [
   {
@@ -158,9 +104,9 @@ const columns = [
 ]
 
 export default {
-  name: 'Repositories',
+  name: 'ProjectRepo',
   components: { TaskForm },
-  mixins: [teamMixin, paginationMixin],
+  mixins: [teamMixin, projectMixin, paginationMixin],
   data() {
     return {
       // data,
@@ -175,9 +121,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['teamKB', 'username', 'teamId', 'teamAdminName']),
-    teamKBWithFormatedCreateTime() {
-      const formatedData = JSON.parse(JSON.stringify(this.teamKB))
+    ...mapGetters(['projectKB', 'username', 'projectId', 'projectAdminName']),
+    projectKBWithFormatedCreateTime() {
+      const formatedData = JSON.parse(JSON.stringify(this.projectKB))
       formatedData.forEach((knowledge) => {
         knowledge.createTimeDisplay = formatDateByPattern(
           new Date(Number(knowledge.createTime)),
@@ -189,9 +135,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryTeamKB', 'queryTeam', 'deleteTeamKB']),
-    isTeamAdminOrUploader(knowledge) {
-      return this.username === this.teamAdminName || this.username === knowledge.uploaderName
+    ...mapActions(['queryProjectKB', 'queryProject', 'deleteProjectKB']),
+    isProjectAdminOrUploader(knowledge) {
+      return this.username === this.projectAdminName || this.username === knowledge.uploaderName
     },
     rowKey(knowledge) {
       return knowledge.knowledgeId
@@ -211,7 +157,7 @@ export default {
       this.$refs.taskForm
         .handleSubmit()
         .catch((err) => {
-          console.error('In teamRepo, update team KB failed, ', err)
+          console.error('In projectRepo, update project KB failed, ', err)
         })
         .finally(() => {
           this.visible = false
@@ -223,14 +169,14 @@ export default {
     },
     deleteKB(knowledge, index) {
       this.$set(this.deleteLoading, index, true)
-      this.deleteTeamKB({
+      this.deleteProjectKB({
         username: this.username,
-        teamId: this.teamId,
+        projectId: this.projectId,
         knowledgeId: knowledge.knowledgeId,
       })
         .then((res) => {
           this.$notification.success({
-            message: '成功删除团队知识库',
+            message: '成功删除项目知识库',
           })
           this.deleteLoading.splice(index, 1)
         })
@@ -243,28 +189,7 @@ export default {
     },
   },
   mounted() {
-    // for test
-    // this.queryTeam({ username: this.username, teamId: this.teamId })
-    //   .then((res) => console.log(res))
-    //   .catch((err) => console.err(err))
-    // // for test
-    // this.queryTeamKB({ username: this.username, teamId: this.teamId })
-    //   .then((res) => {
-    //     this.$notification.success({
-    //       message: '成功获取团队知识库',
-    //       description: '成功获取团队知识库',
-    //     })
-    //     this.deleteLoading = new Array(res.data.knowledgeBase).fill(false)
-    //   })
-    //   .catch((err) => {
-    //     this.$notification.err({
-    //       message: '获取团队知识库失败',
-    //       description: `${err.name}: ${err.message}`,
-    //     })
-    //   })
-    //   .finally(() => {
-    //     this.cardLoading = false
-    //   })
+    this.$emit('load', 'projectRepo')
   },
 }
 </script>

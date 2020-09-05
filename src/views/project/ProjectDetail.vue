@@ -21,11 +21,11 @@ export default {
   data() {
     return {
       tabListNoTitle: [
+        { key: 'bulletins', tab: '公告' },
         { key: 'taskList', tab: '列表' },
         { key: 'taskBoard', tab: '看板' },
         { key: 'projectRepo', tab: '知识库' },
         { key: 'statistics', tab: '统计' },
-        { key: 'bulletins', tab: '公告' },
       ],
       activeKey: 'taskList',
     }

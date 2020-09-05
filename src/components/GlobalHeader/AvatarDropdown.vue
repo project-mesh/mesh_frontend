@@ -56,13 +56,10 @@ export default {
     handleLogout() {
       Modal.confirm({
         title: '您确定要退出吗？',
-        onOk: () =>
-          // return new Promise((resolve, reject) => {
-          //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
-          // }).catch(() => console.log('Oops errors!'))
-          this.$store.dispatch('Logout').then(() => {
-            this.$router.push({ name: 'login' })
-          }),
+        onOk: () => {
+          this.$store.dispatch('Logout')
+          this.$router.push({ name: 'login' })
+        },
         onCancel() {},
       })
     },

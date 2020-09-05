@@ -38,7 +38,7 @@ const projectInfo = {
       state.knowledgeBase = knowledgeBase
     },
     ADD_KNOWLEDGE: (state, newKnowledge) => {
-      state.knowledge.push(newKnowledge)
+      state.knowledgeBase.push(newKnowledge)
     },
     REMOVE_KNOWLEDGE: (state, knowledgeId) => {
       const knowledgeIndex = state.knowledgeBase.findIndex(

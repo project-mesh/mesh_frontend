@@ -11,7 +11,7 @@ export const asyncRouterMap = [
     path: '/',
     name: 'index',
     component: BasicLayout,
-    meta: { title: 'menu.home' },
+    meta: { title: 'home', keepAlive: true, permission: ['user'] },
     redirect: '/project/list',
     children: [
       // 项目
@@ -63,6 +63,8 @@ export const asyncRouterMap = [
                 component: () => import('@/views/exception/404'),
                 meta: {
                   keepAlive: true,
+                  title: '任务列表',
+                  permission: ['user'],
                 },
               },
               // 任务看板
@@ -72,7 +74,9 @@ export const asyncRouterMap = [
                 // TODO: 修改成对应页面
                 component: () => import('@/views/exception/404'),
                 meta: {
+                  title: '任务看板',
                   keepAlive: true,
+                  permission: ['user'],
                 },
               },
               // 统计
@@ -85,6 +89,7 @@ export const asyncRouterMap = [
                   title: '统计',
                   keepAlive: true,
                   icon: 'bar-chart',
+                  permission: ['user'],
                 },
               },
               // 项目知识库
@@ -92,9 +97,12 @@ export const asyncRouterMap = [
                 path: '/project/detail/repositories',
                 name: 'projectRepo',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
+                component: () =>
+                  import('@/views/project/projectDetails/projectRepositories/ProjectRepo'),
                 meta: {
+                  title: '项目知识库',
                   keepAlive: true,
+                  permission: ['user'],
                 },
               },
               // 公告
@@ -102,9 +110,11 @@ export const asyncRouterMap = [
                 path: '/project/detail/bulletins',
                 name: 'bulletins',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/project/projectDetails/Bulletins'),
+                component: () => import('@/views/project/projectDetails/bulletins/Bulletins'),
                 meta: {
+                  title: '公告',
                   keepAlive: true,
+                  permission: ['user'],
                 },
               },
             ],
@@ -112,28 +122,16 @@ export const asyncRouterMap = [
         ],
       },
 
-      //             //暂时用作statics统计页面路由
-      //       {
-      //         path: '/statistics',
-      //         name: 'statistics',
-      //         component: () => import('@/views/statistics/Statistics'),
-      //         hideChildrenInMenu: true,
-      //         meta: {
-      //           title: '统计',
-      //           keepAlive: true,
-      //           icon: 'bar-chart',
-      //         },
-      //       },
-
       // 团队知识库
       {
         path: '/repositories',
         name: 'teamRepo',
         // TODO: 修改成对应页面
-        component: () => import('@/views/repositories/Repositories'),
+        component: () => import('@/views/repositories/TeamRepo'),
         meta: {
           title: '知识库',
           icon: 'form',
+          permission: ['user'],
         },
       },
 
@@ -146,6 +144,7 @@ export const asyncRouterMap = [
           title: '日历',
           icon: 'calendar',
           keepAlive: true,
+          permission: ['user'],
         },
       },
 
@@ -158,6 +157,7 @@ export const asyncRouterMap = [
         meta: {
           title: '团队',
           icon: 'team',
+          permission: ['user'],
         },
       },
 
@@ -206,6 +206,59 @@ export const asyncRouterMap = [
                 },
               },
             ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: '/',
+    name: 'index',
+    component: BasicLayout,
+    meta: { title: 'home', keepAlive: true, permission: ['admin'] },
+    redirect: '/manage',
+    children: [
+      {
+        path: '/manage',
+        name: 'manage',
+        // TODO: 修改成对应页面
+        component: () => import('@/views/exception/404'),
+        meta: {
+          title: '管理',
+          icon: 'tool',
+          keepAlive: true,
+          permission: ['admin'],
+        },
+      },
+      {
+        path: '/account',
+        component: () => import('@/views/account/settings/Index'),
+        redirect: '/account/base',
+        hideChildrenInMenu: true,
+        name: 'account',
+        meta: {
+          title: '个人页',
+          icon: 'user',
+          keepAlive: true,
+          permission: ['admin'],
+        },
+        children: [
+          {
+            path: '/account/base',
+            name: 'baseSettings',
+            component: () => import('@/views/account/settings/BaseSetting'),
+            meta: { title: '基本设置', hidden: true, permission: ['admin'] },
+          },
+          {
+            path: '/account/custom',
+            name: 'customSettings',
+            component: () => import('@/views/account/settings/Custom'),
+            meta: {
+              title: '个性化设置',
+              hidden: true,
+              keepAlive: true,
+              permission: ['admin'],
+            },
           },
         ],
       },

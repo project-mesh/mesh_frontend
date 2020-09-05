@@ -10,7 +10,7 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['login', 'register', 'registerResult'] // no redirect whitelist
 const loginRoutePath = '/user/login'
-const defaultRoutePath = '/dashboard/workplace'
+const defaultRoutePath = '/project/list'
 
 var menuQueryMap = {
   list: () => ({
@@ -40,25 +40,12 @@ function handle(to, from, next) {
       // TODO : role filter
       const role = store.getters.role
       // alert('hello')
-      store.dispatch('GenerateRoutes', { role }).then(() => {
-        router.addRoutes(store.getters.addRouters)
-        // const redirect = decodeURIComponent(from.query.redirect || to.path)
-        // // next({ path: redirect })
-        // if (to.path === redirect) {
-        //   // set the replace: true so the navigation will not leave a history record
-        //   console.log('to.path: ', to.path, 'to.redirect: ', to.redirect)
-        //   tryJump(next, { ...to, replace: true })
-        // } else {
-        //   console.log('222222')
-
-        //   // 跳转到目的路由
-        //   tryJump(next, { path: redirect })
-        // }
-        // tryJump(to, next, { ...to })
-        if (!to.query || !to.query.teamId)
-          next({ ...to, query: { teamId: store.getters.preference.preferenceTeam }, replace: true })
-        else next({ ...to, replace: true })
-      })
+      store.dispatch('GenerateRoutes', role)
+      router.addRoutes(store.getters.addRouters)
+      console.log('routers: ', store.getters.addRouters)
+      if (!to.query || !to.query.teamId)
+        next({ ...to, query: { teamId: store.getters.preference.preferenceTeam }, replace: true })
+      else next({ ...to, replace: true })
     } else {
       let menuItem = to.path.split('/').pop()
       // console.log('打印：menuItem: ')
@@ -74,62 +61,17 @@ function handle(to, from, next) {
   }
 }
 
-// function tryJump(to, next, route) {
-//   const promises = []
-//   if (!store.getters.notifications || store.getters.notifications.length === 0) {
-//     promises.push(
-//       store.dispatch('queryNotification', {
-//         username: store.getters.username,
-//       })
-//     )
-//   }
-
-//   if (
-//     (to.query && to.query.teamId && to.query.teamId !== store.getters.teamId) ||
-//     (!store.getters.teamId && store.getters.preference.preferenceTeam)
-//   ) {
-//     const requestData = {
-//       username: store.getters.username,
-//       teamId: store.getters.preference.preferenceTeam,
-//     }
-
-//     if (to.query && to.query.teamId) requestData.teamId = to.query.teamId
-
-//     promises.push(
-//       store.dispatch('queryTeam', requestData),
-//       store.dispatch('queryTeamKB', requestData)
-//     )
-//   }
-
-//   if (promises.length) {
-//     console.log('?????????????????????????????', to.query.teamId)
-//     Promise.all(promises)
-//       .then(() => {
-//         route ? next(route) : next()
-//       })
-//       .catch((error) => {
-//         notification.error({
-//           message: '请求用户信息失败，请重试',
-//           description: `${error.name}: ${error.message}`,
-//         })
-//         next(false)
-//       })
-//   } else {
-//     route ? next(route) : next()
-//   }
-// }
-
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   if (storage.get(ACCESS_TOKEN)) {
     if (!store.getters.username) {
       store
         .dispatch('Login', { token: storage.get(ACCESS_TOKEN) })
-        .then((response) => {
+        .then((res) => {
           handle(to, from, next)
         })
-        .catch((error) => {
-          console.log('in begin login error is:', error)
+        .catch((err) => {
+          console.log('in begin login err is:', err)
           store.dispatch('Logout')
         })
     } else {
