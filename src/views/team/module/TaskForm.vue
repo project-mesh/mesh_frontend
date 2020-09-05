@@ -1,12 +1,12 @@
 <template>
   <a-form @submit="handleSubmit" :form="form">
-    <a-form-item label="团队名称" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-item label="成员姓名" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-input
-        v-decorator="['title', { rules: [{ required: true, message: '请输入任务名称' }] }]"
+        v-decorator="['title', { rules: [{ required: true, message: '请输入新增成员' }] }]"
       />
     </a-form-item>
     <a-form-item label="职位" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-select v-decorator="['owner', { rules: [{ required: true, message: '请选择开始时间' }] }]">
+      <a-select v-decorator="['owner', { rules: [{ required: true, message: '请选择成员职位' }] }]">
         <a-select-option :value="0">组长</a-select-option>
         <a-select-option :value="1">管理员</a-select-option>
         <a-select-option :value="2">成员</a-select-option>

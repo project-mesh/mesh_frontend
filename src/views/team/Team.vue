@@ -2,10 +2,11 @@
   <a-card style="margin-top: 24px" :bordered="false" :title="teamName">
     <div slot="extra">
       <a-radio-group v-model="status"></a-radio-group>
+      <a-button type="dashed" style="width: 100%" @click="change">修改团队</a-button>
     </div>
 
     <div class="operate">
-      <a-button type="dashed" style="width: 100%" icon="plus" @click="add">创建团队</a-button>
+      <a-button type="dashed" style="width: 100%" icon="plus" @click="addmember">邀请成员</a-button>
     </div>
 
     <a-list size="large">
@@ -14,34 +15,11 @@
           <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
           <a slot="title">{{ item.username }}</a>
         </a-list-item-meta>
-        <div slot="actions">
-          <a-dropdown>
-            <a-menu slot="overlay">
-              <a-menu-item><a @click="edit">编辑</a></a-menu-item>
-              <a-menu-item><a @click="change">切换</a></a-menu-item>
-            </a-menu>
-            <a>
-              更多
-              <a-icon type="down" />
-            </a>
-          </a-dropdown>
-        </div>
         <div class="list-content">
           <div class="list-content-item">
             <span>职位</span>
             <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
           </div>
-          <!-- <div class="list-content-item">
-            <span>标签</span>
-            <p>{{ item.startAt }}</p>
-          </div> -->
-          <!-- <div class="list-content-item">
-            <a-progress
-              :percent="item.progress.value"
-              :status="!item.progress.status ? null : item.progress.status"
-              style="width: 180px;"
-            />
-          </div> -->
         </div>
       </a-list-item>
     </a-list>
@@ -55,84 +33,6 @@ import ChangeForm from './module/ChangeForm'
 import Info from './components/Info'
 import { mapGetters } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
-
-// const data = []
-// data.push({
-//   title: 'Alipay',
-//   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-//   owner: '组长',
-//   startAt: '摸鱼小跟班',
-//   progress: {
-//     value: 90,
-//   },
-// })
-// data.push({
-//   title: 'Alipay',
-//   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-//   owner: '组长',
-//   startAt: '摸鱼小跟班',
-//   progress: {
-//     value: 90,
-//   },
-// })
-// data.push({
-//   title: 'Angular',
-//   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
-//   owner: '组长',
-//   startAt: '摸鱼小组长',
-//   progress: {
-//     value: 54,
-//   },
-// })
-// data.push({
-//   title: 'Ant Design',
-//   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/dURIMkkrRFpPgTuzkwnB.png',
-//   owner: '组长',
-//   startAt: '摸鱼小组长',
-//   progress: {
-//     value: 66,
-//   },
-// })
-// data.push({
-//   title: 'Ant Design Pro',
-//   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png',
-//   owner: '组长',
-//   startAt: '摸鱼小组长',
-//   progress: {
-//     value: 30,
-//   },
-// })
-// data.push({
-//   title: 'Bootstrap',
-//   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-//   owner: '组长',
-//   startAt: '摸鱼小组长',
-//   progress: {
-//     status: 'exception',
-//     value: 100,
-//   },
-// })
-// data.push({
-//   title: 'Bootstrap',
-//   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-//   owner: '组长',
-//   startAt: '摸鱼小组长',
-//   progress: {
-//     status: 'exception',
-//     value: 100,
-//   },
-// })
-// data.push({
-//   title: 'Bootstrap',
-//   avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
-//   owner: '组长',
-//   startAt: '摸鱼小组长',
-//   progress: {
-//     status: 'exception',
-//     value: 100,
-//   },
-// })
-
 export default {
   name: 'StandardList',
   components: {
@@ -150,10 +50,9 @@ export default {
     ...mapGetters(['teamMembers', 'teamAdminName', 'teamName']),
   },
   methods: {
-    add() {
+    addmember() {
       this.$dialog(
         TaskForm,
-        // component props
         {
           record: {},
           on: {
@@ -170,7 +69,7 @@ export default {
         },
         // modal props
         {
-          title: '新增',
+          title: '邀请成员',
           width: 700,
           centered: true,
           maskClosable: false,
@@ -225,7 +124,7 @@ export default {
         },
         // modal props
         {
-          title: '切换',
+          title: '修改团队',
           width: 400,
           height: 240,
           centered: true,
@@ -243,7 +142,10 @@ export default {
   height: 48px;
   line-height: 48px;
 }
-
+.ant-card {
+  width: 70%;
+  margin-left: 15%;
+}
 .list-content-item {
   color: rgba(0, 0, 0, 0.45);
   display: inline-block;

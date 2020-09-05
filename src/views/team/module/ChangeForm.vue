@@ -1,11 +1,9 @@
 <template>
   <a-form @submit="handleSubmit" :form="form">
-    <a-form-item label="切换团队" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-select v-decorator="['owner', { rules: [{ required: true, message: '请切换团队' }] }]">
-        <a-select-option :value="0">摸鱼小队</a-select-option>
-        <a-select-option :value="1">摸鱼中队</a-select-option>
-        <a-select-option :value="2">摸鱼大队</a-select-option>
-      </a-select>
+    <a-form-item label="修改团队" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-input
+        v-decorator="['title', { rules: [{ required: true, message: '请输入新增成员' }] }]"
+      />
     </a-form-item>
   </a-form>
 </template>
