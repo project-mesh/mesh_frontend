@@ -1,0 +1,48 @@
+# Node.js with Vue
+# Build a Node.js project that uses Vue.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    yarn install
+    yarn remove @vue/cli-plugin-eslint
+    yarn run build
+  displayName: 'yarn install and build'
+  
+- task: CopyFiles@2
+  inputs:
+    Contents: 'dist/**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  
+- task: CopyFilesOverSSH@0
+  inputs:
+    sshEndpoint: my_vps
+    sourceFolder: '$(Build.ArtifactStagingDirectory)'
+    targetFolder: '/home/rika/mesh_temp'
+    cleanTargetFolder: true
+    overwrite: false
+    
+- task: SSH@0
+  inputs:
+    sshEndpoint: my_vps
+    runOptions: 'commands'
+    commands: 'rm -rf /var/www/html/*'
+    
+- task: SSH@0
+  inputs:
+    sshEndpoint: my_vps
+    runOptions: 'commands'
+    commands: 'cp -rf /home/rika/mesh_temp/dist/* /var/www/html/;cp -f /home/rika/mesh_temp/.htaccess /var/www/html/'
