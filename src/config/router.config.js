@@ -131,7 +131,7 @@ export const asyncRouterMap = [
         path: '/repositories',
         name: 'teamRepo',
         // TODO: 修改成对应页面
-        component: () => import('@/views/repositories/repositories'),
+        component: () => import('@/views/repositories/Repositories'),
         meta: {
           title: '知识库',
           icon: 'form',

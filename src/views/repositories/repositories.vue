@@ -16,22 +16,47 @@
       <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
     </a-modal>
 
-    <a-table
+    <a-list
       size="large"
-      :columns="columns"
       :data-source="teamKBWithFormatedCreateTime"
-      :row-key="rowKey"
       :pagination="pagination(teamKBWithFormatedCreateTime)"
     >
-      <a slot="hyperlink" slot-scope="link, item" :href="`http://${link}`">{{ item.hyperlink }}</a>
-      <span slot="action" slot-scope="text, item, index">
-        <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">编辑</a>
-        <a-divider type="vertical" />
-        <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
-          <a :disabled="!isTeamAdminOrUploader(item) || deleteLoading[index]">删除</a>
-        </a-popconfirm>
-      </span>
-    </a-table>
+      <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
+        <a-list-item-meta :title="item.knowledgeName">
+          <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
+        </a-list-item-meta>
+        <div slot="actions">
+          <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">编辑</a>
+        </div>
+        <div slot="actions">
+          <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
+            <a :disabled="!isTeamAdminOrUploader(item) || deleteLoading[index]">删除</a>
+          </a-popconfirm>
+        </div>
+        <!-- <div slot="actions">
+          <a-dropdown>
+            <a-menu slot="overlay">
+              <a-menu-item><a @click="edit(item)">编辑</a></a-menu-item>
+              <a-menu-item><a>删除</a></a-menu-item>
+            </a-menu>
+            <a>
+              更多
+              <a-icon type="down" />
+            </a>
+          </a-dropdown>
+        </div> -->
+        <div class="list-content">
+          <div class="list-content-item">
+            <span>上传人</span>
+            <p>{{ item.uploaderName }}</p>
+          </div>
+          <div class="list-content-item">
+            <span>上传时间</span>
+            <p>{{ item.createTimeDisplay }}</p>
+          </div>
+        </div>
+      </a-list-item>
+    </a-list>
   </a-card>
 </template>
 
@@ -249,6 +274,13 @@ export default {
   width: 48px;
   height: 48px;
   line-height: 48px;
+}
+
+.list-content {
+  display: flex;
+  justify-content: space-between;
+  width: 25%;
+  margin: 0 50px;
 }
 
 .list-content-item {
