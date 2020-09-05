@@ -5,10 +5,10 @@
         <div class="header">
           <a href="/">
             <img src="~@/assets/logo.svg" class="logo" alt="logo" />
-            <span class="title">Ant Design</span>
+            <span class="title">Mesh</span>
           </a>
         </div>
-        <div class="desc">Mesh 是嘉定区最具影响力的 Web团队协作</div>
+        <div class="desc">Mesh 是嘉定区最具影响力的 Web 团队协作</div>
       </div>
 
       <router-view />
