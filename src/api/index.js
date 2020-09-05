@@ -169,6 +169,10 @@ const apiMap = {
     url: '/register',
     method: 'post',
   },
+  updateUserAvatar: {
+    url: '/user/avatar',
+    method: 'patch',
+  },
 }
 
 const sendRequest = (apiName, data) => {

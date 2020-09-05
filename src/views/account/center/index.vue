@@ -9,8 +9,7 @@
           :active-tab-key="noTitleKey"
           @tabChange="(key) => handleTabChange(key, 'noTitleKey')"
         >
-          <article-page v-if="noTitleKey === 'article'"></article-page>
-          <app-page v-else-if="noTitleKey === 'app'"></app-page>
+          <team-tasks-page v-if="noTitleKey === 'teamTasks'"></team-tasks-page>
         </a-card>
       </a-col>
     </a-row>
@@ -20,36 +19,26 @@
 <script>
 import { PageView, RouteView } from '@/layouts'
 import { mapGetters } from 'vuex'
-import { AppPage, ArticlePage } from './page'
+import { TeamTasksPage } from './page'
 
 export default {
   components: {
     RouteView,
     PageView,
-    AppPage,
-    ArticlePage,
+    TeamTasksPage,
   },
   data() {
     return {
-      tags: ['很有想法的', '专注设计', '辣~', '大长腿', '川妹子', '海纳百川'],
-
       tagInputVisible: false,
       tagInputValue: '',
 
-      teams: [],
-      teamSpinning: true,
-
       tabListNoTitle: [
         {
-          key: 'article',
-          tab: '公告(8)',
-        },
-        {
-          key: 'app',
+          key: 'teamTasks',
           tab: '任务(8)',
         },
       ],
-      noTitleKey: 'app',
+      noTitleKey: 'teamTasks',
     }
   },
   computed: {
@@ -59,45 +48,8 @@ export default {
     this.getTeams()
   },
   methods: {
-    getTeams() {
-      this.$http.get('/workplace/teams').then((res) => {
-        this.teams = res.result
-        this.teamSpinning = false
-      })
-    },
-
     handleTabChange(key, type) {
       this[type] = key
-    },
-
-    handleTagClose(removeTag) {
-      const tags = this.tags.filter((tag) => tag !== removeTag)
-      this.tags = tags
-    },
-
-    showTagInput() {
-      this.tagInputVisible = true
-      this.$nextTick(() => {
-        this.$refs.tagInput.focus()
-      })
-    },
-
-    handleInputChange(e) {
-      this.tagInputValue = e.target.value
-    },
-
-    handleTagInputConfirm() {
-      const inputValue = this.tagInputValue
-      let { tags } = this
-      if (inputValue && !tags.includes(inputValue)) {
-        tags = [...tags, inputValue]
-      }
-
-      Object.assign(this, {
-        tags,
-        tagInputVisible: false,
-        tagInputValue: '',
-      })
     },
   },
 }
