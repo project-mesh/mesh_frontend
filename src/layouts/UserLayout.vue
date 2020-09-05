@@ -8,9 +8,7 @@
             <span class="title">Ant Design</span>
           </a>
         </div>
-        <div class="desc">
-          Mesh 是嘉定区最具影响力的 Web团队协作
-        </div>
+        <div class="desc">Mesh 是嘉定区最具影响力的 Web团队协作</div>
       </div>
 
       <router-view />
@@ -21,9 +19,7 @@
           <a href="_self">隐私</a>
           <a href="_self">条款</a>
         </div>
-        <div class="copyright">
-          Copyright &copy; 2020 Tongji Mesh
-        </div>
+        <div class="copyright">Copyright &copy; 2020 Tongji Mesh</div>
       </div>
     </div>
   </div>

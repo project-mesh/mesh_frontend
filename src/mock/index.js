@@ -12,8 +12,8 @@ if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'tr
   require('./services/bulletin')
   require('./services/knowledgeBase')
   require('./services/notification')
-  require('./services/project')
   require('./services/task')
+  require('./services/project')
   require('./services/team')
   require('./services/user')
 

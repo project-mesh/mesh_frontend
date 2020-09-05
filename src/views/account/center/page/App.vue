@@ -1,50 +1,146 @@
 <template>
-  <div class="app-list">
-    <a-list
-      :grid="{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }">
-      <a-list-item slot="renderItem">
-      </a-list-item>
-    </a-list>
-
+  <div>
+    <a-card style="margin-top: 24px" :bordered="false" title="任务">
+      <a-list
+        size="large"
+        :pagination="{
+          showSizeChanger: true,
+          showQuickJumper: true,
+          pageSize: 5,
+          total: 50,
+        }"
+      >
+        <a-list-item :key="index" v-for="(item, index) in data">
+          <a-list-item-meta :description="item.description">
+            <a slot="title">{{ item.title }}</a>
+          </a-list-item-meta>
+          <div slot="actions">
+            <a @click="edit(item)">跳转</a>
+          </div>
+          <div slot="actions">
+            <a-dropdown>
+              <a-menu slot="overlay">
+                <a-menu-item><a>编辑</a></a-menu-item>
+                <a-menu-item><a>删除</a></a-menu-item>
+              </a-menu>
+              <a>
+                更多
+                <a-icon type="down" />
+              </a>
+            </a-dropdown>
+          </div>
+          <div class="list-content">
+            <div class="list-content-item">
+              <span>负责人</span>
+              <p>{{ item.owner }}</p>
+            </div>
+            <div class="list-content-item">
+              <span>截止时间</span>
+              <p>{{ item.startAt }}</p>
+            </div>
+            <div class="list-content-item">
+              <a-progress
+                :percent="item.progress.value"
+                :status="!item.progress.status ? null : item.progress.status"
+                style="width: 180px"
+              />
+            </div>
+          </div>
+        </a-list-item>
+      </a-list>
+    </a-card>
   </div>
 </template>
 
 <script>
-  export default {
-    name: 'Article',
-    components: {}
-  }
+const data = []
+data.push({
+  title: 'Alipay',
+  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+  description: '那是一种内在的东西， 他们到达不了，也无法触及的',
+  owner: '付晓晓',
+  startAt: '2018-07-26 22:44',
+  progress: {
+    value: 90,
+  },
+})
+data.push({
+  title: 'Angular',
+  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png',
+  description: '希望是一个好东西，也许是最好的，好东西是不会消亡的',
+  owner: '曲丽丽',
+  startAt: '2018-07-26 22:44',
+  progress: {
+    value: 54,
+  },
+})
+data.push({
+  title: 'Ant Design',
+  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/dURIMkkrRFpPgTuzkwnB.png',
+  description: '生命就像一盒巧克力，结果往往出人意料',
+  owner: '林东东',
+  startAt: '2018-07-26 22:44',
+  progress: {
+    value: 66,
+  },
+})
+data.push({
+  title: 'Ant Design Pro',
+  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png',
+  description: '城镇中有那么多的酒馆，她却偏偏走进了我的酒馆',
+  owner: '周星星',
+  startAt: '2018-07-26 22:44',
+  progress: {
+    value: 30,
+  },
+})
+data.push({
+  title: 'Bootstrap',
+  avatar: 'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png',
+  description: '那时候我只会想自己想要什么，从不想自己拥有什么',
+  owner: '吴加好',
+  startAt: '2018-07-26 22:44',
+  progress: {
+    status: 'exception',
+    value: 100,
+  },
+})
+/*const dataSource = []
+for (let i = 0; i < 11; i++) {
+  dataSource.push({
+    title: 'Alipay',
+    avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+    activeUser: 17,
+    newUser: 1700,
+  })
+}*/
+
+export default {
+  name: 'Article',
+  components: {},
+  data() {
+    return {
+      //dataSource,
+      data,
+    }
+  },
+}
 </script>
 
 <style lang="less" scoped>
-
-  .app-list {
-
-    .meta-cardInfo {
-      zoom: 1;
-      margin-top: 16px;
-
-      > div {
-        position: relative;
-        text-align: left;
-        float: left;
-        width: 50%;
-
-        p {
-          line-height: 32px;
-          font-size: 24px;
-          margin: 0;
-
-          &:first-child {
-            color: rgba(0, 0, 0, .45);
-            font-size: 12px;
-            line-height: 20px;
-            margin-bottom: 4px;
-          }
-        }
-
-      }
-    }
+.list-content-item {
+  color: rgba(0, 0, 0, 0.45);
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 14px;
+  margin-left: 40px;
+  span {
+    line-height: 20px;
   }
-
+  p {
+    margin-top: 4px;
+    margin-bottom: 0;
+    line-height: 22px;
+  }
+}
 </style>

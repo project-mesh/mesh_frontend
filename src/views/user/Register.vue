@@ -34,7 +34,7 @@
               :show-info="false"
               :stroke-color="passwordLevelColor"
             />
-            <div style="margin-top: 10px;">
+            <div style="margin-top: 10px">
               <span>请至少输入 6 个字符。请不要使用容易被猜到的密码。</span>
             </div>
           </div>
@@ -87,9 +87,7 @@
         >
           注册
         </a-button>
-        <router-link class="login" :to="{ name: 'login' }">
-          使用已有账户登录
-        </router-link>
+        <router-link class="login" :to="{ name: 'login' }">使用已有账户登录</router-link>
       </a-form-item>
     </a-form>
   </div>
@@ -114,7 +112,7 @@ const levelColor = {
   2: '#ff7e05',
   3: '#52c41a',
 }
-import { register } from '../../api/login'
+import sendRequest from '@/api'
 
 export default {
   name: 'Register',
@@ -198,7 +196,7 @@ export default {
         if (!err) {
           this.state.passwordLevelChecked = false
           console.log('will call register api by values:', values)
-          register({ ...values })
+          sendRequest('register', { ...values })
             .then((response) => {
               console.log('success register:', response)
               //TODO : store commit

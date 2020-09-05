@@ -5,11 +5,12 @@
       height="254"
       :data="data"
       :scale="scale"
-      :forceFit="true"
-      :padding="['auto', 'auto', '40', '50']">
+      :force-fit="true"
+      :padding="['auto', 'auto', '40', '50']"
+    >
       <v-tooltip />
       <v-axis />
-      <v-bar position="x*y"/>
+      <v-bar position="x*y" />
     </v-chart>
   </div>
 </template>
@@ -19,46 +20,48 @@ const tooltip = [
   'x*y',
   (x, y) => ({
     name: x,
-    value: y
-  })
+    value: y,
+  }),
 ]
-const scale = [{
-  dataKey: 'x',
-  title: '日期(天)',
-  alias: '日期(天)',
-  min: 2
-}, {
-  dataKey: 'y',
-  title: '流量(Gb)',
-  alias: '流量(Gb)',
-  min: 1
-}]
+const scale = [
+  {
+    dataKey: 'x',
+    title: '日期(天)',
+    alias: '日期(天)',
+    min: 2,
+  },
+  {
+    dataKey: 'y',
+    title: '流量(Gb)',
+    alias: '流量(Gb)',
+    min: 1,
+  },
+]
 
 export default {
   name: 'Bar',
   props: {
     title: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
-  data () {
+  data() {
     return {
       data: [],
       scale,
-      tooltip
+      tooltip,
     }
   },
-  created () {
+  created() {
     this.getMonthBar()
   },
   methods: {
-    getMonthBar () {
-      this.$http.get('/analysis/month-bar')
-        .then(res => {
-          this.data = res.result
-        })
-    }
-  }
+    getMonthBar() {
+      this.$http.get('/analysis/month-bar').then((res) => {
+        this.data = res.result
+      })
+    },
+  },
 }
 </script>

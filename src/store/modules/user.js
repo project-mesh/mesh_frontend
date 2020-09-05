@@ -1,17 +1,15 @@
 import storage from 'store'
-import { login, getInfo } from '@/api/login'
+import sendRequest from '@/api'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-
+import store from '@/store'
 const user = {
   state: {
     token: '',
     username: '',
-    id: '',
     role: '',
-    showMode: '',
-    profile: '',
-    teams: [],
+    avatar: '',
     preference: {},
+    teams: {},
   },
 
   mutations: {
@@ -21,24 +19,17 @@ const user = {
     SET_USERNAME: (state, username) => {
       state.username = username
     },
-    SET_ID: (state, id) => {
-      state.id = id
-    },
     SET_ROLE: (state, role) => {
       state.role = role
     },
-    SET_SHOWMODE: (state, showMode) => {
-      state.showMode = showMode
-    },
-    SET_PROFILE: (state, profile) => {
-      state.profile = profile
-    },
-    // 深拷贝问题，残留
-    SET_TEAMS: (state, teams) => {
-      state.teams = teams
+    SET_AVATAR: (state, avatar) => {
+      state.avatar = avatar
     },
     SET_PREFERENCE: (state, preference) => {
       state.preference = preference
+    },
+    SET_TEAMS: (state, teams) => {
+      state.teams = teams
     },
   },
 
@@ -46,28 +37,82 @@ const user = {
     // 登录
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        login(userInfo)
+        sendRequest('login', userInfo)
           .then((response) => {
-            console.log('resolve func begin')
-            console.log(response.data)
             // console.log(response.data.token)
             const token = response.data.token
             console.log('token: ', token)
             storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', token)
-            console.log('will resolve')
-            resolve()
+            commit('SET_USERNAME', response.data.username)
+            commit('SET_ROLE', response.data.role)
+            commit('SET_AVATAR', response.data.avatar)
+            commit('SET_TEAMS', response.data.teams)
+            commit('SET_PREFERENCE', response.data.preference)
+            // commit('SET_TEAMID', response.data.preference.preferenceTeam)
+            resolve(response)
           })
           .catch((error) => {
             reject(error)
           })
       })
     },
-    Logout({ commit, state }) {
+    Logout({ commit }) {
       commit('SET_TOKEN', '')
-      commit('SET_ROLES', [])
+      commit('SET_ROLE', '')
       storage.remove(ACCESS_TOKEN)
-      //
+    },
+    updatePreferenceColor({ commit, state }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceColor', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', {
+              ...state.preference,
+              preferenceColor: requestData.preferenceColor,
+            })
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceTeam({ commit, state }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceTeam', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', {
+              ...state.preference,
+              preferenceTeam: requestData.preferenceTeam,
+            })
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceShowMode({ commit, state }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceShowMode', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', {
+              ...state.preference,
+              preferenceShowMode: requestData.preferenceShowMode,
+            })
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
+    },
+    updatePreferenceLayout({ commit, state }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('preferenceLayout', requestData)
+          .then((res) => {
+            commit('SET_PREFERENCE', {
+              ...state.preference,
+              preferenceLayout: requestData.preferenceLayout,
+            })
+            resolve()
+          })
+          .catch((err) => reject(err))
+      })
     },
   },
 }
