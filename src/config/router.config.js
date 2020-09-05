@@ -1,6 +1,5 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout } from '@/layouts'
-import { bxAnaalyse } from '@/core/icons'
 
 const RouteView = {
   name: 'RouteView',
@@ -12,198 +11,256 @@ export const asyncRouterMap = [
     path: '/',
     name: 'index',
     component: BasicLayout,
-    meta: { title: 'menu.home' },
-    redirect: '/project',
+    meta: { title: 'home', keepAlive: true, permission: ['user'] },
+    redirect: '/project/list',
     children: [
-      // project
+      // 项目
       {
         path: '/project',
         name: 'project',
-        // redirect: '/dashboard/workplace',
+        redirect: '/project/list',
         component: RouteView,
         hideChildrenInMenu: true,
         meta: {
           title: '项目',
           keepAlive: true,
           icon: 'project',
-          // permission: ['dashboard'],
+          permission: ['user'],
         },
-        // children: [
-        //   {
-        //     path: '/dashboard/analysis/:pageNo([1-9]\\d*)?',
-        //     name: 'Analysis',
-        //     component: () => import('@/views/dashboard/Analysis'),
-        //     meta: {
-        //       title: 'menu.dashboard.analysis',
-        //       keepAlive: false,
-        //       permission: ['dashboard'],
-        //     },
-        //   },
-        //   // 外部链接
-        //   {
-        //     path: 'https://www.baidu.com/',
-        //     name: 'Monitor',
-        //     meta: { title: 'menu.dashboard.monitor', target: '_blank' },
-        //   },
-        //   {
-        //     path: '/dashboard/workplace',
-        //     name: 'Workplace',
-        //     component: () => import('@/views/dashboard/Workplace'),
-        //     meta: {
-        //       title: 'menu.dashboard.workplace',
-        //       keepAlive: true,
-        //       permission: ['dashboard'],
-        //     },
-        //   },
-        // ],
+        children: [
+          // 团队项目列表页，选择某个项目后跳转到对应项目详情页
+          {
+            path: '/project/list',
+            name: 'projectList',
+            // TODO: 修改成对应页面
+            // component: () => import('@/views/project/Project'),
+            component: () => import('@/views/project/ProjectList'),
+            meta: {
+              keepAlive: true,
+              title: '项目列表',
+              permission: ['user'],
+            },
+          },
+          // 项目详情页
+          {
+            path: '/project/detail',
+            name: 'projectDetail',
+            hideChildrenInMenu: true,
+            // redirect: '/project/detail/statistics',
+            // TODO: 修改成对应页面
+            component: () => import('@/views/project/ProjectDetail'),
+            meta: {
+              keepAlive: true,
+              title: '项目详情',
+              permission: ['user'],
+            },
+            children: [
+              // 任务列表
+              {
+                path: '/project/detail/task-list',
+                name: 'taskList',
+                // TODO: 修改成对应页面
+                component: () => import('@/views/exception/404'),
+                meta: {
+                  keepAlive: true,
+                  title: '任务列表',
+                  permission: ['user'],
+                },
+              },
+              // 任务看板
+              {
+                path: '/project/detail/task-board',
+                name: 'taskBoard',
+                // TODO: 修改成对应页面
+                component: () => import('@/views/exception/404'),
+                meta: {
+                  title: '任务看板',
+                  keepAlive: true,
+                  permission: ['user'],
+                },
+              },
+              // 统计
+              {
+                path: 'statistics',
+                name: 'statistics',
+                // TODO: 修改成对应页面
+                component: () => import('@/views/project/projectDetails/Statistics'),
+                meta: {
+                  title: '统计',
+                  keepAlive: true,
+                  icon: 'bar-chart',
+                  permission: ['user'],
+                },
+              },
+              // 项目知识库
+              {
+                path: '/project/detail/repositories',
+                name: 'projectRepo',
+                // TODO: 修改成对应页面
+                component: () =>
+                  import('@/views/project/projectDetails/projectRepositories/ProjectRepo'),
+                meta: {
+                  title: '项目知识库',
+                  keepAlive: true,
+                  permission: ['user'],
+                },
+              },
+              // 公告
+              {
+                path: '/project/detail/bulletins',
+                name: 'bulletins',
+                // TODO: 修改成对应页面
+                component: () => import('@/views/project/projectDetails/bulletins/Bulletins'),
+                meta: {
+                  title: '公告',
+                  keepAlive: true,
+                  permission: ['user'],
+                },
+              },
+            ],
+          },
+        ],
       },
 
-      // forms
+      // 团队知识库
       {
         path: '/repositories',
-        // redirect: '/form/base-form',
-        component: RouteView,
-        meta: { title: '知识库', icon: 'form', permission: ['form'] },
-        // children: [
-        //   {
-        //     path: '/form/base-form',
-        //     name: 'BaseForm',
-        //     component: () => import('@/views/form/basicForm'),
-        //     meta: { title: '基础表单', keepAlive: true, permission: ['form'] },
-        //   },
-        //   {
-        //     path: '/form/step-form',
-        //     name: 'StepForm',
-        //     component: () => import('@/views/form/stepForm/StepForm'),
-        //     meta: { title: '分步表单', keepAlive: true, permission: ['form'] },
-        //   },
-        //   {
-        //     path: '/form/advanced-form',
-        //     name: 'AdvanceForm',
-        //     component: () => import('@/views/form/advancedForm/AdvancedForm'),
-        //     meta: { title: '高级表单', keepAlive: true, permission: ['form'] },
-        //   },
-        // ],
+        name: 'teamRepo',
+        // TODO: 修改成对应页面
+        component: () => import('@/views/repositories/TeamRepo'),
+        meta: {
+          title: '知识库',
+          icon: 'form',
+          permission: ['user'],
+        },
       },
 
-      // list
+      // 日历页面
       {
         path: '/calendar',
         name: 'calendar',
-        component: RouteView,
-        // redirect: '/list/table-list',
-        meta: { title: '日历', icon: 'calendar', permission: ['table'] },
-        hideChildrenInMenu: true,
-        // children: [
-        //   {
-        //     path: '/list/table-list/:pageNo([1-9]\\d*)?',
-        //     name: 'TableListWrapper',
-        //     hideChildrenInMenu: true, // 强制显示 MenuItem 而不是 SubMenu
-        //     component: () => import('@/views/list/TableList'),
-        //     meta: { title: '查询表格', keepAlive: true, permission: ['table'] },
-        //   },
-        //   {
-        //     path: '/list/basic-list',
-        //     name: 'BasicList',
-        //     component: () => import('@/views/list/BasicList'),
-        //     meta: { title: '标准列表', keepAlive: true, permission: ['table'] },
-        //   },
-        //   {
-        //     path: '/list/card',
-        //     name: 'CardList',
-        //     component: () => import('@/views/list/CardList'),
-        //     meta: { title: '卡片列表', keepAlive: true, permission: ['table'] },
-        //   },
-        //   {
-        //     path: '/list/search',
-        //     name: 'SearchList',
-        //     component: () => import('@/views/list/search/SearchLayout'),
-        //     redirect: '/list/search/article',
-        //     meta: { title: '搜索列表', keepAlive: true, permission: ['table'] },
-        //     children: [
-        //       {
-        //         path: '/list/search/article',
-        //         name: 'SearchArticles',
-        //         component: () => import('../views/list/search/Article'),
-        //         meta: { title: '搜索列表（文章）', permission: ['table'] },
-        //       },
-        //       {
-        //         path: '/list/search/project',
-        //         name: 'SearchProjects',
-        //         component: () => import('../views/list/search/Projects'),
-        //         meta: { title: '搜索列表（项目）', permission: ['table'] },
-        //       },
-        //       {
-        //         path: '/list/search/application',
-        //         name: 'SearchApplications',
-        //         component: () => import('../views/list/search/Applications'),
-        //         meta: { title: '搜索列表（应用）', permission: ['table'] },
-        //       },
-        //     ],
-        //   },
-        // ],
+        component: () => import('@/views/calendar/BasicCalendar'),
+        meta: {
+          title: '日历',
+          icon: 'calendar',
+          keepAlive: true,
+          permission: ['user'],
+        },
       },
 
-      // profile
+      // 团队页面
       {
         path: '/members',
         name: 'members',
-        component: RouteView,
-        // redirect: '/members/basic',
-        meta: { title: '团队', icon: 'team', permission: ['profile'] },
-        hideChildrenInMenu: true,
-        // children: [
-        //   {
-        //     path: '/profile/basic',
-        //     name: 'ProfileBasic',
-        //     component: () => import('@/views/profile/basic'),
-        //     meta: { title: '基础详情页', permission: ['profile'] },
-        //   },
-        //   {
-        //     path: '/profile/advanced',
-        //     name: 'ProfileAdvanced',
-        //     component: () => import('@/views/profile/advanced/Advanced'),
-        //     meta: { title: '高级详情页', permission: ['profile'] },
-        //   },
-        // ],
+        // TODO: 修改成对应页面
+        component: () => import('@/views/team/Team'),
+        meta: {
+          title: '团队',
+          icon: 'team',
+          permission: ['user'],
+        },
       },
 
-      // result
+      // account
       {
-        path: '/me',
-        name: 'me',
+        path: '/account',
         component: RouteView,
-        // redirect: '/result/success',
-        hideChildrenInMenu: true,
+        redirect: '/account/center',
+        name: 'account',
         meta: {
-          title: '我的',
+          title: '个人页',
           icon: 'user',
-          permission: ['result'],
+          keepAlive: true,
+          permission: ['user'],
         },
-        // children: [
-        //   {
-        //     path: '/result/success',
-        //     name: 'ResultSuccess',
-        //     component: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
-        //     meta: {
-        //       title: '成功',
-        //       keepAlive: false,
-        //       hiddenHeaderContent: true,
-        //       permission: ['result'],
-        //     },
-        //   },
-        //   {
-        //     path: '/result/fail',
-        //     name: 'ResultFail',
-        //     component: () => import(/* webpackChunkName: "result" */ '@/views/result/Error'),
-        //     meta: {
-        //       title: '失败',
-        //       keepAlive: false,
-        //       hiddenHeaderContent: true,
-        //       permission: ['result'],
-        //     },
-        //   },
-        // ],
+        children: [
+          {
+            path: '/account/center',
+            name: 'center',
+            component: () => import('@/views/account/center'),
+            meta: { title: '个人中心', keepAlive: true, permission: ['user'] },
+          },
+          {
+            path: '/account/settings',
+            name: 'settings',
+            component: () => import('@/views/account/settings/Index'),
+            meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
+            redirect: '/account/settings/base',
+            hideChildrenInMenu: true,
+            children: [
+              {
+                path: '/account/settings/base',
+                name: 'BaseSettings',
+                component: () => import('@/views/account/settings/BaseSetting'),
+                meta: { title: '基本设置', hidden: true, permission: ['user'] },
+              },
+              {
+                path: '/account/settings/custom',
+                name: 'CustomSettings',
+                component: () => import('@/views/account/settings/Custom'),
+                meta: {
+                  title: '个性化设置',
+                  hidden: true,
+                  keepAlive: true,
+                  permission: ['user'],
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: '/',
+    name: 'index',
+    component: BasicLayout,
+    meta: { title: 'home', keepAlive: true, permission: ['admin'] },
+    redirect: '/manage',
+    children: [
+      {
+        path: '/manage',
+        name: 'manage',
+        // TODO: 修改成对应页面
+        component: () => import('@/views/exception/404'),
+        meta: {
+          title: '管理',
+          icon: 'tool',
+          keepAlive: true,
+          permission: ['admin'],
+        },
+      },
+      {
+        path: '/account',
+        component: () => import('@/views/account/settings/Index'),
+        redirect: '/account/base',
+        hideChildrenInMenu: true,
+        name: 'account',
+        meta: {
+          title: '个人页',
+          icon: 'user',
+          keepAlive: true,
+          permission: ['admin'],
+        },
+        children: [
+          {
+            path: '/account/base',
+            name: 'baseSettings',
+            component: () => import('@/views/account/settings/BaseSetting'),
+            meta: { title: '基本设置', hidden: true, permission: ['admin'] },
+          },
+          {
+            path: '/account/custom',
+            name: 'customSettings',
+            component: () => import('@/views/account/settings/Custom'),
+            meta: {
+              title: '个性化设置',
+              hidden: true,
+              keepAlive: true,
+              permission: ['admin'],
+            },
+          },
+        ],
       },
     ],
   },
@@ -253,3 +310,21 @@ export const constantRouterMap = [
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
   },
 ]
+
+// /**
+//  * 账户信息路由
+//  * @type { *[] }
+//  */
+// export const accountRouterMap = [
+//   // 我的页面
+//   {
+//     path: '/me',
+//     name: 'me',
+//     // TODO: 修改成对应页面
+//     component: () => import('@/views/account/settings/index'),
+//     meta: {
+//       title: '我的',
+//       icon: 'user',
+//     },
+//   },
+// ]

@@ -6,7 +6,6 @@ const getNotifications = (queryParams) => {
   const resNotifications = notifications.filter(
     (notification) => notification.principal === queryParams.username
   )
-
   return utils.builder({ notifications: resNotifications })
 }
 

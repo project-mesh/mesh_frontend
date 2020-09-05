@@ -1,12 +1,8 @@
 <template>
   <a-dropdown v-if="currentUser && currentUser.name" placement="bottomRight">
     <span class="ant-pro-account-avatar">
-      <a-avatar
-        size="small"
-        src="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png"
-        class="antd-pro-global-header-index-avatar"
-      />
-      <span>{{ currentUser.name }}</span>
+      <a-avatar size="small" :src="avatar" class="antd-pro-global-header-index-avatar" />
+      <span>{{ username }}</span>
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
@@ -33,6 +29,7 @@
 
 <script>
 import { Modal } from 'ant-design-vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'AvatarDropdown',
@@ -46,24 +43,23 @@ export default {
       default: true,
     },
   },
+  computed: {
+    ...mapGetters(['username', 'avatar']),
+  },
   methods: {
     handleToCenter() {
-      this.$router.push({ path: '/account/center' })
+      this.$router.push({ path: '/me' })
     },
     handleToSettings() {
-      this.$router.push({ path: '/account/settings' })
+      this.$router.push({ path: '/me' })
     },
-    handleLogout(e) {
+    handleLogout() {
       Modal.confirm({
-        title: this.$t('layouts.usermenu.dialog.title'),
-        content: this.$t('layouts.usermenu.dialog.content'),
-        onOk: () =>
-          // return new Promise((resolve, reject) => {
-          //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
-          // }).catch(() => console.log('Oops errors!'))
-          this.$store.dispatch('Logout').then(() => {
-            this.$router.push({ name: 'login' })
-          }),
+        title: '您确定要退出吗？',
+        onOk: () => {
+          this.$store.dispatch('Logout')
+          this.$router.push({ name: 'login' })
+        },
         onCancel() {},
       })
     },

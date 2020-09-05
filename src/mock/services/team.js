@@ -1,31 +1,32 @@
 import Mock from 'mockjs2'
 import * as utils from '../utils'
-import { teams, teamMembers, users } from './data'
+import { teams, teamMembers, users, projects } from './data'
 
 const getTeams = (queryParams) => {
-  let resTeams = utils.deepCopy(teams)
-  resTeams = resTeams.filter(
-    (team) =>
-      teamMembers.findIndex(
-        (member) => member.username === queryParams.username && member.teamId === team.teamId
-      ) !== -1
-  )
+  const teamsCopy = utils.deepCopy(teams)
 
-  resTeams.forEach((team) => {
-    team.members = []
-    teamMembers
-      .filter((member) => member.teamId === team.teamId)
-      .forEach((member) =>
-        team.members.push({
-          username: member.username,
-          profile: users.find((user) => user.username === member.username).profile,
-        })
-      )
-  })
+  const team = teamsCopy.find((team) => team.teamId === queryParams.teamId)
 
-  console.log('resTeams: ', resTeams)
+  if (!team) return utils.builder({}, 0, false, '无此团队')
 
-  return utils.builder({ teams: resTeams })
+  team.members = []
+
+  teamMembers
+    .filter((teamMem) => teamMem.teamId === queryParams.teamId)
+    .forEach((teamMem) => {
+      team.members.push({
+        ...teamMem,
+        avatar: users.find((user) => user.username === teamMem.username).avatar,
+      })
+    })
+
+  team.teamProjects = []
+
+  projects
+    .filter((project) => project.teamId === queryParams.teamId)
+    .forEach((project) => team.teamProjects.push(project))
+
+  return utils.builder({ team })
 }
 
 Mock.mock(/\/team/, 'get', utils.functionFactory(getTeams))

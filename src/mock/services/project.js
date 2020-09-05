@@ -3,22 +3,45 @@ import { projects, projectMembers, users } from './data'
 import Mock from 'mockjs2'
 
 const getProjects = (queryParams) => {
-  let resProjects = utils.deepCopy(projects)
-  resProjects = resProjects.filter((project) => project.teamId === queryParams.teamId)
+  let projectsCopy = utils.deepCopy(projects)
+  const project = projectsCopy.find((project) => project.projectId === queryParams.projectId)
 
-  resProjects.forEach((project) => {
-    project.members = []
-    projectMembers
-      .filter((member) => member.projectId === project.projectId)
-      .forEach((member) =>
-        project.members.push({
-          username: member.username,
-          profile: users.find((user) => user.username === member.username).profile,
-        })
-      )
+  if (!project) return utils.builder({}, 0, false, '无此项目')
+
+  project.members = []
+
+  projectMembers
+    .filter((proMem) => proMem.projectId === queryParams.projectId)
+    .forEach((proMem) => {
+      project.members.push({
+        ...proMem,
+        avatar: users.find((user) => user.username === proMem.username).avatar,
+      })
+    })
+
+  return utils.builder({ project })
+}
+
+const createProject = (data) => {
+  const newProject = Mock.mock({
+    teamId: '',
+    projectId: '@id',
+    projectName: '@name',
+    projectLogo: '@image',
+    description: '@paragraph',
+    adminName: '',
+    isPublic: 'true',
+    createTime: Date.now(),
   })
 
-  return utils.builder({ teamProjects: resProjects })
+  Object.keys(data).forEach((key) => {
+    if (key in newProject) newProject[key] = data[key]
+  })
+
+  projects.push(newProject)
+
+  return utils.builder({ project: newProject })
 }
 
 Mock.mock(/\/project/, 'get', utils.functionFactory(getProjects))
+Mock.mock(/\/project/, 'post', utils.functionFactory(createProject))
