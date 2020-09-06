@@ -12,23 +12,23 @@ const whiteList = ['login', 'register', 'registerResult'] // no redirect whiteli
 const loginRoutePath = '/user/login'
 const defaultRoutePath = '/project/list'
 
-var menuQueryMap = {
-  list: () => ({
-    teamId: store.getters.teamId,
-  }),
-  me: () => ({
-    teamId: store.getters.teamId,
-  }),
-  repositories: () => ({
-    teamId: store.getters.teamId,
-  }),
-  calendar: () => ({
-    teamId: store.getters.teamId,
-  }),
-  members: () => ({
-    teamId: store.getters.teamId,
-  }),
-}
+// var menuQueryMap = {
+//   list: () => ({
+//     teamId: store.getters.teamId,
+//   }),
+//   me: () => ({
+//     teamId: store.getters.teamId,
+//   }),
+//   repositories: () => ({
+//     teamId: store.getters.teamId,
+//   }),
+//   calendar: () => ({
+//     teamId: store.getters.teamId,
+//   }),
+//   members: () => ({
+//     teamId: store.getters.teamId,
+//   }),
+// }
 
 function handle(to, from, next) {
   if (to.path === loginRoutePath) {
@@ -42,21 +42,19 @@ function handle(to, from, next) {
       // alert('hello')
       store.dispatch('GenerateRoutes', role)
       router.addRoutes(store.getters.addRouters)
-      console.log('routers: ', store.getters.addRouters)
-      if (!to.query || !to.query.teamId)
-        next({ ...to, query: { teamId: store.getters.preference.preferenceTeam }, replace: true })
-      else next({ ...to, replace: true })
+      next({ ...to })
     } else {
-      let menuItem = to.path.split('/').pop()
-      // console.log('打印：menuItem: ')
-      console.log('看这里！！！！！', to)
-      if (menuItem in menuQueryMap && Object.keys(to.query).length === 0) {
-        let query = menuQueryMap[menuItem]()
-        // tryJump(to, next, { ...to, query })
-        next({ ...to, query })
-      } else {
-        next()
-      }
+      // let menuItem = to.path.split('/').pop()
+      // // console.log('打印：menuItem: ')
+      // console.log('看这里！！！！！', to)
+      // if (menuItem in menuQueryMap && Object.keys(to.query).length === 0) {
+      //   let query = menuQueryMap[menuItem]()
+      //   // tryJump(to, next, { ...to, query })
+      //   next({ ...to, query })
+      // } else {
+      //   next()
+      // }
+      next()
     }
   }
 }

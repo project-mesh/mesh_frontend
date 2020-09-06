@@ -67,6 +67,7 @@ import { formatDateByPattern } from '@/utils/dateUtil'
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
+import _ from 'lodash'
 
 const columns = [
   {
@@ -122,7 +123,7 @@ export default {
   computed: {
     ...mapGetters(['teamKB', 'username', 'teamId', 'teamAdminName', 'teamMembers']),
     teamKBWithFormatedCreateTime() {
-      const formatedData = JSON.parse(JSON.stringify(this.teamKB))
+      const formatedData = _.cloneDeep(this.teamKB)
       formatedData.forEach((knowledge) => {
         knowledge.createTimeDisplay = formatDateByPattern(
           new Date(Number(knowledge.createTime)),
@@ -149,9 +150,10 @@ export default {
       return knowledge.knowledgeId
     },
     getAvatar(username) {
-      const avatar = this.teamMembers.find((member) => member.username === username).avatar
-      console.log('avatar: ', avatar)
-      return this.teamMembers.find((member) => member.username === username).avatar
+      const user = this.teamMembers.find((member) => member.username === username)
+      console.log('TeamMember: ', user)
+      // return this.teamMembers.find((member) => member.username === username).avatar
+      return user ? '' : user.avatar
     },
     add() {
       this.modalTitle = '新建'
