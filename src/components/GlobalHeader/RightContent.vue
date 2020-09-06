@@ -7,12 +7,12 @@
       </a-badge>
     </router-link>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
-    <select-lang :class="prefixCls" />
+    <!-- <select-lang :class="prefixCls" /> -->
   </div>
 </template>
 
 <script>
-import SelectLang from '@/components/SelectLang'
+// import SelectLang from '@/components/SelectLang'
 import AvatarDropdown from './AvatarDropdown'
 import TeamSelector from './TeamSelector'
 import { mapGetters } from 'vuex'
@@ -21,7 +21,7 @@ export default {
   name: 'RightContent',
   components: {
     AvatarDropdown,
-    SelectLang,
+    // SelectLang,
     TeamSelector,
   },
   props: {
