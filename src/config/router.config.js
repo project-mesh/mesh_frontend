@@ -222,7 +222,7 @@ export const asyncRouterMap = [
         path: '/management',
         name: 'management',
         // TODO: 修改成对应页面
-        component: () => import('@/views/management/index'),
+        component: () => import('@/views/management/UserManagement'),
         meta: {
           title: '管理',
           icon: 'tool',
