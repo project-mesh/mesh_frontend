@@ -216,13 +216,13 @@ export const asyncRouterMap = [
     name: 'index',
     component: BasicLayout,
     meta: { title: 'home', keepAlive: true, permission: ['admin'] },
-    redirect: '/manage',
+    redirect: '/management',
     children: [
       {
-        path: '/manage',
-        name: 'manage',
+        path: '/management',
+        name: 'management',
         // TODO: 修改成对应页面
-        component: () => import('@/views/exception/404'),
+        component: () => import('@/views/management/index'),
         meta: {
           title: '管理',
           icon: 'tool',
