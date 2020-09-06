@@ -1,7 +1,6 @@
 import Mock from 'mockjs2'
 import md5 from 'md5'
 import themePluginConfig from '../../../config/themePluginConfig'
-const fs = require('fs')
 
 const random = Mock.Random
 
@@ -156,7 +155,7 @@ const users = [
       preferenceShowMode: 'card',
       preferenceTeam: '数据库',
       preferenceColor: '#1890ff',
-      preferenceLayout: 'topmenu',
+      preferenceLayout: 'sidemenu',
     },
     role: 'user',
   },
@@ -169,7 +168,7 @@ const users = [
       preferenceShowMode: 'card',
       preferenceTeam: '数据库',
       preferenceColor: '#1890ff',
-      preferenceLayout: 'topmenu',
+      preferenceLayout: 'sidemenu',
     },
     role: 'admin',
   },
@@ -361,7 +360,7 @@ for (let i = 0; i < 500; ++i) {
 }
 
 for (let i = 0; i < projects.length; ++i) {
-  for (let j = 0; j < 10; ++j) {
+  for (let j = 0; j < 15; ++j) {
     bulletins.push(
       Mock.mock({
         projectId: projects[i].projectId,
@@ -373,8 +372,6 @@ for (let i = 0; i < projects.length; ++i) {
     )
   }
 }
-
-console.log(tasks)
 
 export {
   bulletins,

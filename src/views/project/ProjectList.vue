@@ -17,7 +17,7 @@
       </a-radio-group>
       <div class="search-and-create">
         <div class="search-box">
-          <a-input-search placeholder="输入要查找的项目" enter-button @search="onSearch" />
+          <a-input-search placeholder="输入要查找的项目" v-model="filterText" enter-button />
         </div>
         <a-button
           :disabled="username !== teamAdminName"
@@ -91,9 +91,14 @@
       </a-form>
     </a-modal>
     <div v-if="listVisible" class="list-view">
-      <a-list item-layout="horizontal" :data-source="teamProjects">
+      <a-list item-layout="horizontal" :data-source="filteredProjects">
         <a-list-item slot="renderItem" slot-scope="item">
-          <img slot="extra" width="100" alt="logo" :src="item.projectLogo" />
+          <img
+            slot="extra"
+            style="width: 100px; height: 100px; object-fit: cover"
+            alt="logo"
+            :src="item.projectLogo"
+          />
           <a-list-item-meta>
             <div slot="title">{{ item.projectName }}</div>
             <div slot="description">{{ item.adminName }}</div>
@@ -107,7 +112,7 @@
         <a-list
           type="flex"
           :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4 }"
-          :data-source="teamProjects"
+          :data-source="filteredProjects"
           class="card-row"
         >
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
@@ -155,7 +160,14 @@ function getBase64(img, callback) {
 export default {
   name: 'Project',
   mixins: [teamMixin],
-  computed: mapGetters(['teamProjects', 'preference', 'username', 'teamAdminName', 'teamMembers']),
+  computed: {
+    ...mapGetters(['teamProjects', 'preference', 'username', 'teamAdminName', 'teamMembers']),
+    filteredProjects() {
+      return this.teamProjects.filter((project) =>
+        project.projectName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
+      )
+    },
+  },
   watch: {
     ['$route.query.teamId']() {
       this.loadTeamInfo()
@@ -242,6 +254,7 @@ export default {
       previewImage: '',
       fileList: [],
       form: this.$form.createForm(this),
+      filterText: '',
     }
   },
   mounted: function () {

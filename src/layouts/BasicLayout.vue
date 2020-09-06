@@ -8,7 +8,7 @@
     :handle-media-query="handleMediaQuery"
     :handle-collapse="handleCollapse"
     :logo="logoRender"
-    :i18n-render="i18nRender"
+    :content-width="settings.contentWidth ? 'Fluid' : 'Fixed'"
     v-bind="settings"
   >
     <setting-drawer :settings="settings" @change="handleSettingChange" />
@@ -27,7 +27,8 @@
 </template>
 
 <script>
-import { SettingDrawer, updateTheme } from '@ant-design-vue/pro-layout'
+import { updateTheme } from '@ant-design-vue/pro-layout'
+import SettingDrawer from '@/components/SettingDrawer'
 import { i18nRender } from '@/locales'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
@@ -61,7 +62,7 @@ export default {
         layout: defaultSettings.layout, // 'sidemenu', 'topmenu'
         // 定宽: true / 流式: false
         contentWidth:
-          defaultSettings.layout === 'sidemenu' ? false : defaultSettings.contentWidth === 'Fixed',
+          defaultSettings.layout === 'sidemenu' ? true : defaultSettings.contentWidth === 'Fixed',
         // 主题 'dark' | 'light'
         theme: defaultSettings.navTheme,
         // 主色调
@@ -113,11 +114,7 @@ export default {
       this.settings.primaryColor = this.preference.preferenceColor
     if (this.preference.preferenceLayout) this.settings.layout = this.preference.preferenceLayout
 
-    if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
-      // first update color
-      // TIPS: THEME COLOR HANDLER!! PLEASE CHECK THAT!!
-      updateTheme(this.settings.primaryColor)
-    }
+    updateTheme(this.settings.primaryColor)
   },
   methods: {
     ...mapActions(['updatePreferenceColor', 'updatePreferenceLayout']),
@@ -139,7 +136,6 @@ export default {
       this.collapsed = val
     },
     handleSettingChange({ type, value }) {
-      console.log('type', type, value)
       type && (this.settings[type] = value)
       switch (type) {
         case 'contentWidth':

@@ -74,8 +74,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
+
 export default {
   name: 'Login',
   data() {
@@ -93,6 +94,9 @@ export default {
       },
     }
   },
+  computed: {
+    ...mapGetters(['role']),
+  },
   methods: {
     ...mapActions(['Login']),
     handleSubmit(e) {
@@ -102,9 +106,10 @@ export default {
           console.log('Received values of form: ', values)
           this.state.loginBtn = true
           this.Login(values)
-            .then((response) => {
-              console.log('success,boy', response)
-              this.$router.push({ path: '/' })
+            .then((res) => {
+              console.log('success,boy', res)
+              if (this.role === 'user') this.$router.push({ name: 'projectList' })
+              else this.$router.push({ name: 'manage' })
               // 延迟 1 秒显示欢迎信息
               setTimeout(() => {
                 this.$notification.success({

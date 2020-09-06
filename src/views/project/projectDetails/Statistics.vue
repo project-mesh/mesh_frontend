@@ -1,19 +1,18 @@
 <template>
-  <a-layout>
+  <a-layout style="background: #fff">
     <a-layout-content style="margin: 0 16px">
-      <a-breadcrumb style="margin: 16px 0">
+      <!-- <a-breadcrumb style="margin: 16px 0">
         <a-breadcrumb-item>
           <router-link :to="{ name: 'projectList', query: { teamId: $route.query.teamId } }">
             项目
           </router-link>
         </a-breadcrumb-item>
         <a-breadcrumb-item>统计</a-breadcrumb-item>
-      </a-breadcrumb>
+      </a-breadcrumb> -->
       <a-row :gutter="24" class="row">
         <a-col :sm="24" :md="10" class="col">
           <a-card
             class="antd-pro-pages-dashboard-analysis-salesCard"
-            :bordered="false"
             title="任务按执行者分布"
             :style="{ height: '100%' }"
           >
@@ -48,7 +47,6 @@
         <a-col :sm="24" :md="10" class="col">
           <a-card
             class="antd-pro-pages-dashboard-analysis-salesCard"
-            :bordered="false"
             title="任务完成情况"
             :style="{ height: '100%' }"
           >
@@ -74,7 +72,6 @@
         <a-col :sm="24" :md="10" class="col">
           <a-card
             class="antd-pro-pages-dashboard-analysis-salesCard"
-            :bordered="false"
             title="概览报表"
             :style="{ height: '100%' }"
           >
@@ -87,7 +84,6 @@
 </template>
 
 <script>
-import { values } from 'mockjs2'
 import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
 import { mapGetters } from 'vuex'
@@ -201,6 +197,9 @@ export default {
       console.log('显示折线图')
       this.finishHistogramVisible = false
     },
+  },
+  mounted() {
+    this.$emit('load', 'statistics')
   },
 }
 </script>

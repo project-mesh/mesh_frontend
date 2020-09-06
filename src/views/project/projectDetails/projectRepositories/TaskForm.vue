@@ -22,16 +22,11 @@
         ]"
       />
     </a-form-item>
-    <!-- <a-form-item label="简介" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-textarea v-decorator="['description']"></a-textarea>
-    </a-form-item> -->
   </a-form>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-
-// const fields = ['title', 'startAt', 'owner', 'description']
 
 export default {
   name: 'TaskForm',
@@ -55,32 +50,28 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username', 'teamId']),
+    ...mapGetters(['username', 'projectId']),
     isCreateForm() {
       return Object.keys(this.record).length === 0
     },
     requestName() {
-      return this.isCreateForm ? 'createTeamKB' : 'updateTeamKB'
+      return this.isCreateForm ? 'createProjectKB' : 'updateProjectKB'
     },
   },
-  // mounted() {
-  //   this.record && this.form.setFieldsValue(pick(this.record, fields))
-  // },
   methods: {
-    ...mapActions(['createTeamKB', 'updateTeamKB']),
+    ...mapActions(['createProjectKB', 'updateProjectKB']),
     handleSubmit() {
       return new Promise((resolve, reject) => {
         const {
           form: { validateFields },
         } = this
-        // this.visible = true
         validateFields((errors, values) => {
           if (!errors) {
             console.log('values', values)
 
             const requestData = {
               username: this.username,
-              teamId: this.teamId,
+              projectId: this.projectId,
               knowledgeName: values.title,
               hyperlink: values.link,
             }
@@ -92,7 +83,7 @@ export default {
             reject(errors)
           }
         })
-      }).catch((error) => console.log('error occured in TaskForm: ', error))
+      })
     },
   },
 }

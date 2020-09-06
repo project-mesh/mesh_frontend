@@ -60,43 +60,56 @@ const user = {
     Logout({ commit }) {
       commit('SET_TOKEN', '')
       commit('SET_ROLE', '')
+      commit('SET_ROUTERS', [], { root: true })
       storage.remove(ACCESS_TOKEN)
     },
-    updatePreferenceColor({ commit }, requestData) {
+    updatePreferenceColor({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('preferenceColor', requestData)
           .then((res) => {
-            commit('SET_PREFERENCE', res.data.preference)
+            commit('SET_PREFERENCE', {
+              ...state.preference,
+              preferenceColor: requestData.preferenceColor,
+            })
             resolve()
           })
           .catch((err) => reject(err))
       })
     },
-    updatePreferenceTeam({ commit }, requestData) {
+    updatePreferenceTeam({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('preferenceTeam', requestData)
           .then((res) => {
-            commit('SET_PREFERENCE', res.data.preference)
+            commit('SET_PREFERENCE', {
+              ...state.preference,
+              preferenceTeam: requestData.preferenceTeam,
+            })
             resolve()
           })
           .catch((err) => reject(err))
       })
     },
-    updatePreferenceShowMode({ commit }, requestData) {
+    updatePreferenceShowMode({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('preferenceShowMode', requestData)
           .then((res) => {
-            commit('SET_PREFERENCE', res.data.preference)
+            commit('SET_PREFERENCE', {
+              ...state.preference,
+              preferenceShowMode: requestData.preferenceShowMode,
+            })
             resolve()
           })
           .catch((err) => reject(err))
       })
     },
-    updatePreferenceLayout({ commit }, requestData) {
+    updatePreferenceLayout({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('preferenceLayout', requestData)
           .then((res) => {
-            commit('SET_PREFERENCE', res.data.preference)
+            commit('SET_PREFERENCE', {
+              ...state.preference,
+              preferenceLayout: requestData.preferenceLayout,
+            })
             resolve()
           })
           .catch((err) => reject(err))

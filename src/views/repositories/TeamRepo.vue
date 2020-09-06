@@ -1,7 +1,10 @@
 <template>
   <a-card style="margin-top: 24px" :bordered="false" title="知识库" :loading="cardLoading">
-    <div class="operate">
-      <a-button type="dashed" icon="plus" block @click="add">添加</a-button>
+    <div class="operate" slot="extra">
+      <div class="search-box">
+        <a-input-search v-model="filterText" placeholder="输入要查找的条目" />
+      </div>
+      <a-button type="primary" icon="plus" @click="add">添加</a-button>
     </div>
 
     <a-modal
@@ -16,29 +19,18 @@
       <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
     </a-modal>
 
-    <a-list
-      size="large"
-      :data-source="teamKBWithFormatedCreateTime"
-      :pagination="{
-        showSizeChanger: true,
-        showQuickJumper: true,
-        pageSize: pageSize,
-        total: teamKBWithFormatedCreateTime.length,
-        current: currentPage,
-        onChange: handlePageChange,
-        onShowSizeChange: handlePageSizeChange,
-      }"
-    >
+    <a-list size="large" :data-source="filteredTeamKB" :pagination="pagination(filteredTeamKB)">
       <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
         <a-list-item-meta :title="item.knowledgeName">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
+          <a-avatar slot="avatar" :src="getAvatar(item.uploaderName)" />
         </a-list-item-meta>
         <div slot="actions">
           <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">编辑</a>
         </div>
         <div slot="actions">
           <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
-            <a :disabled="!isTeamAdminOrUploader(item) || deleteLoading[index]">删除</a>
+            <a :disabled="!isTeamAdminOrUploader(item)">删除</a>
           </a-popconfirm>
         </div>
         <!-- <div slot="actions">
@@ -70,81 +62,65 @@
 
 <script>
 // 演示如何使用 this.$dialog 封装 modal 组件
-import TaskForm from '@/views/repositories/TaskForm'
+import TaskForm from './TaskForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
+import paginationMixin from '@/utils/mixins/paginationMixin'
 
-/*
-{
-  "error_code": 0,
-  "data": {
-    "isSuccess": true,
-    "msg": "",
-    "knowledgeBase": [
-      {
-        "knowledgeId": "asgsdfvgdxzvzsd",
-        "knowledgeName": "项目地址",
-        "hyperlink": "xxxx",
-        "uploaderName": "王新宇",
-        "createTime": "1595215568570"
-      }
-    ]
-  }
-}
-*/
-
-// const data = []
-// data.push({
-//   knowledgeName: '谷歌',
-//   hyperlink: 'www.google.com',
-//   uploaderName: '付晓晓',
-//   createTime: '1595215568570',
-// })
-// data.push({
-//   knowledgeName: '百度',
-//   hyperlink: 'www.baidu.com',
-//   uploaderName: '付晓晓',
-//   createTime: '1595215561593',
-// })
-// data.push({
-//   knowledgeName: '必应',
-//   hyperlink: 'www.bing.com',
-//   uploaderName: '付晓晓',
-//   createTime: '1595215561593',
-// })
-// data.push({
-//   knowledgeName: '百度',
-//   hyperlink: 'www.baidu.com',
-//   uploaderName: '付晓晓',
-//   createTime: '1595215561593',
-// })
-
-// for (const item of data) {
-//   const fullDate = new Date(Number(item.createTime))
-//   item.createTimeDisplay = formatDateByPattern(fullDate, 'yyyy-MM-dd hh:mm')
-// }
+const columns = [
+  {
+    title: '标题',
+    dataIndex: 'knowledgeName',
+    key: 'knowledgeName',
+    ellipsis: true,
+  },
+  {
+    title: '地址',
+    dataIndex: 'hyperlink',
+    key: 'hyperlink',
+    ellipsis: true,
+    scopedSlots: { customRender: 'hyperlink' },
+  },
+  {
+    title: '上传人',
+    dataIndex: 'uploaderName',
+    key: 'uploaderName',
+    ellipsis: true,
+  },
+  {
+    title: '上传时间',
+    dataIndex: 'createTimeDisplay',
+    key: 'createTimeDisplay',
+    ellipsis: true,
+  },
+  {
+    title: '操作',
+    key: 'action',
+    scopedSlots: { customRender: 'action' },
+    align: 'right',
+  },
+]
 
 export default {
   name: 'Repositories',
   components: { TaskForm },
-  mixins: [teamMixin],
+  mixins: [teamMixin, paginationMixin],
   data() {
     return {
       // data,
+      columns,
       status: 'all',
       selectedItem: {},
       visible: false,
       confirmLoading: false,
       modalTitle: '新建',
-      pageSize: 10,
-      currentPage: 1,
-      deleteLoading: [],
       cardLoading: false,
+      filterText: '',
     }
   },
   computed: {
-    ...mapGetters(['teamKB', 'username', 'teamId', 'teamAdminName']),
+    ...mapGetters(['teamKB', 'username', 'teamId', 'teamAdminName', 'teamMembers']),
     teamKBWithFormatedCreateTime() {
       const formatedData = JSON.parse(JSON.stringify(this.teamKB))
       formatedData.forEach((knowledge) => {
@@ -156,11 +132,26 @@ export default {
 
       return formatedData
     },
+    filteredTeamKB() {
+      return this.teamKBWithFormatedCreateTime.filter(
+        (knowledge) =>
+          knowledge.knowledgeName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase()) ||
+          knowledge.hyperlink.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
+      )
+    },
   },
   methods: {
     ...mapActions(['queryTeamKB', 'queryTeam', 'deleteTeamKB']),
     isTeamAdminOrUploader(knowledge) {
       return this.username === this.teamAdminName || this.username === knowledge.uploaderName
+    },
+    rowKey(knowledge) {
+      return knowledge.knowledgeId
+    },
+    getAvatar(username) {
+      const avatar = this.teamMembers.find((member) => member.username === username).avatar
+      console.log('avatar: ', avatar)
+      return this.teamMembers.find((member) => member.username === username).avatar
     },
     add() {
       this.modalTitle = '新建'
@@ -172,25 +163,14 @@ export default {
       this.selectedItem = record
       this.visible = true
     },
-    handlePageChange(current) {
-      this.currentPage = current
-    },
-    handlePageSizeChange(current, pageSize) {
-      this.pageSize = pageSize
-    },
     handleOk() {
       this.confirmLoading = true
       this.$refs.taskForm
         .handleSubmit()
-        .then((response) => {
-          this.visible = false
-          this.confirmLoading = false
-
-          if (!this.selectedItem.knowledgeId) {
-            this.deleteLoading.push(false)
-          }
+        .catch((err) => {
+          console.error('In teamRepo, update team KB failed, ', err)
         })
-        .catch((error) => {
+        .finally(() => {
           this.visible = false
           this.confirmLoading = false
         })
@@ -199,58 +179,48 @@ export default {
       this.visible = false
     },
     deleteKB(knowledge, index) {
-      this.$set(this.deleteLoading, index, true)
       this.deleteTeamKB({
         username: this.username,
         teamId: this.teamId,
         knowledgeId: knowledge.knowledgeId,
       })
-        .then((response) => {
+        .then((res) => {
           this.$notification.success({
             message: '成功删除团队知识库',
           })
-          this.deleteLoading.splice(index, 1)
         })
-        .catch((error) =>
-          this.$notification.error({
+        .catch((err) =>
+          this.$notification.err({
             message: '删除知识库失败',
-            description: error.message,
+            description: err.message,
           })
         )
     },
-  },
-  mounted() {
-    // for test
-    // this.queryTeam({ username: this.username, teamId: this.teamId })
-    //   .then((response) => console.log(response))
-    //   .catch((error) => console.error(error))
-    // // for test
-    // this.queryTeamKB({ username: this.username, teamId: this.teamId })
-    //   .then((response) => {
-    //     this.$notification.success({
-    //       message: '成功获取团队知识库',
-    //       description: '成功获取团队知识库',
-    //     })
-    //     this.deleteLoading = new Array(response.data.knowledgeBase).fill(false)
-    //   })
-    //   .catch((error) => {
-    //     this.$notification.error({
-    //       message: '获取团队知识库失败',
-    //       description: `${error.name}: ${error.message}`,
-    //     })
-    //   })
-    //   .finally(() => {
-    //     this.cardLoading = false
-    //   })
   },
 }
 </script>
 
 <style lang="less" scoped>
+.operate {
+  display: flex;
+  align-items: center;
+}
+
+.search-box {
+  margin-right: 10px;
+}
+
 .ant-avatar-lg {
   width: 48px;
   height: 48px;
   line-height: 48px;
+}
+
+.list-content {
+  display: flex;
+  justify-content: space-between;
+  width: 25%;
+  margin: 0 50px;
 }
 
 .list-content-item {
