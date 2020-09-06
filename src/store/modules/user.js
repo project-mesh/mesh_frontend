@@ -112,6 +112,15 @@ const user = {
           .catch((err) => reject(err))
       })
     },
+    updateUserPassword({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('updateUserPassword', requestData)
+          .then((res) => {
+            resolve(res)
+          })
+          .catch((err) => reject(err))
+      })
+    },
   },
 }
 
