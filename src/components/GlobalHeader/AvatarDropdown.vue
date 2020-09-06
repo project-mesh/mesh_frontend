@@ -51,7 +51,7 @@ export default {
       this.$router.push({ path: '/account/center' })
     },
     handleToSettings() {
-      this.$router.push({ path: '/account/settings/base' })
+      this.$router.push({ path: '/account/settings' })
     },
     handleLogout() {
       Modal.confirm({

@@ -1,22 +1,24 @@
 <template>
   <div :class="wrpCls">
-    <team-selector :class="prefixCls" />
-    <notification-dropdown :class="prefixCls" />
+    <team-selector v-if="role === 'user'" :class="prefixCls" />
+    <span v-if="role === 'user'" :class="prefixCls">
+      <a-badge :count="notifications.length" dot>
+        <a-icon type="notification" />
+      </a-badge>
+    </span>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
   </div>
 </template>
 
 <script>
-import SelectLang from '@/components/SelectLang'
 import AvatarDropdown from './AvatarDropdown'
-import NotificationDropdown from './NotificationDropdown'
 import TeamSelector from './TeamSelector'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'RightContent',
   components: {
     AvatarDropdown,
-    NotificationDropdown,
     TeamSelector,
   },
   props: {
@@ -44,6 +46,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['notifications', 'role']),
     wrpCls() {
       return {
         'ant-pro-global-header-index-right': true,
