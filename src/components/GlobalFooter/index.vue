@@ -1,12 +1,16 @@
 <template>
   <global-footer class="footer custom-render">
     <template v-slot:links>
-      <a href="https://www.github.com/vueComponent/pro-layout" target="_blank">Pro Layout</a>
-      <a href="https://www.github.com/vueComponent/ant-design-vue-pro" target="_blank">Github</a>
-      <a href="https://www.github.com/sendya/" target="_blank">@Sendya</a>
+      <a href="https://github.com/project-mesh/mesh_frontend/blob/master/README.md" target="_blank">
+        项目简介
+      </a>
+      <a href="https://github.com/project-mesh/mesh_frontend/blob/master/LICENSE" target="_blank">
+        许可协议
+      </a>
+      <a href="https://github.com/orgs/project-mesh/people" target="_blank">开发人员</a>
     </template>
     <template v-slot:copyright>
-      <a href="https://github.com/vueComponent" target="_blank">vueComponent</a>
+      <a href="https://github.com/project-mesh" target="_blank">Tongji Mesh</a>
     </template>
   </global-footer>
 </template>
