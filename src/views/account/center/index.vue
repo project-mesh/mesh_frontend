@@ -18,14 +18,12 @@
 </template>
 
 <script>
-import { PageView, RouteView } from '@/layouts'
+import {} from '@/layouts'
 import { mapGetters } from 'vuex'
 import { AppPage, ArticlePage } from './page'
 
 export default {
   components: {
-    RouteView,
-    PageView,
     AppPage,
     ArticlePage,
   },
