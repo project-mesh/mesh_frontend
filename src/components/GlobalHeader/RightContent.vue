@@ -1,16 +1,18 @@
 <template>
   <div :class="wrpCls">
     <team-selector v-if="role === 'user'" :class="prefixCls" />
-    <span v-if="role === 'user'" :class="prefixCls">
+    <router-link tag="span" :to="{ name: 'center' }" v-if="role === 'user'" :class="prefixCls">
       <a-badge :count="notifications.length" dot>
         <a-icon type="notification" />
       </a-badge>
-    </span>
+    </router-link>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
+    <!-- <select-lang :class="prefixCls" /> -->
   </div>
 </template>
 
 <script>
+// import SelectLang from '@/components/SelectLang'
 import AvatarDropdown from './AvatarDropdown'
 import TeamSelector from './TeamSelector'
 import { mapGetters } from 'vuex'
@@ -19,6 +21,7 @@ export default {
   name: 'RightContent',
   components: {
     AvatarDropdown,
+    // SelectLang,
     TeamSelector,
   },
   props: {

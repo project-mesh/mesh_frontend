@@ -38,6 +38,11 @@ const createProject = (data) => {
     if (key in newProject) newProject[key] = data[key]
   })
 
+  projectMembers.push({
+    projectId: newProject.projectId,
+    username: data.adminName,
+  })
+
   projects.push(newProject)
 
   return utils.builder({ project: newProject })

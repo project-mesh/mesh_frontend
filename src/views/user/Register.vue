@@ -177,7 +177,6 @@ export default {
 
     handlePasswordCheck(rule, value, callback) {
       const password = this.form.getFieldValue('password')
-      console.log('value', value)
       if (value === undefined) {
         callback(new Error('请输入密码'))
       }
@@ -195,25 +194,19 @@ export default {
       this.form.validateFields({ force: true }, (err, values) => {
         if (!err) {
           this.state.passwordLevelChecked = false
-          console.log('will call register api by values:', values)
           sendRequest('register', { ...values })
             .then((response) => {
-              console.log('success register:', response)
               //TODO : store commit
               this.$router.push({ name: 'registerResult', params: { ...values } })
             })
-            .catch((err) => {
-              console.log('register failed', err)
-            })
+            .catch((err) => {})
         }
       })
     },
   },
 
   watch: {
-    'state.passwordLevel': function (val) {
-      console.log(val)
-    },
+    'state.passwordLevel': function (val) {},
   },
 }
 </script>

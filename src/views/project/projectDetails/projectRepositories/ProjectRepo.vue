@@ -27,6 +27,7 @@
       <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
         <a-list-item-meta :title="item.knowledgeName">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
+          <a-avatar slot="avatar" :src="getAvatar(item.uploaderName)" />
         </a-list-item-meta>
         <div slot="actions">
           <a @click="edit(item)" :disabled="!isProjectAdminOrUploader(item)">编辑</a>
@@ -71,6 +72,7 @@ import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
+import _ from 'lodash'
 
 const columns = [
   {
@@ -124,9 +126,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['projectKB', 'username', 'projectId', 'projectAdminName']),
+    ...mapGetters(['projectKB', 'username', 'projectId', 'projectAdminName', 'teamMembers']),
     projectKBWithFormatedCreateTime() {
-      const formatedData = JSON.parse(JSON.stringify(this.projectKB))
+      const formatedData = _.cloneDeep(this.projectKB)
       formatedData.forEach((knowledge) => {
         knowledge.createTimeDisplay = formatDateByPattern(
           new Date(Number(knowledge.createTime)),
@@ -151,6 +153,9 @@ export default {
     },
     rowKey(knowledge) {
       return knowledge.knowledgeId
+    },
+    getAvatar(username) {
+      return this.teamMembers.find((member) => member.username === username).avatar
     },
     add() {
       this.modalTitle = '新建'

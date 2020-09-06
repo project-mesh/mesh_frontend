@@ -1,7 +1,6 @@
-export const deepCopy = (obj) => {
-  if (typeof obj !== 'object') return {}
-  return JSON.parse(JSON.stringify(obj))
-}
+import _ from 'lodash'
+
+export const deepCopy = _.cloneDeep
 
 export const builder = (data, code = 0, isSuccess = true, message = '', headers = {}) => {
   const responseBody = {}
@@ -42,7 +41,8 @@ export const getBody = (options) => {
 
 export const functionFactory = (func) => (options) => {
   const queryParams = getQueryParameters(options)
-  console.log('In mock functionFactory, query Params: ', queryParams)
+  if (Object.keys(queryParams).length)
+    console.log('In mock functionFactory, query Params: ', queryParams)
   if (Object.keys(queryParams).length) return deepCopy(func(queryParams))
   console.log('In mock functionFactory, options: ', options)
   const body = getBody(options)

@@ -20,7 +20,7 @@ module.exports = {
     'prettier/prettier': 'error',
     'vue/eqeqeq': ['error', 'smart'],
     'vue/no-unused-components': 1,
-    'no-unused-vars': isProd ? 'error' : 'warn',
+    'no-unused-vars': [isProd ? 'error' : 'warn', { argsIgnorePattern: 'res|err|req|val|_' }],
   },
   overrides: [
     {

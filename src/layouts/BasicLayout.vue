@@ -8,7 +8,7 @@
     :handle-media-query="handleMediaQuery"
     :handle-collapse="handleCollapse"
     :logo="logoRender"
-    :i18n-render="i18nRender"
+    :content-width="settings.contentWidth ? 'Fluid' : 'Fixed'"
     v-bind="settings"
   >
     <setting-drawer :settings="settings" @change="handleSettingChange" />
@@ -27,10 +27,12 @@
 </template>
 
 <script>
-import { SettingDrawer, updateTheme } from '@ant-design-vue/pro-layout'
+import { updateTheme } from '@ant-design-vue/pro-layout'
+import SettingDrawer from '@/components/SettingDrawer'
 import { i18nRender } from '@/locales'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
+import storage from 'store'
 
 import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
@@ -54,14 +56,14 @@ export default {
       // base
       menus: [],
       // 侧栏收起状态
-      collapsed: false,
+      collapsed: storage.get(SIDEBAR_TYPE, false),
       title: defaultSettings.title,
       settings: {
         // 布局类型
         layout: defaultSettings.layout, // 'sidemenu', 'topmenu'
         // 定宽: true / 流式: false
         contentWidth:
-          defaultSettings.layout === 'sidemenu' ? false : defaultSettings.contentWidth === 'Fixed',
+          defaultSettings.layout === 'sidemenu' ? true : defaultSettings.contentWidth === 'Fixed',
         // 主题 'dark' | 'light'
         theme: defaultSettings.navTheme,
         // 主色调
@@ -69,15 +71,12 @@ export default {
         fixedHeader: defaultSettings.fixedHeader,
         fixSiderbar: defaultSettings.fixSiderbar,
         colorWeak: defaultSettings.colorWeak,
-
-        hideHintAlert: false,
-        hideCopyButton: false,
       },
       // 媒体查询
       query: {},
 
       // 是否手机模式
-      isMobile: false,
+      isMobile: storage.get(TOGGLE_MOBILE_TYPE, false),
     }
   },
   computed: {
@@ -113,11 +112,7 @@ export default {
       this.settings.primaryColor = this.preference.preferenceColor
     if (this.preference.preferenceLayout) this.settings.layout = this.preference.preferenceLayout
 
-    if (process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true') {
-      // first update color
-      // TIPS: THEME COLOR HANDLER!! PLEASE CHECK THAT!!
-      updateTheme(this.settings.primaryColor)
-    }
+    updateTheme(this.settings.primaryColor)
   },
   methods: {
     ...mapActions(['updatePreferenceColor', 'updatePreferenceLayout']),
@@ -139,7 +134,6 @@ export default {
       this.collapsed = val
     },
     handleSettingChange({ type, value }) {
-      console.log('type', type, value)
       type && (this.settings[type] = value)
       switch (type) {
         case 'contentWidth':
