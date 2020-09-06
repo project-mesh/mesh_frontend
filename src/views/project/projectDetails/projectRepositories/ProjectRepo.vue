@@ -27,6 +27,7 @@
       <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
         <a-list-item-meta :title="item.knowledgeName">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
+          <a-avatar slot="avatar" :src="getAvatar(item.uploaderName)" />
         </a-list-item-meta>
         <div slot="actions">
           <a @click="edit(item)" :disabled="!isProjectAdminOrUploader(item)">编辑</a>
@@ -124,7 +125,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['projectKB', 'username', 'projectId', 'projectAdminName']),
+    ...mapGetters(['projectKB', 'username', 'projectId', 'projectAdminName', 'teamMembers']),
     projectKBWithFormatedCreateTime() {
       const formatedData = JSON.parse(JSON.stringify(this.projectKB))
       formatedData.forEach((knowledge) => {
@@ -151,6 +152,9 @@ export default {
     },
     rowKey(knowledge) {
       return knowledge.knowledgeId
+    },
+    getAvatar(username) {
+      return this.teamMembers.find((member) => member.username === username).avatar
     },
     add() {
       this.modalTitle = '新建'
