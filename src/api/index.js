@@ -173,6 +173,10 @@ const apiMap = {
     url: '/user/avatar',
     method: 'patch',
   },
+  updateUserPassword: {
+    url: '/user/password',
+    method: 'patch',
+  },
 }
 
 const sendRequest = (apiName, data) => {
