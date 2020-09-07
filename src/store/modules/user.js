@@ -1,7 +1,7 @@
 import storage from 'store'
 import sendRequest from '@/api'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import store from '@/store'
+
 const user = {
   state: {
     token: '',
@@ -10,6 +10,13 @@ const user = {
     avatar: '',
     preference: {},
     teams: {},
+    address: '',
+    nickname: '',
+    birthday: '',
+    age: null,
+    gender: '',
+    description: '',
+    status: [],
   },
 
   mutations: {
@@ -31,6 +38,32 @@ const user = {
     SET_TEAMS: (state, teams) => {
       state.teams = teams
     },
+    SET_ADDRESS: (state, address) => {
+      state.address = address
+    },
+    SET_NICKNAME: (state, nickname) => {
+      state.nickname = nickname
+    },
+    SET_BIRTHDAY: (state, birthday) => {
+      state.birthday = birthday
+      if (birthday) {
+        const birthdate = new Date(birthday)
+        const nowdate = new Date()
+        let age = nowdate.getFullYear() - birthdate.getFullYear() - 1
+        if (nowdate.getMonth() >= birthdate.getMonth() && nowdate.getDate() >= birthdate.getDate())
+          ++age
+        state.age = age
+      }
+    },
+    SET_GENDER: (state, gender) => {
+      state.gender = gender
+    },
+    SET_DESCRIPTION: (state, description) => {
+      state.description = description
+    },
+    SET_STATUS: (state, status) => {
+      state.status = status
+    },
   },
 
   actions: {
@@ -49,6 +82,12 @@ const user = {
             commit('SET_AVATAR', response.data.avatar)
             commit('SET_TEAMS', response.data.teams)
             commit('SET_PREFERENCE', response.data.preference)
+            commit('SET_ADDRESS', response.data.address)
+            commit('SET_NICKNAME', response.data.nickname)
+            commit('SET_BIRTHDAY', response.data.birthday)
+            commit('SET_GENDER', response.data.gender)
+            commit('SET_DESCRIPTION', response.data.description)
+            commit('SET_STATUS', response.data.status)
             // commit('SET_TEAMID', response.data.preference.preferenceTeam)
             resolve(response)
           })

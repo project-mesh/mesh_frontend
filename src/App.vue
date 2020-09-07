@@ -15,6 +15,5 @@ export default {
       locale: zhCN,
     }
   },
-  computed: {},
 }
 </script>

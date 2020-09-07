@@ -1,7 +1,6 @@
 <template>
   <div>
     <div id="calendar">
-      <span id="calendarTitle">日历</span>
       <span id="calendarConfig">
         <a-checkbox @change="onOnlyNotFinishedChange">仅显示未完成</a-checkbox>
         <a-checkbox @change="onOnlyViewMineChange">只看我负责的</a-checkbox>

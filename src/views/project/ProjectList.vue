@@ -116,17 +116,14 @@
           class="card-row"
         >
           <a-list-item slot="renderItem" slot-scope="item" class="list-item">
-            <a-card
-              hoverable
-              style="width: 100%; overflow: hidden"
-              @click="tryJumpToProjectDetail(item.projectId)"
-            >
+            <a-card hoverable style="width: 100%; overflow: hidden">
               <img
                 style="height: 400px; overflow: hidden; object-fit: cover"
                 slot="cover"
                 alt="example"
                 :src="item.projectLogo"
                 class="card-img"
+                @click="tryJumpToProjectDetail(item.projectId)"
               />
               <template slot="actions" class="ant-card-actions">
                 <a-icon key="setting" type="setting" />
