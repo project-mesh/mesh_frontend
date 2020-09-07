@@ -78,6 +78,9 @@
             <ve-wordcloud :data="performerData"></ve-wordcloud>
           </a-card>
         </a-col>
+        <a-col :sm="24" :md="10" class="col">
+          <a-button type="primary" @click="export2Excel">导出统计数据到本地</a-button>
+        </a-col>
       </a-row>
     </a-layout-content>
   </a-layout>
@@ -108,6 +111,11 @@ export default {
       performeRingVisible: true, //第一个表格显示环状图true 直方图 false
       finishHistogramVisible: true, //显示直方图true 折线图 false
       filterType: 'all',
+      tableData: [
+        { index: '0', nickName: '沙滩搁浅我们的旧时光', name: '小明' },
+        { index: '1', nickName: '女人天生高贵', name: '小红' },
+        { index: '2', nickName: '海是彩色的灰尘', name: '小兰' },
+      ],
       // performerData: {
       //   columns: ['principal', 'count'],
       //   rows: [
@@ -196,6 +204,21 @@ export default {
     finishShowLine() {
       console.log('显示折线图')
       this.finishHistogramVisible = false
+    },
+    //导出的方法
+    export2Excel() {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('../../../excel/Export2Excel')
+        const tHeader = ['序号', '昵称', '姓名'] // 设置Excel的表格第一行的标题
+        const filterVal = ['index', 'nickName', 'name'] // index、nickName、name是tableData里对象的属性
+        const list = this.tableData //把data里的tableData存到list
+        const data = this.formatJson(filterVal, list)
+        export_json_to_excel(tHeader, data, '统计数据') //导出Excel 文件名
+      })
+    },
+
+    formatJson(filterVal, jsonData) {
+      return jsonData.map((v) => filterVal.map((j) => v[j]))
     },
   },
   mounted() {
