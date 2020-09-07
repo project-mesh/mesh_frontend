@@ -70,14 +70,6 @@ export default {
             ok() {
               alert('外部ok')
               console.log('ok 回调')
-              this.updateUserPassword({ username: this.username, password: this.password }).catch(
-                (error) => {
-                  this.$notification.error({
-                    message: '获取任务失败',
-                    description: `${error.name}: ${error.message}`,
-                  })
-                }
-              )
             },
             cancel() {
               console.log('cancel 回调')
