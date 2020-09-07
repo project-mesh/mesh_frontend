@@ -1,3 +1,13 @@
+import {
+  TOGGLE_NAV_THEME,
+  TOGGLE_LAYOUT,
+  TOGGLE_FIXED_HEADER,
+  TOGGLE_FIXED_SIDEBAR,
+  TOGGLE_CONTENT_WIDTH,
+  TOGGLE_COLOR,
+  TOGGLE_WEAK,
+} from '@/store/mutation-types'
+import storage from 'store'
 /**
  * 项目默认配置项
  * primaryColor - 默认主题色, 如果修改颜色不生效，请清理 localStorage
@@ -13,15 +23,15 @@
  */
 
 export default {
-  navTheme: 'dark', // theme for nav menu
-  primaryColor: '#52C41A', // primary color of ant design
-  layout: 'sidemenu', // nav menu position: `sidemenu` or `topmenu`
-  contentWidth: 'Fluid', // layout of content: `Fluid` or `Fixed`, only works when layout is topmenu
-  fixedHeader: false, // sticky header
-  fixSiderbar: false, // sticky siderbar
-  colorWeak: false,
+  navTheme: storage.get(TOGGLE_NAV_THEME, 'dark'), // theme for nav menu
+  primaryColor: storage.get(TOGGLE_COLOR, '#52C41A'), // primary color of ant design
+  layout: storage.get(TOGGLE_LAYOUT, 'sidemenu'), // nav menu position: `sidemenu` or `topmenu`
+  contentWidth: storage.get(TOGGLE_CONTENT_WIDTH, 'Fluid'), // layout of content: `Fluid` or `Fixed`, only works when layout is topmenu
+  fixedHeader: storage.get(TOGGLE_FIXED_HEADER, false), // sticky header
+  fixSiderbar: storage.get(TOGGLE_FIXED_SIDEBAR, false), // sticky siderbar
+  colorWeak: storage.get(TOGGLE_WEAK, false),
   menu: {
-    locale: true,
+    locale: false,
   },
   title: 'Mesh',
   pwa: false,

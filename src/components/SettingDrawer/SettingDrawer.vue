@@ -179,6 +179,15 @@
 import config from '@/config/defaultSettings'
 import SettingItem from './SettingItem'
 import { updateTheme, updateColorWeak, colorList } from './settingConfig'
+import {
+  TOGGLE_NAV_THEME,
+  TOGGLE_LAYOUT,
+  TOGGLE_FIXED_HEADER,
+  TOGGLE_FIXED_SIDEBAR,
+  TOGGLE_CONTENT_WIDTH,
+  TOGGLE_COLOR,
+  TOGGLE_WEAK,
+} from '@/store/mutation-types'
 
 export default {
   props: {
@@ -215,13 +224,16 @@ export default {
       this.visible = !this.visible
     },
     onColorWeak(checked) {
+      this.$store.commit(TOGGLE_WEAK, checked)
       this.$emit('change', { type: 'colorWeak', value: checked })
       updateColorWeak(checked)
     },
     handleMenuTheme(theme) {
+      this.$store.commit(TOGGLE_NAV_THEME, theme)
       this.$emit('change', { type: 'theme', value: theme })
     },
     handleLayout(mode) {
+      this.$store.commit(TOGGLE_LAYOUT, mode)
       this.$emit('change', { type: 'layout', value: mode })
       // 因为顶部菜单不能固定左侧菜单栏，所以强制关闭
       this.handleFixSiderbar(false)
@@ -229,22 +241,27 @@ export default {
       this.handleContentWidthChange('Fixed')
     },
     handleContentWidthChange(type) {
+      this.$store.commit(TOGGLE_CONTENT_WIDTH, type)
       this.$emit('change', { type: 'contentWidth', value: type })
     },
     changeColor(color) {
       if (this.settings.primaryColor !== color) {
+        this.$store.commit(TOGGLE_COLOR, color)
         this.$emit('change', { type: 'primaryColor', value: color })
         updateTheme(color)
       }
     },
     handleFixedHeader(fixed) {
+      this.$store.commit(TOGGLE_FIXED_HEADER, fixed)
       this.$emit('change', { type: 'fixedHeader', value: fixed })
     },
     handleFixSiderbar(fixed) {
       if (this.settings.layout === 'topmenu') {
         this.$emit('change', { type: 'fixSiderbar', value: false })
+        this.$store.commit(TOGGLE_FIXED_SIDEBAR, false)
         return
       }
+      this.$store.commit(TOGGLE_FIXED_SIDEBAR, fixed)
       this.$emit('change', { type: 'fixSiderbar', value: fixed })
     },
   },

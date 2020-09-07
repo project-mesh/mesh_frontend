@@ -146,10 +146,10 @@ const teamMembers = [
 ]
 
 const users = [
-  {
+  Mock.mock({
     username: 'test',
-    email: Mock.mock('@email'),
-    avatar: Mock.mock('@image'),
+    email: '@email',
+    avatar: '@image',
     password: md5('test'),
     preference: {
       preferenceShowMode: 'card',
@@ -158,11 +158,17 @@ const users = [
       preferenceLayout: 'sidemenu',
     },
     role: 'user',
-  },
-  {
+    address: random.county(true),
+    nickname: random.name(),
+    birthday: random.date('yyyy-MM-dd'),
+    gender: '女',
+    description: '@csentence',
+    status: [random.cword(1, 5), random.cword(1, 5)],
+  }),
+  Mock.mock({
     username: 'zengze',
-    email: Mock.mock('@email'),
-    avatar: Mock.mock('@image'),
+    email: '@email',
+    avatar: '@image',
     password: md5('test'),
     preference: {
       preferenceShowMode: 'card',
@@ -171,7 +177,13 @@ const users = [
       preferenceLayout: 'sidemenu',
     },
     role: 'admin',
-  },
+    address: random.county(true),
+    nickname: random.name(),
+    birthday: random.date('yyyy-MM-dd'),
+    gender: '男',
+    description: '@csentence',
+    status: [random.cword(1, 5)],
+  }),
 ]
 
 for (let i = 0; i < 9; ++i) {
@@ -180,10 +192,10 @@ for (let i = 0; i < 9; ++i) {
   teams.push(
     Mock.mock({
       teamId: teamId,
-      teamName: '@name',
+      teamName: '@ctitle',
       adminName: 'test',
       createTime: Date.now(),
-      description: '@paragraph',
+      description: '@cparagraph',
     })
   )
 
@@ -205,7 +217,7 @@ for (let i = 0; i < 28; ++i) {
 
   users.push(
     Mock.mock({
-      username: '@name',
+      username: '@cname',
       email: '@email',
       avatar: '@image',
       password: md5('test'),
@@ -216,6 +228,20 @@ for (let i = 0; i < 28; ++i) {
         preferenceTeam: '数据库',
       },
       role: 'user',
+      address: random.county(true),
+      nickname: random.name(),
+      birthday: random.date('yyyy-MM-dd'),
+      'gender|1': ['女', '男'],
+      description: '@csentence',
+      status: function () {
+        const statusCnt = random.natural(0, 4)
+        const status = []
+        for (let i = 0; i < statusCnt; ++i) {
+          status.push(random.cword(1, 5))
+        }
+
+        return status
+      },
     })
   )
 }
@@ -247,9 +273,9 @@ for (let i = 0; i < 10; ++i) {
       Mock.mock({
         teamId: curTeamId,
         projectId: '@id',
-        projectName: '@name',
+        projectName: '@ctitle',
         projectLogo: '@image',
-        description: '@paragraph',
+        description: '@cparagraph',
         adminName: curTeamMembers[random.natural(0, teamUsers - 1)],
         isPublic: 'true',
         createTime: Date.now(),
@@ -296,11 +322,11 @@ for (let i = 0; i < 300; ++i) {
     Mock.mock({
       teamId,
       projectId: member.projectId,
-      founder: '@name',
+      founder: '@cname',
       principal: member.username,
       notificationId: '@id',
-      title: '@title',
-      description: '@paragraph',
+      title: '@ctitle',
+      description: '@cparagraph',
       createTime: Date.now(),
       isFinished: false,
     })
@@ -309,13 +335,13 @@ for (let i = 0; i < 300; ++i) {
   const newTask = Mock.mock({
     projectId: member.projectId,
     taskId: '@id',
-    taskName: '@name',
+    taskName: '@ctitle',
     'isFinished|1': true,
     priority: random.natural(1, 3),
     createTime: Date.now(),
     deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
-    description: '@paragraph',
-    founder: '@name',
+    description: '@cparagraph',
+    founder: '@cname',
     principal: member.username,
   })
 
@@ -335,7 +361,7 @@ for (let i = 0; i < 200; ++i) {
     Mock.mock({
       teamId: member.teamId,
       knowledgeId: '@id',
-      knowledgeName: '@name',
+      knowledgeName: '@ctitle',
       hyperlink: '@url',
       uploaderName: member.username,
       createTime: Date.now(),
@@ -351,7 +377,7 @@ for (let i = 0; i < 500; ++i) {
     Mock.mock({
       projectId: member.projectId,
       knowledgeId: '@id',
-      knowledgeName: '@name',
+      knowledgeName: '@ctitle',
       hyperlink: '@url',
       uploaderName: member.username,
       createTime: Date.now(),
@@ -365,8 +391,8 @@ for (let i = 0; i < projects.length; ++i) {
       Mock.mock({
         projectId: projects[i].projectId,
         bulletinId: '@id',
-        bulletinName: '@name',
-        description: '@sentence',
+        bulletinName: '@ctitle',
+        description: '@csentence',
         createTime: Date.now(),
       })
     )

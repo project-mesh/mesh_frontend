@@ -1,9 +1,18 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout } from '@/layouts'
+import store from '../store'
 
 const RouteView = {
   name: 'RouteView',
   render: (h) => h('router-view'),
+}
+
+const guard = (to, from, next) => {
+  if (to.query && to.query.teamId) return next()
+
+  const teamId = store.getters.teamId || store.getters.preference.preferenceTeam
+
+  next({ ...to, query: { teamId } })
 }
 
 export const asyncRouterMap = [
@@ -20,6 +29,7 @@ export const asyncRouterMap = [
         name: 'project',
         redirect: '/project/list',
         component: RouteView,
+        beforeEnter: guard,
         hideChildrenInMenu: true,
         meta: {
           title: '项目',
@@ -126,6 +136,7 @@ export const asyncRouterMap = [
       {
         path: '/repositories',
         name: 'teamRepo',
+        beforeEnter: guard,
         // TODO: 修改成对应页面
         component: () => import('@/views/repositories/TeamRepo'),
         meta: {
@@ -139,6 +150,7 @@ export const asyncRouterMap = [
       {
         path: '/calendar',
         name: 'calendar',
+        beforeEnter: guard,
         component: () => import('@/views/calendar/BasicCalendar'),
         meta: {
           title: '日历',
@@ -152,6 +164,7 @@ export const asyncRouterMap = [
       {
         path: '/members',
         name: 'members',
+        beforeEnter: guard,
         // TODO: 修改成对应页面
         component: () => import('@/views/team/Team'),
         meta: {
@@ -177,6 +190,7 @@ export const asyncRouterMap = [
           {
             path: '/account/center',
             name: 'center',
+            beforeEnter: guard,
             component: () => import('@/views/account/center'),
             meta: { title: '个人中心', keepAlive: true, permission: ['user'] },
           },
@@ -193,17 +207,6 @@ export const asyncRouterMap = [
                 name: 'baseSettings',
                 component: () => import('@/views/account/settings/BaseSetting'),
                 meta: { title: '基本设置', hidden: true, permission: ['user'] },
-              },
-              {
-                path: '/account/settings/custom',
-                name: 'customSettings',
-                component: () => import('@/views/account/settings/Custom'),
-                meta: {
-                  title: '个性化设置',
-                  hidden: true,
-                  keepAlive: true,
-                  permission: ['user'],
-                },
               },
             ],
           },
@@ -248,17 +251,6 @@ export const asyncRouterMap = [
             name: 'baseSettings',
             component: () => import('@/views/account/settings/BaseSetting'),
             meta: { title: '基本设置', hidden: true, permission: ['admin'] },
-          },
-          {
-            path: '/account/custom',
-            name: 'customSettings',
-            component: () => import('@/views/account/settings/Custom'),
-            meta: {
-              title: '个性化设置',
-              hidden: true,
-              keepAlive: true,
-              permission: ['admin'],
-            },
           },
         ],
       },
@@ -307,7 +299,11 @@ export const constantRouterMap = [
 
   {
     path: '/404',
-    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
+    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404_pageview'),
+  },
+  {
+    path: '*',
+    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404_pageview'),
   },
 ]
 

@@ -29,9 +29,9 @@
 <script>
 import { updateTheme } from '@ant-design-vue/pro-layout'
 import SettingDrawer from '@/components/SettingDrawer'
-import { i18nRender } from '@/locales'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
+import storage from 'store'
 
 import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
@@ -55,7 +55,7 @@ export default {
       // base
       menus: [],
       // 侧栏收起状态
-      collapsed: false,
+      collapsed: storage.get(SIDEBAR_TYPE, false),
       title: defaultSettings.title,
       settings: {
         // 布局类型
@@ -70,15 +70,12 @@ export default {
         fixedHeader: defaultSettings.fixedHeader,
         fixSiderbar: defaultSettings.fixSiderbar,
         colorWeak: defaultSettings.colorWeak,
-
-        hideHintAlert: false,
-        hideCopyButton: false,
       },
       // 媒体查询
       query: {},
 
       // 是否手机模式
-      isMobile: false,
+      isMobile: storage.get(TOGGLE_MOBILE_TYPE, false),
     }
   },
   computed: {
@@ -118,7 +115,6 @@ export default {
   },
   methods: {
     ...mapActions(['updatePreferenceColor', 'updatePreferenceLayout']),
-    i18nRender,
     handleMediaQuery(val) {
       this.query = val
       if (this.isMobile && !val['screen-xs']) {

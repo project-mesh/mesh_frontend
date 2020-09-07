@@ -40,8 +40,6 @@ const colorList = [
 
 const updateTheme = (newPrimaryColor) => {
   const hideMessage = message.loading('正在切换主题！', 0)
-  const p = themeColor.changeColor(newPrimaryColor)
-  console.log('P is promise: ', p instanceof Promise)
   themeColor.changeColor(newPrimaryColor).finally(() => {
     setTimeout(() => {
       hideMessage()

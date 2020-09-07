@@ -7,12 +7,8 @@ import {
   TOGGLE_FIXED_HEADER,
   TOGGLE_FIXED_SIDEBAR,
   TOGGLE_CONTENT_WIDTH,
-  TOGGLE_HIDE_HEADER,
   TOGGLE_COLOR,
   TOGGLE_WEAK,
-  TOGGLE_MULTI_TAB,
-  // i18n
-  APP_LANGUAGE,
 } from '@/store/mutation-types'
 import { loadLanguageAsync } from '@/locales'
 
@@ -25,11 +21,9 @@ const app = {
     contentWidth: '',
     fixedHeader: false,
     fixedSidebar: false,
-    autoHideHeader: false,
     color: '',
     weak: false,
-    multiTab: true,
-    lang: 'en-US',
+    lang: 'zh-CN',
     _antLocale: {},
   },
   mutations: {
@@ -60,10 +54,6 @@ const app = {
       state.contentWidth = type
       storage.set(TOGGLE_CONTENT_WIDTH, type)
     },
-    [TOGGLE_HIDE_HEADER]: (state, type) => {
-      state.autoHideHeader = type
-      storage.set(TOGGLE_HIDE_HEADER, type)
-    },
     [TOGGLE_COLOR]: (state, color) => {
       state.color = color
       storage.set(TOGGLE_COLOR, color)
@@ -72,20 +62,10 @@ const app = {
       state.weak = mode
       storage.set(TOGGLE_WEAK, mode)
     },
-    [APP_LANGUAGE]: (state, lang, antd = {}) => {
-      state.lang = lang
-      state._antLocale = antd
-      storage.set(APP_LANGUAGE, lang)
-    },
-    [TOGGLE_MULTI_TAB]: (state, bool) => {
-      storage.set(TOGGLE_MULTI_TAB, bool)
-      state.multiTab = bool
-    },
   },
   actions: {
-    setLang({ commit }, lang) {
+    setLang(lang) {
       return new Promise((resolve, reject) => {
-        commit(APP_LANGUAGE, lang)
         loadLanguageAsync(lang)
           .then(() => {
             resolve()

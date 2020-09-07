@@ -40,6 +40,7 @@ import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
 import { mapGetters, mapActions } from 'vuex'
+import _ from 'lodash'
 
 export default {
   components: {
@@ -57,7 +58,7 @@ export default {
   computed: {
     ...mapGetters(['bulletins', 'username', 'projectAdminName']),
     bulletinWithFormatedCreateTime() {
-      const formatedData = JSON.parse(JSON.stringify(this.bulletins))
+      const formatedData = _.cloneDeep(this.bulletins)
       formatedData.forEach((bulletin) => {
         bulletin.createTimeDisplay = formatDateByPattern(
           new Date(Number(bulletin.createTime)),

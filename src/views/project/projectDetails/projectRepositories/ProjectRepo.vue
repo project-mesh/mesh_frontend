@@ -72,6 +72,7 @@ import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
+import _ from 'lodash'
 
 const columns = [
   {
@@ -127,7 +128,7 @@ export default {
   computed: {
     ...mapGetters(['projectKB', 'username', 'projectId', 'projectAdminName', 'teamMembers']),
     projectKBWithFormatedCreateTime() {
-      const formatedData = JSON.parse(JSON.stringify(this.projectKB))
+      const formatedData = _.cloneDeep(this.projectKB)
       formatedData.forEach((knowledge) => {
         knowledge.createTimeDisplay = formatDateByPattern(
           new Date(Number(knowledge.createTime)),

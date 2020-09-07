@@ -4,17 +4,9 @@
       <a-col :md="24" :lg="16">
         <a-form layout="vertical">
           <a-form-item label="账号">
-            <p>1234567</p>
+            <p>{{ username }}</p>
           </a-form-item>
-          <a-form-item label="昵称">
-            <a-input placeholder="给自己起个名字" />
-          </a-form-item>
-          <a-form-item label="电子邮件" :required="false">
-            <a-input placeholder="exp@admin.com" />
-          </a-form-item>
-
           <a-form-item>
-            <a-button type="primary">保存</a-button>
             <a-button class="operate" style="margin-left: 8px" @click="add">修改密码</a-button>
           </a-form-item>
         </a-form>
@@ -28,12 +20,12 @@
         </div>
       </a-col>
     </a-row>
-
     <avatar-modal ref="modal" @ok="setavatar" />
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import AvatarModal from './AvatarModal'
 import CodeForm from './CodeForm'
 export default {
@@ -41,6 +33,7 @@ export default {
     AvatarModal,
     CodeForm,
   },
+  computed: mapGetters(['username']),
   data() {
     return {
       // cropper
@@ -63,6 +56,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['updateUserPassword']),
     setavatar(url) {
       this.option.img = url
     },
@@ -74,7 +68,16 @@ export default {
           record: {},
           on: {
             ok() {
+              alert('外部ok')
               console.log('ok 回调')
+              this.updateUserPassword({ username: this.username, password: this.password }).catch(
+                (error) => {
+                  this.$notification.error({
+                    message: '获取任务失败',
+                    description: `${error.name}: ${error.message}`,
+                  })
+                }
+              )
             },
             cancel() {
               console.log('cancel 回调')
