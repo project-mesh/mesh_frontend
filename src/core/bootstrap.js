@@ -11,13 +11,9 @@ import {
   TOGGLE_WEAK,
   TOGGLE_COLOR,
 } from '@/store/mutation-types'
-import { printANSI } from '@/utils/screenLog'
 import defaultSettings from '@/config/defaultSettings'
 
 export default function Initializer() {
-  // 请自行移除该行.  please remove this line
-  // printANSI()
-
   store.commit(TOGGLE_LAYOUT, storage.get(TOGGLE_LAYOUT, defaultSettings.layout))
   store.commit(TOGGLE_FIXED_HEADER, storage.get(TOGGLE_FIXED_HEADER, defaultSettings.fixedHeader))
   store.commit(TOGGLE_FIXED_SIDEBAR, storage.get(TOGGLE_FIXED_SIDEBAR, defaultSettings.fixSiderbar))
@@ -29,7 +25,5 @@ export default function Initializer() {
   store.commit(TOGGLE_WEAK, storage.get(TOGGLE_WEAK, defaultSettings.colorWeak))
   store.commit(TOGGLE_COLOR, storage.get(TOGGLE_COLOR, defaultSettings.primaryColor))
   store.commit('SET_TOKEN', storage.get(ACCESS_TOKEN))
-
-  store.dispatch('setLang', storage.get(APP_LANGUAGE, 'zh-CN'))
   // last step
 }

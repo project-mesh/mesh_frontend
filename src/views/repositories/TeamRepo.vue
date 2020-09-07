@@ -151,7 +151,6 @@ export default {
     },
     getAvatar(username) {
       const user = this.teamMembers.find((member) => member.username === username)
-      console.log('TeamMember: ', user)
       // return this.teamMembers.find((member) => member.username === username).avatar
       return user ? '' : user.avatar
     },

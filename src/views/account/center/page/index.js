@@ -1,4 +1,3 @@
-import AppPage from './App'
-import ArticlePage from './Article'
+import TeamTasksPage from './teamTasks'
 
-export { AppPage, ArticlePage }
+export { TeamTasksPage }

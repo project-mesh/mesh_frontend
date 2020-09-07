@@ -7,16 +7,12 @@ export const builder = (data, code = 0, isSuccess = true, message = '', headers 
   if (!data) return responseBody
   responseBody.data = { ...data }
   responseBody.error_code = 0
-  responseBody.data.isSuccess = true
-  responseBody.data.msg = ''
-  if (code !== undefined && code !== 0) {
+  responseBody.data.isSuccess = isSuccess
+  responseBody.data.msg = message
+  if (typeof code === 'number') {
     responseBody.error_code = code
   }
-  if (!isSuccess) {
-    responseBody.data.isSuccess = false
-    responseBody.data.msg = message
-  }
-  if (headers !== null && typeof headers === 'object' && Object.keys(headers).length > 0) {
+  if (typeof headers === 'object' && Object.keys(headers).length > 0) {
     responseBody._headers = headers
   }
   return responseBody
