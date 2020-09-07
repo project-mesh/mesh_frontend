@@ -10,6 +10,9 @@ import store from './store'
 import themePluginConfig from '../config/themePluginConfig'
 import VCharts from 'v-charts'
 
+import Blob from './excel/Blob'
+import Export2Excel from './excel/Export2Excel.js'
+
 // mock
 // WARNING: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.
 import './mock'

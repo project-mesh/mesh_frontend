@@ -78,6 +78,9 @@
             <ve-wordcloud :data="performerData"></ve-wordcloud>
           </a-card>
         </a-col>
+        <a-col :sm="24" :md="10" class="col">
+          <a-button type="primary" @click="export2Excel">导出统计数据到本地</a-button>
+        </a-col>
       </a-row>
     </a-layout-content>
   </a-layout>
@@ -87,6 +90,7 @@
 import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
 import { mapGetters } from 'vuex'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'Statistics',
@@ -179,6 +183,27 @@ export default {
 
       return data
     },
+    formatedProjectTasks() {
+      const formatedData = cloneDeep(this.projectTasks)
+
+      formatedData.forEach((task) => {
+        switch (task.priority) {
+          case 1:
+            task.priority = '普通'
+            break
+          case 2:
+            task.priority = '较高'
+            break
+          case 3:
+            task.priority = '极高'
+            break
+        }
+
+        task.createTime = new Date(task.createTime).toLocaleString()
+      })
+
+      return formatedData
+    },
   },
   methods: {
     performeShowRing() {
@@ -196,6 +221,29 @@ export default {
     finishShowLine() {
       console.log('显示折线图')
       this.finishHistogramVisible = false
+    },
+    //导出的方法
+    export2Excel() {
+      require.ensure([], () => {
+        const { export_json_to_excel } = require('../../../excel/Export2Excel')
+        const tHeader = ['任务名', '任务状态', '创建时间', '截止日期', '优先级', '创建人', '负责人'] // 设置Excel的表格第一行的标题
+        const filterVal = [
+          'taskName',
+          'status',
+          'createTime',
+          'deadline',
+          'priority',
+          'founder',
+          'principal',
+        ] // index、nickName、name是tableData里对象的属性
+        const list = this.formatedProjectTasks //把data里的tableData存到list
+        const data = this.formatJson(filterVal, list)
+        export_json_to_excel(tHeader, data, '统计数据') //导出Excel 文件名
+      })
+    },
+
+    formatJson(filterVal, jsonData) {
+      return jsonData.map((v) => filterVal.map((j) => v[j]))
     },
   },
   mounted() {
