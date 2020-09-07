@@ -117,6 +117,17 @@ export const asyncRouterMap = [
                   permission: ['user'],
                 },
               },
+              {
+                path: '/project/detail/bulletins',
+                name: 'bulletins',
+                // TODO: 修改成对应页面
+                component: () => import('@/views/project/projectDetails/bulletins/Bulletins'),
+                meta: {
+                  title: '公告',
+                  keepAlive: true,
+                  permission: ['user'],
+                },
+              },
             ],
           },
         ],
@@ -174,12 +185,14 @@ export const asyncRouterMap = [
           permission: ['user'],
         },
         children: [
+          // 个人中心
           {
             path: '/account/center',
             name: 'center',
             component: () => import('@/views/account/center'),
             meta: { title: '个人中心', keepAlive: true, permission: ['user'] },
           },
+          // 设置
           {
             path: '/account/settings',
             name: 'settings',
@@ -188,11 +201,19 @@ export const asyncRouterMap = [
             redirect: '/account/settings/base',
             hideChildrenInMenu: true,
             children: [
+              // 基本设置
               {
                 path: '/account/settings/base',
                 name: 'baseSettings',
                 component: () => import('@/views/account/settings/BaseSetting'),
                 meta: { title: '基本设置', hidden: true, permission: ['user'] },
+              },
+              // 个性化
+              {
+                path: '/account/settings/custom',
+                name: 'customSettings',
+                component: () => import('@/views/exception/404'),
+                meta: { title: '个性化设置', hidden: true, permission: ['user'] },
               },
             ],
           },
