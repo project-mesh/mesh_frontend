@@ -40,6 +40,9 @@ const user = {
         sendRequest('login', userInfo)
           .then((response) => {
             // console.log(response.data.token)
+            // TODO: 去掉token
+            response.data.token = 'fake token'
+            // end
             const token = response.data.token
             console.log('token: ', token)
             storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
