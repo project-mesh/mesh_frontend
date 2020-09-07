@@ -9,8 +9,8 @@ import {
   TOGGLE_CONTENT_WIDTH,
   TOGGLE_COLOR,
   TOGGLE_WEAK,
-  APP_LANGUAGE,
 } from '@/store/mutation-types'
+import { loadLanguageAsync } from '@/locales'
 
 const app = {
   state: {
@@ -23,6 +23,8 @@ const app = {
     fixedSidebar: false,
     color: '',
     weak: false,
+    lang: 'zh-CN',
+    _antLocale: {},
   },
   mutations: {
     [SIDEBAR_TYPE]: (state, type) => {
@@ -59,6 +61,19 @@ const app = {
     [TOGGLE_WEAK]: (state, mode) => {
       state.weak = mode
       storage.set(TOGGLE_WEAK, mode)
+    },
+  },
+  actions: {
+    setLang(lang) {
+      return new Promise((resolve, reject) => {
+        loadLanguageAsync(lang)
+          .then(() => {
+            resolve()
+          })
+          .catch((e) => {
+            reject(e)
+          })
+      })
     },
   },
 }
