@@ -6,7 +6,7 @@
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
-        <a-menu-item v-if="menu" key="center" @click="handleToCenter">
+        <a-menu-item v-if="menu && role === 'user'" key="center" @click="handleToCenter">
           <a-icon type="user" />
           个人中心
         </a-menu-item>
@@ -44,14 +44,18 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['username', 'avatar']),
+    ...mapGetters(['username', 'avatar', 'role']),
   },
   methods: {
     handleToCenter() {
       this.$router.push({ path: '/account/center' })
     },
     handleToSettings() {
-      this.$router.push({ path: '/account/settings' })
+      if (this.role === 'user') {
+        this.$router.push({ path: '/account/settings' })
+      } else {
+        this.$router.push({ path: '/account/base' })
+      }
     },
     handleLogout() {
       Modal.confirm({

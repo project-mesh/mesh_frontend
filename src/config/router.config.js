@@ -224,14 +224,31 @@ export const asyncRouterMap = [
       {
         path: '/management',
         name: 'management',
+        component: RouteView,
+        redirect: '/management/userManagement',
         // TODO: 修改成对应页面
-        component: () => import('@/views/management/UserManagement'),
         meta: {
           title: '管理',
           icon: 'tool',
           keepAlive: true,
           permission: ['admin'],
         },
+        children: [
+          {
+            path: '/management/userManagement',
+            name: 'userManagement',
+            beforeEnter: guard,
+            component: () => import('@/views/management/UserManagement'),
+            meta: { title: '用户管理', keepAlive: true, permission: ['admin'] },
+          },
+          {
+            path: '/management/statistics',
+            name: 'adminStatistics',
+            beforeEnter: guard,
+            component: () => import('@/views/exception/404'),
+            meta: { title: '实时数据', keepAlive: true, permission: ['admin'] },
+          },
+        ],
       },
       {
         path: '/account',
