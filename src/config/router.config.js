@@ -245,7 +245,7 @@ export const asyncRouterMap = [
             path: '/management/statistics',
             name: 'adminStatistics',
             beforeEnter: guard,
-            component: () => import('@/views/exception/404'),
+            component: () => import('@/views/management/AdminStatistics'),
             meta: { title: '实时数据', keepAlive: true, permission: ['admin'] },
           },
         ],
