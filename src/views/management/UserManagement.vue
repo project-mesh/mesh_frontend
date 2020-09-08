@@ -1,54 +1,84 @@
 <template>
   <div>
-    <div id="userQueryTitle">搜索用户名</div>
+    <div id="userQueryTitle">搜索用户关键词</div>
     <div class="ant-pro-page-header-search">
       <a-input-search size="large" style="width: 80%; max-width: 522px">
         <template v-slot:enterButton>搜索</template>
       </a-input-search>
     </div>
     <div id="userShowTitle">搜索结果</div>
-    <a-list
-      item-layout="vertical"
-      size="large"
-      :pagination="pagination"
-      :data-source="listData"
-      id="userQueryResultList"
-      bordered
-    >
-      <a-list-item slot="renderItem" key="item.title" slot-scope="item">
-        <template v-for="{ type, text } in actions" slot="actions">
-          <span :key="type">
-            <a-icon :type="type" style="margin-right: 8px" />
+    <a-table :columns="columns" :data-source="data" id="userQueryShowTable" bordered>
+      <template v-for="col in ['name', 'age', 'address']" :slot="col" slot-scope="text, record">
+        <div :key="col">
+          <a-input
+            v-if="record.editable"
+            style="margin: -5px 0"
+            :value="text"
+            @change="(e) => handleChange(e.target.value, record.key, col)"
+          />
+          <template v-else>
             {{ text }}
+          </template>
+        </div>
+      </template>
+      <template slot="operation" slot-scope="text, record">
+        <div class="editable-row-operations">
+          <span v-if="record.editable">
+            <a @click="() => save(record.key)">保存</a>
+            <a-popconfirm title="确定要取消吗？" @confirm="() => cancel(record.key)">
+              <a>取消</a>
+            </a-popconfirm>
           </span>
-        </template>
-        <img
-          slot="extra"
-          width="272"
-          alt="logo"
-          src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-        />
-        <a-list-item-meta :description="item.description">
-          <a slot="title" :href="item.href">{{ item.title }}</a>
-          <a-avatar slot="avatar" :src="item.avatar" />
-        </a-list-item-meta>
-        {{ item.content }}
-      </a-list-item>
-    </a-list>
+          <span v-else>
+            <a :disabled="editingKey !== ''" @click="() => edit(record.key)">编辑</a>
+          </span>
+          <a :disabled="editingKey !== ''">修改密码</a>
+        </div>
+      </template>
+    </a-table>
   </div>
 </template>
 
 <script>
-const listData = []
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `ant design vue part ${i}`,
-    avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-    description:
-      'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-    content:
-      'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+const columns = [
+  {
+    title: '姓名',
+    dataIndex: 'name',
+    width: '15%',
+    scopedSlots: { customRender: 'name' },
+  },
+  {
+    title: '头像',
+    dataIndex: 'avatar',
+    width: '15%',
+    scopedSlots: { customRender: 'avatar' },
+  },
+  {
+    title: '年龄',
+    dataIndex: 'age',
+    width: '15%',
+    scopedSlots: { customRender: 'age' },
+  },
+  {
+    title: '地址',
+    dataIndex: 'address',
+    width: '40%',
+    scopedSlots: { customRender: 'address' },
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    scopedSlots: { customRender: 'operation' },
+  },
+]
+
+const data = []
+for (let i = 0; i < 100; i++) {
+  data.push({
+    key: i.toString(),
+    name: `Edrward ${i}`,
+    age: 32,
+    address: `London Park no. ${i}`,
   })
 }
 import {} from 'vuex'
@@ -56,24 +86,57 @@ import {} from 'vuex'
 export default {
   components: {},
   data() {
+    this.cacheData = data.map((item) => ({ ...item }))
     return {
-      listData,
-      pagination: {
-        onChange: (page) => {
-          console.log(page)
-        },
-        pageSize: 3,
-      },
-      actions: [
-        { type: 'star-o', text: '156' },
-        { type: 'like-o', text: '156' },
-        { type: 'message', text: '2' },
-      ],
+      data,
+      columns,
+      editingKey: '',
     }
   },
   computed: {},
   mounted() {},
-  methods: {},
+  methods: {
+    handleChange(value, key, column) {
+      const newData = [...this.data]
+      const target = newData.filter((item) => key === item.key)[0]
+      if (target) {
+        target[column] = value
+        this.data = newData
+      }
+    },
+    edit(key) {
+      const newData = [...this.data]
+      const target = newData.filter((item) => key === item.key)[0]
+      this.editingKey = key
+      if (target) {
+        target.editable = true
+        this.data = newData
+      }
+    },
+    save(key) {
+      const newData = [...this.data]
+      const newCacheData = [...this.cacheData]
+      const target = newData.filter((item) => key === item.key)[0]
+      const targetCache = newCacheData.filter((item) => key === item.key)[0]
+      if (target && targetCache) {
+        delete target.editable
+        this.data = newData
+        Object.assign(targetCache, target)
+        this.cacheData = newCacheData
+      }
+      this.editingKey = ''
+    },
+    cancel(key) {
+      const newData = [...this.data]
+      const target = newData.filter((item) => key === item.key)[0]
+      this.editingKey = ''
+      if (target) {
+        Object.assign(target, this.cacheData.filter((item) => key === item.key)[0])
+        delete target.editable
+        this.data = newData
+      }
+    },
+  },
 }
 </script>
 
@@ -88,7 +151,10 @@ export default {
   font-size: 125%;
   margin: 1em;
 }
-#userQueryResultList {
+#userQueryShowTable {
   margin: 1em;
+}
+.editable-row-operations a {
+  margin-right: 8px;
 }
 </style>
