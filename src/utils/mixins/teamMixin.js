@@ -9,7 +9,6 @@ export default {
     // 判断是否需要重新加载团队信息
     needToLoadTeamInfo() {
       const currentRoute = this.$route
-
       // 如果团队改变，返回true
       if (
         currentRoute.query &&
@@ -17,11 +16,10 @@ export default {
         currentRoute.query.teamId !== this.teamId
       ) {
         return true
-      } else if (!this.teamId && this.preference.preferenceTeam) {
+      } else if (!this.teamId) {
         // 如果当前沒有团队信息且存在偏好团队，返回true
         return true
       }
-
       return false
     },
     loadTeamInfo() {
@@ -66,9 +64,13 @@ export default {
     },
   },
   mounted() {
-    this.loadTeamInfo()
+    if (this.preference.preferenceTeam !== -1) {
+      this.loadTeamInfo()
+    }
   },
   activated() {
-    this.loadTeamInfo()
+    if (this.preference.preferenceTeam !== -1) {
+      this.loadTeamInfo()
+    }
   },
 }

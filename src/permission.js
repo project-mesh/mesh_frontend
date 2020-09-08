@@ -65,7 +65,6 @@ router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   if (storage.get(ACCESS_TOKEN)) {
     if (!store.getters.username) {
-      alert('1')
       store
         .dispatch('Login', { token: storage.get(ACCESS_TOKEN) })
         .then((res) => {
@@ -76,7 +75,6 @@ router.beforeEach((to, from, next) => {
           store.dispatch('Logout')
         })
     } else {
-      alert('2')
       handle(to, from, next)
     }
   } else {
@@ -84,7 +82,6 @@ router.beforeEach((to, from, next) => {
       // 在免登录白名单，直接进入
       next()
     } else {
-      alert('3')
       next({ path: loginRoutePath })
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }

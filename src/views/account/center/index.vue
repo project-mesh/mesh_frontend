@@ -18,10 +18,12 @@
 
 <script>
 import { PageView, RouteView } from '@/layouts'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { TeamTasksPage } from './page'
+import teamMixin from '@/utils/mixins/teamMixin'
 
 export default {
+  mixins: [teamMixin],
   components: {
     RouteView,
     PageView,
@@ -42,12 +44,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['nickname', 'avatar']),
+    ...mapGetters(['nickname', 'avatar', 'teamId']),
   },
-  mounted() {
-    this.getTeams()
-  },
+  mounted() {},
   methods: {
+    ...mapActions(['queryTeamTasks']),
     handleTabChange(key, type) {
       this[type] = key
     },

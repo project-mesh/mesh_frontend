@@ -8,7 +8,6 @@
     <div class="operate">
       <a-button type="dashed" style="width: 100%" icon="plus" @click="addmember">邀请成员</a-button>
     </div>
-
     <a-list size="large">
       <a-list-item :key="index" v-for="(item, index) in teamMembers">
         <a-list-item-meta>

@@ -43,6 +43,9 @@ const user = {
             // TODO: 去掉token
             response.data.token = 'fake token'
             // end
+            //TODO: 测试无团队情况
+            // response.data.preference.preferenceTeam = -1
+            // end
             const token = response.data.token
             console.log('token: ', token)
             storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
