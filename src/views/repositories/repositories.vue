@@ -21,7 +21,12 @@
       :data-source="teamKBWithFormatedCreateTime"
       :pagination="pagination(teamKBWithFormatedCreateTime)"
     >
-      <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
+      <a-list-item
+        slot="renderItem"
+        key="item.knowledgeId"
+        slot-scope="item, index"
+        :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
+      >
         <a-list-item-meta :title="item.knowledgeName">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
         </a-list-item-meta>
@@ -282,7 +287,12 @@ export default {
   width: 25%;
   margin: 0 50px;
 }
-
+.changeColor {
+  background-color: #f0f0f0;
+}
+.changeWidth {
+  background-color: #ffffff;
+}
 .list-content-item {
   color: rgba(0, 0, 0, 0.45);
   display: inline-block;

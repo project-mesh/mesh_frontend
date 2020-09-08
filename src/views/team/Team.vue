@@ -10,11 +10,21 @@
     </div>
 
     <a-list size="large">
-      <a-list-item :key="index" v-for="(item, index) in teamMembers">
+      <a-list-item
+        :key="index"
+        v-for="(item, index) in teamMembers"
+        :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
+      >
         <a-list-item-meta>
           <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
-          <a slot="title">{{ item.username }}</a>
         </a-list-item-meta>
+        <a-popover title="成员信息">
+          <template slot="content">
+            <p>{{ item.username }}</p>
+            <p>{{ item.username }}</p>
+          </template>
+          <a-button type="link">{{ item.username }}</a-button>
+        </a-popover>
         <div class="list-content">
           <div class="list-content-item">
             <span>职位</span>
@@ -125,8 +135,7 @@ export default {
         // modal props
         {
           title: '修改团队',
-          width: 400,
-          height: 240,
+          width: 700,
           centered: true,
           maskClosable: false,
         }
@@ -170,5 +179,14 @@ export default {
 }
 div.list-content-item {
   margin-left: 200px;
+}
+.changeColor {
+  background-color: #f0f0f0;
+}
+.changeWidth {
+  background-color: #ffffff;
+}
+.ant-btn-link {
+  margin-right: 200px;
 }
 </style>
