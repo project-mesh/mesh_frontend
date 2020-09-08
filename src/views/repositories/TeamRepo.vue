@@ -19,7 +19,7 @@
       <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
     </a-modal>
 
-    <a-list size="large" :data-source="filteredTeamKB" :pagination="pagination(filteredTeamKB)">
+    <!-- <a-list size="large" :data-source="filteredTeamKB" :pagination="pagination(filteredTeamKB)">
       <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
         <a-list-item-meta :title="item.knowledgeName">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
@@ -33,18 +33,6 @@
             <a :disabled="!isTeamAdminOrUploader(item)">删除</a>
           </a-popconfirm>
         </div>
-        <!-- <div slot="actions">
-          <a-dropdown>
-            <a-menu slot="overlay">
-              <a-menu-item><a @click="edit(item)">编辑</a></a-menu-item>
-              <a-menu-item><a>删除</a></a-menu-item>
-            </a-menu>
-            <a>
-              更多
-              <a-icon type="down" />
-            </a>
-          </a-dropdown>
-        </div> -->
         <div class="list-content">
           <div class="list-content-item">
             <span>上传人</span>
@@ -56,18 +44,63 @@
           </div>
         </div>
       </a-list-item>
-    </a-list>
+    </a-list> -->
+    <a-table
+      size="large"
+      :columns="columns"
+      :row-key="rowKey"
+      :data-source="filteredTeamKB"
+      :pagination="pagination(filteredTeamKB)"
+    >
+      <template slot="knowledgeName" slot-scope="text, item">
+        <editable-cell
+          :text="text"
+          :editing="item.knowledgeNameEditing"
+          :validators="[[isNotEmpty, '知识库标题不能为空']]"
+          @change="handleOk(item, 'knowledgeName', $event)"
+          @editStatusChange="handleEditStatusChange(item, 'knowledgeName', $event)"
+        >
+          <span>{{ text }}</span>
+        </editable-cell>
+      </template>
+      <template slot="hyperlink" slot-scope="text, item">
+        <editable-cell
+          :text="text"
+          :editing="item.hyperlinkEditing"
+          :validators="[[isURL, 'url地址无效！']]"
+          @change="handleOk(item, 'hyperlink', $event)"
+          @editStatusChange="handleEditStatusChange(item, 'hyperlink', $event)"
+        >
+          <a :href="`http://${text}`">
+            {{ text }}
+          </a>
+        </editable-cell>
+      </template>
+      <div class="uploader-box" slot="uploader" slot-scope="text">
+        <a-avatar :src="getAvatar(text)" />
+        <span style="margin-left: 10px">{{ text }}</span>
+      </div>
+      <span slot="action" slot-scope="text, item, index">
+        <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
+          <a :disabled="!isTeamAdminOrUploader(item)">删除</a>
+        </a-popconfirm>
+      </span>
+    </a-table>
   </a-card>
 </template>
 
 <script>
 // 演示如何使用 this.$dialog 封装 modal 组件
+import { mapGetters, mapActions } from 'vuex'
+import validator from 'validator'
+
 import TaskForm from './TaskForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
-import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
+import EditableCell from './EditableCell'
 import _ from 'lodash'
+import Mock from 'mockjs2'
 
 const columns = [
   {
@@ -75,6 +108,7 @@ const columns = [
     dataIndex: 'knowledgeName',
     key: 'knowledgeName',
     ellipsis: true,
+    scopedSlots: { customRender: 'knowledgeName' },
   },
   {
     title: '地址',
@@ -87,6 +121,7 @@ const columns = [
     title: '上传人',
     dataIndex: 'uploaderName',
     key: 'uploaderName',
+    scopedSlots: { customRender: 'uploader' },
     ellipsis: true,
   },
   {
@@ -105,8 +140,11 @@ const columns = [
 
 export default {
   name: 'Repositories',
-  components: { TaskForm },
   mixins: [teamMixin, paginationMixin],
+  components: {
+    EditableCell,
+    TaskForm,
+  },
   data() {
     return {
       // data,
@@ -118,6 +156,15 @@ export default {
       modalTitle: '新建',
       cardLoading: false,
       filterText: '',
+      newKB: {
+        knowledgeId: Mock.mock('@id'),
+        knowledgeName: '',
+        hyperlink: '',
+        createTime: Date.now(),
+        uploaderName: this.username,
+        knowledgeNameEditing: false,
+        hyperlinkEditing: false,
+      },
     }
   },
   computed: {
@@ -134,15 +181,22 @@ export default {
       return formatedData
     },
     filteredTeamKB() {
-      return this.teamKBWithFormatedCreateTime.filter(
+      const filtered = this.teamKBWithFormatedCreateTime.filter(
         (knowledge) =>
           knowledge.knowledgeName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase()) ||
           knowledge.hyperlink.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
       )
+
+      if (this.creating) filtered.unshift(this.newKB)
+
+      return filtered
+    },
+    creating() {
+      return this.newKB.knowledgeNameEditing || this.newKB.hyperlinkEditing
     },
   },
   methods: {
-    ...mapActions(['queryTeamKB', 'queryTeam', 'deleteTeamKB']),
+    ...mapActions(['queryTeamKB', 'queryTeam', 'deleteTeamKB', 'updateTeamKB', 'createTeamKB']),
     isTeamAdminOrUploader(knowledge) {
       return this.username === this.teamAdminName || this.username === knowledge.uploaderName
     },
@@ -155,31 +209,78 @@ export default {
       return user ? '' : user.avatar
     },
     add() {
-      this.modalTitle = '新建'
-      this.selectedItem = {}
-      this.visible = true
+      // this.modalTitle = '新建'
+      // this.selectedItem = {}
+      // this.visible = true
+      if (this.creating) {
+        return this.$warning({
+          content: '当前已有知识库正在创建！',
+        })
+      }
+
+      this.newKB.knowledgeNameEditing = true
+      this.newKB.hyperlinkEditing = true
+      this.newKB.uploaderName = this.username
     },
     edit(record) {
       this.modalTitle = '编辑'
       this.selectedItem = record
       this.visible = true
     },
-    handleOk() {
-      this.confirmLoading = true
-      this.$refs.taskForm
-        .handleSubmit()
+    handleOk(item, key, value) {
+      if (item.knowledgeNameEditing || item.hyperlinkEditing) {
+        this.newKB[key] = value
+        this.newKB[`${key}Editing`] = false
+        if (!item.knowledgeNameEditing && !item.hyperlinkEditing) {
+          const requestData = {
+            username: this.username,
+            teamId: this.teamId,
+            knowledgeName: this.newKB.knowledgeName,
+            hyperlink: this.newKB.hyperlink,
+          }
+
+          this.create(requestData)
+        }
+      } else this.update(item, key, value)
+    },
+    handleEditStatusChange(item, key, value) {
+      if (`${key}Editing` in item) {
+        this.newKB[`${key}Editing`] = value
+      }
+    },
+    create(requestData) {
+      this.createTeamKB(requestData)
         .catch((err) => {
-          console.error('In teamRepo, update team KB failed, ', err)
+          this.$notification.error({
+            message: 'create TeamKB fail!',
+            description: err.message,
+          })
         })
         .finally(() => {
-          this.visible = false
-          this.confirmLoading = false
+          this.newKB.knowledgeName = ''
+          this.newKB.knowledgeNameEditing = false
+          this.newKB.hyperlink = ''
+          this.newKB.hyperlinkEditing = false
         })
+    },
+    update(item, key, value) {
+      const { knowledgeId } = item
+      this.updateTeamKB({
+        username: this.username,
+        teamId: this.teamId,
+        knowledgeId,
+        [key]: value,
+      }).catch((err) => {
+        this.$notification.error({
+          message: '更新知识库失败',
+          description: err.message,
+        })
+      })
     },
     handleCancel() {
       this.visible = false
     },
-    deleteKB(knowledge, index) {
+    deleteKB(knowledge) {
       this.deleteTeamKB({
         username: this.username,
         teamId: this.teamId,
@@ -197,6 +298,10 @@ export default {
           })
         )
     },
+    isNotEmpty(value) {
+      return !validator.isEmpty(value, { ignore_whitespace: true })
+    },
+    isURL: validator.isURL,
   },
 }
 </script>
@@ -238,5 +343,11 @@ export default {
     margin-bottom: 0;
     line-height: 22px;
   }
+}
+
+.uploader-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 </style>
