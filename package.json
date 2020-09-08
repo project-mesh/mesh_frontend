@@ -29,6 +29,7 @@
     "nprogress": "^0.2.0",
     "store": "^2.0.12",
     "v-charts": "^1.19.0",
+    "validator": "^13.1.1",
     "viser-vue": "^2.4.6",
     "vue": "^2.6.10",
     "vue-clipboard2": "^0.2.1",
