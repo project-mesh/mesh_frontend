@@ -32,6 +32,7 @@ const getters = {
   bulletins: (state) => state.projectInfo.bulletins,
   notifications: (state) => state.notification.notifications,
   sessionKey: (state) => state.app.sessionKey,
+  isCreatingTeam: (state) => state.app.creatingTeam,
 }
 
 export default getters

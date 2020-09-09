@@ -33,6 +33,7 @@ const app = {
     lang: 'en-US',
     _antLocale: {},
     sessionKey: '.AspNetCore.Session',
+    creatingTeam: false,
   },
   mutations: {
     [SIDEBAR_TYPE]: (state, type) => {
@@ -82,6 +83,9 @@ const app = {
     [TOGGLE_MULTI_TAB]: (state, bool) => {
       storage.set(TOGGLE_MULTI_TAB, bool)
       state.multiTab = bool
+    },
+    TOGGLE_CREATING_TEAM: (state, bool) => {
+      state.creatingTeam = bool
     },
   },
   actions: {

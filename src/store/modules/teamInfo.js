@@ -42,32 +42,6 @@ const teamInfo = {
       state.adminName = data.adminName
       state.members = data.members
       state.teamProjects = data.teamProjects
-      // state.teamProjects = [
-      //   {
-      //     projectName: 'Ant Design Title 1',
-      //     projectId: 'Ant Design Title 1',
-      //     adminName: '周杰桀桀桀桀桀',
-      //     projectLogo: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
-      //   },
-      //   {
-      //     projectName: 'Ant Design Title 2',
-      //     projectId: 'Ant Design Title 2',
-      //     adminName: '蔡徐坤',
-      //     projectLogo: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
-      //   },
-      //   {
-      //     projectName: 'Ant Design Title 3',
-      //     projectId: 'Ant Design Title 3',
-      //     adminName: '郭麒麟',
-      //     projectLogo: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
-      //   },
-      //   {
-      //     projectName: 'Ant Design Title 4',
-      //     projectId: 'Ant Design Title 4',
-      //     adminName: '吴亦凡',
-      //     projectLogo: 'https://p.qqan.com/up/2019-9/2019092509041435004.jpg',
-      //   },
-      // ]
     },
     ADD_PROJECT: (state, project) => {
       state.teamProjects.push(project)
@@ -111,6 +85,8 @@ const teamInfo = {
         sendRequest('createTeam', requestData)
           .then((response) => {
             console.log('response from createTeam action is:', response)
+            //新建团队没有返回任务列表，增加一个空列表避免undefined
+            response.data.team.teamProjects = []
             commit('SET_ALL', response.data.team)
             resolve(response)
           })

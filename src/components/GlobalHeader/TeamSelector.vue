@@ -8,7 +8,7 @@
       <a-menu-item v-for="team in teams" :key="team.teamId" @click="handleTeamChange(team)">
         {{ team.teamName }}
       </a-menu-item>
-      <a-menu-item>
+      <a-menu-item @click="handleTeamCreate">
         <a-icon type="plus" />
         <span>创建新团队</span>
       </a-menu-item>
@@ -18,14 +18,16 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-
+import store from '../../store'
+import { mapMutations } from 'vuex'
 export default {
   name: 'TeamSelector',
   computed: {
-    ...mapGetters(['username', 'teamName', 'teams', 'teamId']),
+    ...mapGetters(['username', 'teamName', 'teams', 'teamId', 'isCreatingTeam']),
   },
   methods: {
     ...mapActions(['queryTeam', 'queryTeamKB', 'updatePreferenceTeam']),
+    ...mapMutations(['TOGGLE_CREATING_TEAM']),
     async handleTeamChange(team) {
       this.updatePreferenceTeam({ username: this.username, preferenceTeam: team.teamId }).then(
         () => {
@@ -38,6 +40,9 @@ export default {
           teamId: team.teamId,
         },
       })
+    },
+    handleTeamCreate() {
+      this.TOGGLE_CREATING_TEAM(true)
     },
   },
 }
