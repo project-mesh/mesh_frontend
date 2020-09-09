@@ -2,11 +2,35 @@
   <div class="account-settings-info-view">
     <a-row :gutter="16">
       <a-col :md="24" :lg="16">
-        <a-form layout="vertical">
-          <a-form-item label="账号">
-            <p>{{ username }}</p>
+        <a-form layout="horizontal" :form="form">
+          <a-form-item label="账号/邮箱">
+            <div>{{ username }}</div>
+          </a-form-item>
+          <a-form-item label="昵称">
+            <a-input placeholder="给自己起个名字" />
+          </a-form-item>
+          <a-form-item label="生日">
+            <a-date-picker @change="onChange" />
+            <icon-font type="icon-juxiezuo" class="xingzuo" />
+            <icon-font type="icon-tuxiao" class="shengxiao" />
+          </a-form-item>
+          <a-form-item label="地址">
+            <a-cascader
+              v-decorator="[
+                'residence',
+                {
+                  initialValue: ['zhejiang', 'hangzhou', 'xihu'],
+                  rules: [{ type: 'array', required: true, message: '请输入你的地址' }],
+                },
+              ]"
+              :options="city"
+            />
+          </a-form-item>
+          <a-form-item label="个性签名">
+            <a-textarea v-decorator="['description']"></a-textarea>
           </a-form-item>
           <a-form-item>
+            <a-button type="primary">保存</a-button>
             <a-button class="operate" style="margin-left: 8px" @click="add">修改密码</a-button>
           </a-form-item>
         </a-form>
@@ -26,17 +50,58 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { Icon } from 'ant-design-vue'
 import AvatarModal from './AvatarModal'
 import CodeForm from './CodeForm'
+const IconFont = Icon.createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_2053325_2myvezomfgb.js',
+})
+const city = [
+  {
+    value: 'zhejiang',
+    label: 'Zhejiang',
+    children: [
+      {
+        value: 'hangzhou',
+        label: 'Hangzhou',
+        children: [
+          {
+            value: 'xihu',
+            label: 'West Lake',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    value: 'jiangsu',
+    label: 'Jiangsu',
+    children: [
+      {
+        value: 'nanjing',
+        label: 'Nanjing',
+        children: [
+          {
+            value: 'zhonghuamen',
+            label: 'Zhong Hua Men',
+          },
+        ],
+      },
+    ],
+  },
+]
+const birthDayStr = '2000-06-13'
 export default {
   components: {
     AvatarModal,
     CodeForm,
+    IconFont,
   },
   computed: mapGetters(['username']),
   data() {
     return {
       // cropper
+      city,
       preview: {},
       option: {
         img: '/avatar2.jpg',
@@ -88,6 +153,9 @@ export default {
         }
       )
     },
+  },
+  mounted() {
+    console.log('wzzzzzzzzj', city)
   },
 }
 </script>
@@ -146,5 +214,14 @@ export default {
     border-radius: 50%;
     overflow: hidden;
   }
+}
+
+.xingzuo {
+  margin-left: 2%;
+  font-size: 18px;
+}
+.shengxiao {
+  margin-left: 2%;
+  font-size: 22px;
 }
 </style>

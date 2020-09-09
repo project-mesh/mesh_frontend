@@ -31,6 +31,7 @@ const getters = {
   projectKB: (state) => state.projectInfo.knowledgeBase,
   bulletins: (state) => state.projectInfo.bulletins,
   notifications: (state) => state.notification.notifications,
+  sessionKey: (state) => state.app.sessionKey,
 }
 
 export default getters

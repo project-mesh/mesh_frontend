@@ -5,6 +5,7 @@ import Antd from 'ant-design-vue'
 import Viser from 'viser-vue'
 import VueCropper from 'vue-cropper'
 import 'ant-design-vue/dist/antd.less'
+import VueCookies from 'vue-cookies'
 
 // ext library
 import VueClipboard from 'vue-clipboard2'
@@ -22,6 +23,7 @@ Vue.use(PageLoading)
 Vue.use(VueClipboard)
 Vue.use(PermissionHelper)
 Vue.use(VueCropper)
+Vue.use(VueCookies)
 
 process.env.NODE_ENV !== 'production' &&
   console.warn('[antd-pro] WARNING: Antd now use fulled imported.')

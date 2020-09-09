@@ -39,24 +39,27 @@ const user = {
       return new Promise((resolve, reject) => {
         sendRequest('login', userInfo)
           .then((response) => {
-            // console.log(response.data.token)
-            // TODO: 去掉token
-            response.data.token = 'fake token'
-            // end
-            //TODO: 测试无团队情况
-            // response.data.preference.preferenceTeam = -1
-            // end
-            const token = response.data.token
-            console.log('token: ', token)
-            storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
-            commit('SET_TOKEN', token)
-            commit('SET_USERNAME', response.data.username)
-            commit('SET_ROLE', response.data.role)
-            commit('SET_AVATAR', response.data.avatar)
-            commit('SET_TEAMS', response.data.teams)
-            commit('SET_PREFERENCE', response.data.preference)
-            // commit('SET_TEAMID', response.data.preference.preferenceTeam)
-            resolve(response)
+            if (!response.data.isSuccess) {
+              reject(response.data.msg)
+            } else {
+              // TODO: 去掉token
+              response.data.token = 'fake token'
+              // end
+              //TODO: 测试无团队情况
+              response.data.preference.preferenceTeam = -1
+              // end
+              const token = response.data.token
+              console.log('token: ', token)
+              storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
+              commit('SET_TOKEN', token)
+              commit('SET_USERNAME', response.data.username)
+              commit('SET_ROLE', response.data.role)
+              commit('SET_AVATAR', response.data.avatar)
+              commit('SET_TEAMS', response.data.teams)
+              commit('SET_PREFERENCE', response.data.preference)
+              // commit('SET_TEAMID', response.data.preference.preferenceTeam)
+              resolve(response)
+            }
           })
           .catch((error) => {
             reject(error)

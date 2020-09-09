@@ -1,4 +1,5 @@
 import storage from 'store'
+import Cookies from 'js-cookie'
 import {
   SIDEBAR_TYPE,
   TOGGLE_MOBILE_TYPE,
@@ -31,6 +32,7 @@ const app = {
     multiTab: true,
     lang: 'en-US',
     _antLocale: {},
+    sessionKey: '.AspNetCore.Session',
   },
   mutations: {
     [SIDEBAR_TYPE]: (state, type) => {

@@ -10,7 +10,7 @@
       </a-menu-item>
       <a-menu-item>
         <a-icon type="plus" />
-        <span>创建新项目</span>
+        <span>创建新团队</span>
       </a-menu-item>
     </a-menu>
   </a-dropdown>

@@ -5,7 +5,7 @@ import storage from 'store'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 // import notification from 'ant-design-vue/es/notification'
 import store from './store'
-
+import Cookies from 'js-cookie'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['login', 'register', 'registerResult'] // no redirect whitelist
@@ -62,17 +62,23 @@ function handle(to, from, next) {
 }
 
 router.beforeEach((to, from, next) => {
-  NProgress.start() // start progress bar
-  if (storage.get(ACCESS_TOKEN)) {
+  NProgress.start() // strt progress bar
+  if (Cookies.get(store.getters.sessionKey)) {
     if (!store.getters.username) {
       store
-        .dispatch('Login', { token: storage.get(ACCESS_TOKEN) })
+        .dispatch('Login')
         .then((res) => {
-          handle(to, from, next)
+          if (res.isSuccess) {
+            handle(to, from, next)
+          } else {
+            store.dispatch('Logout')
+          }
         })
         .catch((err) => {
           console.log('in begin login err is:', err)
           store.dispatch('Logout')
+          Cookies.remove(store.getters.sessionKey)
+          next({ path: loginRoutePath })
         })
     } else {
       handle(to, from, next)

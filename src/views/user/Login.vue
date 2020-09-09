@@ -105,6 +105,9 @@ export default {
         if (!err) {
           console.log('Received values of form: ', values)
           this.state.loginBtn = true
+          setTimeout(() => {
+            this.state.loginBtn = false
+          }, 1000)
           this.Login({ username: values.username, password: values.password })
             .then((res) => {
               console.log('success,boy', res)
