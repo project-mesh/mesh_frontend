@@ -2,7 +2,7 @@
   <div>
     <div id="userQueryTitle">搜索用户关键词</div>
     <div class="ant-pro-page-header-search">
-      <a-input-search size="large" style="width: 80%; max-width: 522px">
+      <a-input-search size="large" style="width: 80%; max-width: 522px" @search="onKeywordSearch">
         <template v-slot:enterButton>搜索</template>
       </a-input-search>
     </div>
@@ -16,9 +16,9 @@
       <template
         v-for="col in [
           'nickname',
-          'sex',
+          'gender',
           'birthday',
-          'location',
+          'address',
           'status',
           'description',
           'password',
@@ -72,14 +72,14 @@ const columns = [
   {
     title: '用户名',
     dataIndex: 'username',
-    width: '10%',
+    width: '9%',
     scopedSlots: { customRender: 'username' },
     align: 'center',
   },
   {
     title: '头像',
     dataIndex: 'avatar',
-    width: '5%',
+    width: '6%',
     scopedSlots: { customRender: 'avatar' },
     align: 'center',
   },
@@ -99,9 +99,9 @@ const columns = [
   },
   {
     title: '性别',
-    dataIndex: 'sex',
+    dataIndex: 'gender',
     width: '8%',
-    scopedSlots: { customRender: 'sex' },
+    scopedSlots: { customRender: 'gender' },
     align: 'center',
   },
   {
@@ -113,9 +113,9 @@ const columns = [
   },
   {
     title: '位置',
-    dataIndex: 'location',
+    dataIndex: 'address',
     width: '10%',
-    scopedSlots: { customRender: 'location' },
+    scopedSlots: { customRender: 'address' },
     align: 'center',
   },
   {
@@ -141,20 +141,7 @@ const columns = [
 ]
 
 const data = []
-for (let i = 0; i < 100; i++) {
-  data.push({
-    username: `Edrward ${i}`,
-    avatar: `test `,
-    nickname: `test ${i}`,
-    sex: '男',
-    birthday: '2000-08-20',
-    location: '郑州',
-    status: '摸鱼中',
-    age: 32,
-    description: '我就是经典废物',
-  })
-}
-import {} from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   components: {},
@@ -170,6 +157,32 @@ export default {
   computed: {},
   mounted() {},
   methods: {
+    ...mapActions(['queryUsers', 'updateUserPasswordAdmin']),
+    onKeywordSearch(value) {
+      this.queryUsers({ keyword: value })
+        .then((response) => {
+          data.splice(0, data.length)
+          let queryUser
+          for (queryUser in response.data) {
+            data.push({
+              username: queryUser.username,
+              avatar: queryUser.avatar,
+              nickname: queryUser.nickname,
+              gender: queryUser.gender,
+              birthday: queryUser.birthday,
+              address: queryUser.address,
+              status: queryUser.status,
+              description: queryUser.description,
+            })
+          }
+        })
+        .catch((error) => {
+          this.$notification.error({
+            message: '搜索关键词失败',
+            description: `${error.name}: ${error.message}`,
+          })
+        })
+    },
     handleChange(value, username, column) {
       const newData = [...this.data]
       const target = newData.filter((item) => username === item.username)[0]
@@ -206,6 +219,20 @@ export default {
       const targetCache = newCacheData.filter((item) => username === item.username)[0]
       if (target.editable) {
         if (target && targetCache) {
+          this.updateUserInformation({
+            username: username,
+            nickname: newCacheData.nickname,
+            gender: newCacheData.gender,
+            birthday: newCacheData.birthday,
+            address: newCacheData.address,
+            status: newCacheData.status,
+            description: newCacheData.description,
+          }).catch((error) => {
+            this.$notification.error({
+              message: '修改信息失败',
+              description: `${error.name}: ${error.message}`,
+            })
+          })
           delete target.editable
           this.data = newData
           Object.assign(targetCache, target)
@@ -213,6 +240,15 @@ export default {
         }
         this.editingKey = ''
       } else {
+        this.updateUserPasswordAdmin({ username: username, password: this.cachePassword }).catch(
+          (error) => {
+            this.$notification.error({
+              message: '修改密码失败',
+              description: `${error.name}: ${error.message}`,
+            })
+          }
+        )
+        this.cachePassword = ''
         delete target.changingPassword
         this.data = newData
       }
@@ -228,6 +264,7 @@ export default {
           this.data = newData
         }
       } else {
+        this.cachePassword = ''
         delete target.changingPassword
         this.data = newData
       }
