@@ -212,7 +212,7 @@ export const asyncRouterMap = [
               {
                 path: '/account/settings/custom',
                 name: 'customSettings',
-                component: () => import('@/views/exception/404'),
+                component: () => import('@/views/account/settings/Custom'),
                 meta: { title: '个性化设置', hidden: true, permission: ['user'] },
               },
             ],

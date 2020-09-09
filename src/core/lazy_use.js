@@ -47,6 +47,7 @@ import {
   notification,
   Calendar,
   Collapse,
+  Cascader,
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -100,11 +101,13 @@ Vue.use(Statistic)
 Vue.use(Descriptions)
 Vue.use(Calendar)
 Vue.use(Collapse)
+Vue.use(Cascader)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message
 Vue.prototype.$notification = notification
 Vue.prototype.$info = Modal.info
+
 Vue.prototype.$success = Modal.success
 Vue.prototype.$error = Modal.error
 Vue.prototype.$warning = Modal.warning
