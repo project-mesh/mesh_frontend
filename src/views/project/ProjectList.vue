@@ -90,6 +90,68 @@
         </a-form-item>
       </a-form>
     </a-modal>
+    <a-modal v-model="modifyProjForm" title="修改项目信息" centered @ok="handleSubmit">
+      <!-- 项目创建表单 -->
+      <a-form
+        :form="form"
+        :label-col="{ span: 5 }"
+        :wrapper-col="{ span: 16 }"
+        @submit="handleSubmit"
+      >
+        <a-form-item label="项目名称">
+          <a-input
+            v-decorator="['projName', { rules: [{ required: true, message: '请输入项目名称!' }] }]"
+            default-value="item.projectName"
+          />
+        </a-form-item>
+        <a-form-item label="项目权限">
+          <a-select
+            v-decorator="[
+              'projAuthority',
+              { rules: [{ required: true, message: '请选择项目权限!' }] },
+            ]"
+            placeholder="公有/私有"
+          >
+            <a-select-option value="public">公开</a-select-option>
+            <a-select-option value="private">私密</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="项目负责人">
+          <a-select
+            v-decorator="[
+              'projAdmin',
+              { rules: [{ required: true, message: '请选择项目负责人!' }] },
+            ]"
+            placeholder="选择项目管理员"
+          >
+            <a-select-option
+              v-for="member in teamMembers"
+              :key="member.username"
+              :value="member.username"
+            >
+              {{ member.username }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="项目封面">
+          <a-upload
+            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            list-type="picture-card"
+            :file-list="fileList"
+            @preview="handlePreview"
+            @change="handleChange"
+          >
+            <div v-if="fileList.length < 1">
+              <a-icon type="plus" />
+              <div class="ant-upload-text">Upload</div>
+            </div>
+          </a-upload>
+          <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+            <img alt="example" style="width: 100%" :src="previewImage" />
+          </a-modal>
+        </a-form-item>
+      </a-form>
+    </a-modal>
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="filteredProjects">
         <a-list-item slot="renderItem" slot-scope="item">
@@ -126,9 +188,12 @@
                 @click="tryJumpToProjectDetail(item.projectId)"
               />
               <template slot="actions" class="ant-card-actions">
-                <a-icon key="setting" type="setting" />
-                <a-icon key="edit" type="edit" />
-                <a-icon key="ellipsis" type="ellipsis" />
+                <a-icon key="edit" type="edit" @click="() => (modifyProjForm = true)" />
+                <a-icon
+                  key="delete"
+                  type="delete"
+                  @click="handleProjectDelete(item.projectId, item.projectName)"
+                />
               </template>
               <a-card-meta>
                 <div slot="title" class="card-text">{{ item.projectName }}</div>
@@ -208,6 +273,20 @@ export default {
     handleChange({ fileList }) {
       this.fileList = fileList
     },
+    //删除项目
+    handleProjectDelete(projectId, projectName) {
+      this.$confirm({
+        title: '您是否要删除该团队?',
+        content: (h) => <div style='color:red;'>请确认即将删除的团队名称：{{ projectName }}</div>,
+        onOk() {
+          console.log('OK')
+        },
+        onCancel() {
+          console.log('Cancel')
+        },
+        class: 'test',
+      })
+    },
     handleSubmit(e) {
       this.createProjForm = false
       e.preventDefault()
@@ -247,6 +326,7 @@ export default {
     return {
       listVisible: false, //是否显示列表 true显示列表 false显示卡片
       createProjForm: false, //显示创建项目的表单
+      modifyProjForm: false, //现实修改项目信息的表单
       previewVisible: false,
       previewImage: '',
       fileList: [],
