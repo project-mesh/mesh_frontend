@@ -134,7 +134,17 @@ export const asyncRouterMap = [
           permission: ['user'],
         },
       },
-
+      {
+        path: '/project_view',
+        name: 'project_view',
+        // TODO: 修改成对应页面
+        component: () => import('@/views/project_view/project_view'),
+        meta: {
+          title: '项目视图',
+          icon: 'form',
+          permission: ['user'],
+        },
+      },
       // 日历页面
       {
         path: '/calendar',
