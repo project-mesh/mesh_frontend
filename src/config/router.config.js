@@ -138,6 +138,18 @@ export const asyncRouterMap = [
         },
       },
 
+      // 团队知识库
+      {
+        path: '/hello',
+        name: 'hello',
+        // TODO: 修改成对应页面
+        component: () => import('@/views/exception/NoTeam'),
+        meta: {
+          title: '欢迎页',
+          icon: 'hello',
+        },
+      },
+
       // 日历页面
       {
         path: '/calendar',
