@@ -115,6 +115,8 @@ const projectInfo = {
                 commit('SET_MEMBERS', project.members)
                 commit('SET_VISIBILITY', project.isPublic)
               }
+
+              commit('UPDATE_PROJECT', project, { root: true })
             }
             resolve(res)
           })

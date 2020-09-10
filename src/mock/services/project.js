@@ -48,5 +48,32 @@ const createProject = (data) => {
   return utils.builder({ project: newProject })
 }
 
+const deleteProject = (data) => {
+  const prjIndex = projects.findIndex((prj) => prj.projectId === data.projectId)
+
+  if (prjIndex !== -1) {
+    projects.splice(prjIndex, 1)
+    return utils.builder({})
+  }
+
+  return utils.builder({}, 0, false, 'No Such Project`')
+}
+
+const updateProject = (data) => {
+  const updatePrj = projects.find((prj) => prj.projectId === data.projectId)
+
+  if (updatePrj) {
+    Object.keys(data).forEach((key) => {
+      if (key in updatePrj) updatePrj[key] = data[key]
+    })
+
+    return utils.builder({ project: updatePrj })
+  }
+
+  return utils.builder({}, 0, false, 'No Such Project`')
+}
+
 Mock.mock(/\/project/, 'get', utils.functionFactory(getProjects))
 Mock.mock(/\/project/, 'post', utils.functionFactory(createProject))
+Mock.mock(/\/project/, 'delete', utils.functionFactory(deleteProject))
+Mock.mock(/\/project/, 'patch', utils.functionFactory(updateProject))

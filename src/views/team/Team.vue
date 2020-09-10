@@ -47,7 +47,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['teamMembers', 'teamAdminName', 'teamName']),
+    ...mapGetters(['teamMembers', 'teamAdminName', 'teamName', 'team']),
   },
   methods: {
     addmember() {
@@ -132,6 +132,9 @@ export default {
         }
       )
     },
+  },
+  mounted() {
+    if (!this.teams || this.teams.length === 0) this.$router.replace({ name: 'noTeam' })
   },
 }
 </script>

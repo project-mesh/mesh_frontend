@@ -1,7 +1,7 @@
 <template>
   <div class="welcome-img">
     <img src="../../assets/welcome.png" width="500px" />
-    <a-button type="primary">创建你的第一个项目</a-button>
+    <a-button type="primary">创建你的第一个团队</a-button>
   </div>
 </template>
 <script>

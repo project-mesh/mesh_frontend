@@ -29,13 +29,19 @@
         </a-button>
       </div>
     </div>
-    <a-modal v-model="createProjForm" title="创建新项目" centered @ok="handleSubmit">
+    <a-modal
+      v-model="createProjForm"
+      title="创建新项目"
+      centered
+      @ok="handleCreateSubmit"
+      :ok-button-props="{ loading: createLoading }"
+    >
       <!-- 项目创建表单 -->
       <a-form
         :form="form"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 16 }"
-        @submit="handleSubmit"
+        @submit="handleCreateSubmit"
       >
         <a-form-item label="项目名称">
           <a-input
@@ -90,18 +96,29 @@
         </a-form-item>
       </a-form>
     </a-modal>
-    <a-modal v-model="modifyProjForm" title="修改项目信息" centered @ok="handleSubmit">
+    <a-modal
+      v-model="modifyProjForm"
+      title="修改项目信息"
+      centered
+      @ok="handleUpdateSubmit"
+      :ok-button-props="{ loading: updateLoading }"
+    >
       <!-- 项目创建表单 -->
       <a-form
         :form="form"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 16 }"
-        @submit="handleSubmit"
+        @submit="handleUpdateSubmit"
       >
         <a-form-item label="项目名称">
           <a-input
-            v-decorator="['projName', { rules: [{ required: true, message: '请输入项目名称!' }] }]"
-            default-value="item.projectName"
+            v-decorator="[
+              'projName',
+              {
+                initialValue: (selectedUpdatePrj && selectedUpdatePrj.projectName) || '',
+                rules: [{ required: true, message: '请输入项目名称!' }],
+              },
+            ]"
           />
         </a-form-item>
         <a-form-item label="项目权限">
@@ -188,12 +205,12 @@
                 @click="tryJumpToProjectDetail(item.projectId)"
               />
               <template slot="actions" class="ant-card-actions">
-                <a-icon key="edit" type="edit" @click="() => (modifyProjForm = true)" />
-                <a-icon
-                  key="delete"
-                  type="delete"
-                  @click="handleProjectDelete(item.projectId, item.projectName)"
-                />
+                <a :disabled="username !== item.adminName" @click="showUpdatePrjForm(item)">
+                  <a-icon key="edit" type="edit" />
+                </a>
+                <a :disabled="username !== item.adminName" @click="handleProjectDelete(item)">
+                  <a-icon key="delete" type="delete" />
+                </a>
               </template>
               <a-card-meta>
                 <div slot="title" class="card-text">{{ item.projectName }}</div>
@@ -223,7 +240,14 @@ export default {
   name: 'Project',
   mixins: [teamMixin],
   computed: {
-    ...mapGetters(['teamProjects', 'preference', 'username', 'teamAdminName', 'teamMembers']),
+    ...mapGetters([
+      'teamProjects',
+      'preference',
+      'username',
+      'teamAdminName',
+      'teamMembers',
+      'teamId',
+    ]),
     filteredProjects() {
       return this.teamProjects.filter((project) =>
         project.projectName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
@@ -236,7 +260,13 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryTeam', 'createProject', 'updatePreferenceShowMode']),
+    ...mapActions([
+      'queryTeam',
+      'createProject',
+      'updatePreferenceShowMode',
+      'deleteProject',
+      'updateProject',
+    ]),
     tryJumpToProjectDetail(projectId) {
       this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
     },
@@ -274,12 +304,32 @@ export default {
       this.fileList = fileList
     },
     //删除项目
-    handleProjectDelete(projectId, projectName) {
+    handleProjectDelete(prj) {
+      const vm = this
       this.$confirm({
         title: '您是否要删除该团队?',
-        content: (h) => <div style='color:red;'>请确认即将删除的团队名称：{{ projectName }}</div>,
+        // okButtonProps: {
+        //   loading: this.deleteLoading,
+        // },
+        content: (h) =>
+          h('div', { style: { color: 'red' } }, [`请确认即将删除的团队名称：${prj.projectName}`]),
         onOk() {
-          console.log('OK')
+          // this.deleteLoading = true
+          return new Promise((resolve, reject) => {
+            vm.deleteProject({
+              username: vm.username,
+              teamId: vm.teamId,
+              projectId: prj.projectId,
+            })
+              .then(resolve)
+              .catch((err) => {
+                vm.$notification.error({
+                  message: '删除项目失败',
+                  description: err.message,
+                })
+                reject(err)
+              })
+          })
         },
         onCancel() {
           console.log('Cancel')
@@ -287,10 +337,9 @@ export default {
         class: 'test',
       })
     },
-    handleSubmit(e) {
-      this.createProjForm = false
+    handleCreateSubmit(e) {
       e.preventDefault()
-      console.log('哈哈哈哈哈哈哈')
+      this.createLoading = true
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
@@ -315,11 +364,54 @@ export default {
               console.log('error, boy: ', err)
               this.$notification.error({
                 message: '创建失败',
+                description: err.message,
+              })
+            })
+            .finally(() => (this.createLoading = false))
+        }
+      })
+    },
+    handleUpdateSubmit(e) {
+      e.preventDefault()
+      this.updateLoading = true
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+          this.updateProject({
+            username: store.getters.username,
+            teamId: store.getters.teamId,
+            projectId: this.selectedUpdatePrj.projectId,
+            projectName: values.projName,
+            adminName: values.projAdmin,
+            isPublic: values.projAuthority !== 'private',
+          })
+            .then((response) => {
+              console.log('success,boy', response)
+              // 延迟显示欢迎信息
+              setTimeout(() => {
+                this.$notification.success({
+                  message: '更新成功',
+                  description: `${timeFix()}，已成功添加新项目`,
+                })
+              }, 0)
+            })
+            .catch((err) => {
+              console.log('error, boy: ', err)
+              this.$notification.error({
+                message: '更新失败',
                 description: err,
               })
             })
+            .finally(() => {
+              this.updateLoading = false
+              this.modifyProjForm = false
+            })
         }
       })
+    },
+    showUpdatePrjForm(prj) {
+      this.selectedUpdatePrj = prj
+      this.modifyProjForm = true
     },
   },
   data() {
@@ -332,6 +424,9 @@ export default {
       fileList: [],
       form: this.$form.createForm(this),
       filterText: '',
+      selectedUpdatePrj: null,
+      createLoading: false,
+      updateLoading: false,
     }
   },
   mounted: function () {

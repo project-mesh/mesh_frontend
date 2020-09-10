@@ -51,6 +51,11 @@ const teamInfo = {
       if (prjIndex !== -1) return state.teamProjects.splice(prjIndex, 1)
       throw new Error('In teamInfo>REMOVE_PROJECT: Invalid projectId')
     },
+    UPDATE_PROJECT: (state, updatedPrj) => {
+      const prjIndex = state.teamProjects.findIndex((prj) => prj.projectId === updatedPrj.projectId)
+      if (prjIndex !== -1) return state.teamProjects.splice(prjIndex, 1, updatedPrj)
+      throw new Error('In teamInfo>UPDATE_PROJECT: Invalid project')
+    },
     ADD_TEAMKB: (state, newKB) => {
       state.knowledgeBase.unshift(newKB)
     },

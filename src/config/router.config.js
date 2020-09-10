@@ -8,6 +8,8 @@ const RouteView = {
 }
 
 const guard = (to, from, next) => {
+  if (!store.getters.teams || store.getters.teams.length === 0) return next()
+
   if (to.query && to.query.teamId) return next()
 
   const teamId = store.getters.teamId || store.getters.preference.preferenceTeam
@@ -146,18 +148,6 @@ export const asyncRouterMap = [
         },
       },
 
-      // 团队知识库
-      {
-        path: '/hello',
-        name: 'hello',
-        // TODO: 修改成对应页面
-        component: () => import('@/views/exception/NoTeam'),
-        meta: {
-          title: '欢迎页',
-          icon: 'hello',
-        },
-      },
-
       // 日历页面
       {
         path: '/calendar',
@@ -176,14 +166,34 @@ export const asyncRouterMap = [
       {
         path: '/members',
         name: 'members',
-        beforeEnter: guard,
         // TODO: 修改成对应页面
-        component: () => import('@/views/team/Team'),
+        component: RouteView,
+        redirect: 'members/list',
+        hideChildrenInMenu: true,
         meta: {
           title: '团队',
           icon: 'team',
           permission: ['user'],
         },
+        children: [
+          {
+            path: '/members/list',
+            name: 'membersList',
+            component: () => import('@/views/team/Team'),
+            beforeEnter: guard,
+            meta: {
+              permission: ['user'],
+            },
+          },
+          {
+            path: '/members/noTeam',
+            name: 'noTeam',
+            component: () => import('@/views/exception/NoTeam'),
+            meta: {
+              permission: ['user'],
+            },
+          },
+        ],
       },
 
       // account
