@@ -120,7 +120,7 @@ export default {
     dateChange(timeDate) {
       var date = new Date(timeDate) //获取一个时间对象
       this.year = date.getFullYear()
-      this.month = date.getMonth()
+      this.month = date.getMonth() + 1
       this.day = date.getDate()
     },
     change() {
