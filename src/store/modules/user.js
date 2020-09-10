@@ -9,7 +9,7 @@ const user = {
     role: '',
     avatar: '',
     preference: {},
-    teams: {},
+    teams: [],
     address: '',
     nickname: '',
     birthday: '',

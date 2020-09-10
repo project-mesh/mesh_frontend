@@ -95,7 +95,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['role']),
+    ...mapGetters(['role', 'teams']),
   },
   methods: {
     ...mapActions(['Login']),
@@ -108,8 +108,11 @@ export default {
           this.Login(values)
             .then((res) => {
               console.log('success,boy', res)
-              if (this.role === 'user') this.$router.push({ name: 'projectList' })
-              else this.$router.push({ name: 'manage' })
+              if (this.role === 'user') {
+                if (!this.teams || this.teams.length === 0) {
+                  this.$router.push({ name: 'noTeam' })
+                } else this.$router.push({ name: 'projectList' })
+              } else this.$router.push({ name: 'manage' })
               // 延迟 1 秒显示欢迎信息
               setTimeout(() => {
                 this.$notification.success({

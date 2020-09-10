@@ -1,19 +1,24 @@
 <template>
-  <a-dropdown placement="bottomRight">
-    <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-      {{ teamName }}
-      <a-icon type="down" />
+  <div>
+    <a-dropdown v-if="teams && teams.length" placement="bottomRight">
+      <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+        {{ teamName }}
+        <a-icon type="down" />
+      </a>
+      <a-menu slot="overlay" class="ant-pro-drop-down menu">
+        <a-menu-item v-for="team in teams" :key="team.teamId" @click="handleTeamChange(team)">
+          {{ team.teamName }}
+        </a-menu-item>
+        <a-menu-item>
+          <a-icon type="plus" />
+          <span>创建新项目</span>
+        </a-menu-item>
+      </a-menu>
+    </a-dropdown>
+    <a v-else class="create-team-box">
+      <span>创建新项目</span>
     </a>
-    <a-menu slot="overlay" class="ant-pro-drop-down menu">
-      <a-menu-item v-for="team in teams" :key="team.teamId" @click="handleTeamChange(team)">
-        {{ team.teamName }}
-      </a-menu-item>
-      <a-menu-item>
-        <a-icon type="plus" />
-        <span>创建新项目</span>
-      </a-menu-item>
-    </a-menu>
-  </a-dropdown>
+  </div>
 </template>
 
 <script>
@@ -50,5 +55,10 @@ export default {
   /deep/ .ant-dropdown-menu-item {
     min-width: 160px;
   }
+}
+
+.create-team-box {
+  display: flex;
+  align-items: center;
 }
 </style>

@@ -44,6 +44,7 @@ function handle(to, from, next) {
       router.addRoutes(store.getters.addRouters)
       next({ ...to })
     } else {
+      console.log(to)
       // let menuItem = to.path.split('/').pop()
       // // console.log('打印：menuItem: ')
       // console.log('看这里！！！！！', to)

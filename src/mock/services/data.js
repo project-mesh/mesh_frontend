@@ -399,6 +399,28 @@ for (let i = 0; i < projects.length; ++i) {
   }
 }
 
+users.push(
+  Mock.mock({
+    username: 'lxd',
+    email: '@email',
+    avatar: '@image',
+    password: md5('test'),
+    preference: {
+      preferenceShowMode: 'card',
+      preferenceTeam: '',
+      preferenceColor: '#1890ff',
+      preferenceLayout: 'sidemenu',
+    },
+    role: 'user',
+    address: random.county(true),
+    nickname: random.name(),
+    birthday: random.date('yyyy-MM-dd'),
+    gender: '女',
+    description: '@csentence',
+    status: [random.cword(1, 5)],
+  })
+)
+
 export {
   bulletins,
   teamKB,
