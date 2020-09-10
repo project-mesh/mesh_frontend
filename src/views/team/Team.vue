@@ -1,12 +1,13 @@
 <template>
   <a-card style="margin-top: 24px" :bordered="false" :title="teamName">
-    <div slot="extra">
-      <a-radio-group v-model="status"></a-radio-group>
-      <a-button type="dashed" style="width: 100%" @click="change">修改团队</a-button>
+    <div class="admin-info">
+      <div>管理员：{{ teamAdminName }}</div>
+      <div>创建时间：{{ year }}年{{ month }}月{{ day }}日</div>
     </div>
-
     <div class="operate">
-      <a-button type="dashed" style="width: 100%" icon="plus" @click="addmember">邀请成员</a-button>
+      <a-button type="dashed" style="width: 100%" icon="plus" class="add-member" @click="addmember">
+        邀请成员
+      </a-button>
     </div>
 
     <a-list size="large">
@@ -15,19 +16,18 @@
         v-for="(item, index) in teamMembers"
         :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
       >
-        <a-list-item-meta>
+        <div class="avator-card">
           <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
-        </a-list-item-meta>
-        <a-popover title="成员信息">
-          <template slot="content">
-            <p>{{ item.username }}</p>
-            <p>{{ item.username }}</p>
-          </template>
-          <a-button type="link">{{ item.username }}</a-button>
-        </a-popover>
+          <a-popover title="成员信息">
+            <template slot="content">
+              <p>{{ item.username }}</p>
+              <p>{{ item.username }}</p>
+            </template>
+            <a-button type="link">{{ item.username }}</a-button>
+          </a-popover>
+        </div>
         <div class="list-content">
           <div class="list-content-item">
-            <span>职位</span>
             <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
           </div>
         </div>
@@ -54,10 +54,13 @@ export default {
     return {
       // data,
       status: 'all',
+      year: null,
+      month: null,
+      day: null,
     }
   },
   computed: {
-    ...mapGetters(['teamMembers', 'teamAdminName', 'teamName']),
+    ...mapGetters(['teamMembers', 'teamAdminName', 'teamName', 'teamCreateTime']),
   },
   methods: {
     addmember() {
@@ -114,6 +117,12 @@ export default {
         }
       )
     },
+    dateChange(timeDate) {
+      var date = new Date(timeDate) //获取一个时间对象
+      this.year = date.getFullYear()
+      this.month = date.getMonth()
+      this.day = date.getDate()
+    },
     change() {
       this.$dialog(
         ChangeForm,
@@ -142,6 +151,9 @@ export default {
       )
     },
   },
+  created() {
+    this.dateChange(this.teamCreateTime)
+  },
 }
 </script>
 
@@ -151,16 +163,20 @@ export default {
   height: 48px;
   line-height: 48px;
 }
+.admin-info {
+  padding-bottom: 10px;
+}
+.avator-card {
+  padding-left: 20px;
+}
 .ant-card {
-  width: 70%;
-  margin-left: 15%;
+  width: 90%;
+  margin-left: 5%;
 }
 .list-content-item {
   color: rgba(0, 0, 0, 0.45);
   display: inline-block;
-  vertical-align: middle;
-  font-size: 14px;
-  margin-left: 40px;
+  padding-right: 20px;
   span {
     line-height: 20px;
   }
@@ -177,9 +193,6 @@ export default {
 .ant-list-item-meta-content {
   width: 150px;
 }
-div.list-content-item {
-  margin-left: 200px;
-}
 .changeColor {
   background-color: #f0f0f0;
 }
@@ -188,5 +201,8 @@ div.list-content-item {
 }
 .ant-btn-link {
   margin-right: 200px;
+}
+.add-member {
+  margin-bottom: 10px;
 }
 </style>
