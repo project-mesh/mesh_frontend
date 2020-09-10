@@ -27,7 +27,7 @@
         slot-scope="item, index"
         :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
       >
-        <a-list-item-meta :title="item.knowledgeName">
+        <a-list-item-meta :title="item.knowledgeName" :style="{ marginLeft: '50px' }">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
         </a-list-item-meta>
         <div slot="actions">
@@ -280,7 +280,9 @@ export default {
   height: 48px;
   line-height: 48px;
 }
-
+.ant-list-item-meta-content {
+  margin-left: 20px;
+}
 .list-content {
   display: flex;
   justify-content: space-between;

@@ -15,19 +15,27 @@
         v-for="(item, index) in teamMembers"
         :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
       >
-        <a-list-item-meta>
-          <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
-        </a-list-item-meta>
-        <a-popover title="成员信息">
-          <template slot="content">
-            <p>{{ item.username }}</p>
-            <p>{{ item.username }}</p>
-          </template>
-          <a-button type="link">{{ item.username }}</a-button>
-        </a-popover>
+        <div :style="{ height: '70px' }">
+          <a-list-item-meta>
+            <a-avatar
+              slot="avatar"
+              size="large"
+              shape="square"
+              :src="item.avatar"
+              :style="{ marginBottom: '0px' }"
+            />
+          </a-list-item-meta>
+          <a-popover title="成员信息" :style="{ marginLeft: '50px', marginBottom: '-50px' }">
+            <template slot="content">
+              <p>{{ item.username }}</p>
+              <p>{{ item.username }}</p>
+            </template>
+            <a-button type="link">{{ item.username }}</a-button>
+          </a-popover>
+        </div>
         <div class="list-content">
           <div class="list-content-item">
-            <span>职位</span>
+            <p :style="{ marginLeft: item.username === teamAdminName ? '10px' : '0px' }">职位</p>
             <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
           </div>
         </div>
@@ -160,7 +168,6 @@ export default {
   display: inline-block;
   vertical-align: middle;
   font-size: 14px;
-  margin-left: 40px;
   span {
     line-height: 20px;
   }
@@ -172,13 +179,6 @@ export default {
 }
 .ant-list-item-meta-title {
   margin-top: 1.25%;
-  width: 125px;
-}
-.ant-list-item-meta-content {
-  width: 150px;
-}
-div.list-content-item {
-  margin-left: 200px;
 }
 .changeColor {
   background-color: #f0f0f0;
@@ -186,7 +186,8 @@ div.list-content-item {
 .changeWidth {
   background-color: #ffffff;
 }
-.ant-btn-link {
-  margin-right: 200px;
+.ant-list-item-meta {
+  width: 0px;
+  flex: 0;
 }
 </style>
