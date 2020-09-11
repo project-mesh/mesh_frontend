@@ -60,14 +60,12 @@
 </template>
 
 <script>
-import projectMixin from '@/utils/mixins/projectMixin'
-import teamMixin from '@/utils/mixins/teamMixin'
 import China from 'echarts/map/json/china.json'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Statistics',
   components: {},
-  mixins: [teamMixin, projectMixin],
   data() {
     this.mapChartSettings = {
       mapOrigin: China,
@@ -169,7 +167,90 @@ export default {
       },
     }
   },
-  computed: {},
+  computed: {
+    ...mapGetters([
+      'maleUser',
+      'femaleUser',
+      'unknownUser',
+      'userAge',
+      'userLocation',
+      'currentOnlineUser',
+      'avgTeamUser',
+      'avgTeamProject',
+      'currentTotalUser',
+      'historyTotalUser',
+    ]),
+    histoMountChartData() {
+      const columns = ['日期', '累积用户数']
+      const rows = []
+
+      let year = new Date().getFullYear()
+      let month = new Date().getMonth() + 1
+
+      for (let i = 0; i < this.historyTotalUser.length; ++i) {
+        rows.push({
+          日期: `${year}年${month}月`,
+          累积用户数: this.historyTotalUser[i].totalUser,
+        })
+
+        if (--month === 0) {
+          --year
+          month = 12
+        }
+      }
+
+      return { columns, rows: rows.reverse() }
+    },
+    mapMountChartData() {
+      const columns = ['位置', '用户数']
+      const rows = []
+
+      for (let i = 0; i < this.userLocation.length; ++i) {
+        let location = this.userLocation[i].location
+
+        if (location.endsWith('省')) {
+          location = location.slice(0, -1)
+        } else if (location.endsWith('族自治区') || location.endsWith('特别行政区')) {
+          location = location.slice(0, -5)
+        } else if (location.endsWith('自治区')) {
+          location = location.slice(0, -3)
+        }
+        rows.push({
+          位置: location,
+          用户数: this.userLocation[i].userCount,
+        })
+      }
+
+      return {
+        columns,
+        rows,
+      }
+    },
+    pieChartData() {
+      const columns = ['性别', '用户数']
+      const rows = []
+
+      rows.push(
+        {
+          性别: '男',
+          用户数: this.maleUser,
+        },
+        {
+          性别: '女',
+          用户数: this.femaleUser,
+        },
+        {
+          性别: '未知',
+          用户数: this.unknownUser,
+        }
+      )
+
+      return {
+        columns,
+        rows,
+      }
+    },
+  },
   methods: {
     pieChartShowAgeAction() {
       this.pieChartShowAge = true
@@ -183,6 +264,7 @@ export default {
     lineChartShowThirtyAction() {
       this.lineChartShowSeven = false
     },
+    ...mapActions(['queryGeneralStatistics', 'queryTotalUser', 'queryUserStatistics']),
     //导出的方法
     export2Excel() {
       require.ensure([], () => {
@@ -206,7 +288,16 @@ export default {
       return jsonData.map((v) => filterVal.map((j) => v[j]))
     },
   },
-  mounted() {},
+  mounted() {
+    Promise.all([
+      this.queryGeneralStatistics(),
+      this.queryUserStatistics(),
+      this.queryTotalUser({
+        timeInterval: 10,
+        itemCount: 10,
+      }).catch((err) => {}),
+    ])
+  },
 }
 </script>
 

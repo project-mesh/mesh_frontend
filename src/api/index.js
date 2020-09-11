@@ -177,6 +177,22 @@ const apiMap = {
     url: '/user/password',
     method: 'patch',
   },
+  queryUserInfo: {
+    url: '/stastistics/search-user',
+    method: 'get',
+  },
+  queryGeneralStatistics: {
+    url: '/stastistics/general',
+    method: 'get',
+  },
+  queryTotalUser: {
+    url: '/stastistics/totaluser',
+    method: 'get',
+  },
+  queryUserStatistics: {
+    url: 'stastistics/user',
+    methodL: 'get',
+  },
 }
 
 const sendRequest = (apiName, data) => {

@@ -31,6 +31,17 @@ const getters = {
   projectKB: (state) => state.projectInfo.knowledgeBase,
   bulletins: (state) => state.projectInfo.bulletins,
   notifications: (state) => state.notification.notifications,
+  users: (state) => state.statistics.users,
+  maleUser: (state) => state.statistics.maleUser,
+  femaleUser: (state) => state.statistics.femaleUser,
+  unknownUser: (state) => state.statistics.unknownUser,
+  userAge: (state) => state.statistics.userAge,
+  userLocation: (state) => state.statistics.userLocation,
+  currentOnlineUser: (state) => state.statistics.currentOnlineUser,
+  avgTeamUser: (state) => state.statistics.avgTeamUser,
+  avgTeamProject: (state) => state.statistics.avgTeamProject,
+  currentTotalUser: (state) => state.statistics.currentTotalUser,
+  historyTotalUser: (state) => state.statistics.historyTotalUser,
 }
 
 export default getters

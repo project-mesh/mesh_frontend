@@ -161,9 +161,9 @@ const users = [
     address: random.county(true),
     nickname: random.name(),
     birthday: random.date('yyyy-MM-dd'),
-    gender: '女',
+    gender: 1,
     description: '@csentence',
-    status: [random.cword(1, 5), random.cword(1, 5)],
+    status: random.natural(0, 8),
   }),
   Mock.mock({
     username: 'zengze',
@@ -180,9 +180,9 @@ const users = [
     address: random.county(true),
     nickname: random.name(),
     birthday: random.date('yyyy-MM-dd'),
-    gender: '男',
+    gender: 1,
     description: '@csentence',
-    status: [random.cword(1, 5)],
+    status: random.natural(0, 8),
   }),
 ]
 
@@ -231,17 +231,9 @@ for (let i = 0; i < 28; ++i) {
       address: random.county(true),
       nickname: random.name(),
       birthday: random.date('yyyy-MM-dd'),
-      'gender|1': ['女', '男'],
+      gender: random.integer(-1, 1),
       description: '@csentence',
-      status: function () {
-        const statusCnt = random.natural(0, 4)
-        const status = []
-        for (let i = 0; i < statusCnt; ++i) {
-          status.push(random.cword(1, 5))
-        }
-
-        return status
-      },
+      status: random.natural(0, 8),
     })
   )
 }
@@ -415,9 +407,9 @@ users.push(
     address: random.county(true),
     nickname: random.name(),
     birthday: random.date('yyyy-MM-dd'),
-    gender: '女',
+    gender: 0,
     description: '@csentence',
-    status: [random.cword(1, 5)],
+    status: random.natural(0, 8),
   })
 )
 

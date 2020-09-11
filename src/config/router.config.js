@@ -259,14 +259,12 @@ export const asyncRouterMap = [
           {
             path: '/management/userManagement',
             name: 'userManagement',
-            beforeEnter: guard,
             component: () => import('@/views/management/UserManagement'),
             meta: { title: '用户管理', keepAlive: true, permission: ['admin'] },
           },
           {
             path: '/management/statistics',
             name: 'adminStatistics',
-            beforeEnter: guard,
             component: () => import('@/views/management/AdminStatistics'),
             meta: { title: '实时数据', keepAlive: true, permission: ['admin'] },
           },

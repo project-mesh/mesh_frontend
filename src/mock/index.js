@@ -19,6 +19,7 @@ if (true) {
   require('./services/project')
   require('./services/team')
   require('./services/user')
+  require('./services/statistics')
 
   Mock.setup({
     timeout: 800, // setter delay time

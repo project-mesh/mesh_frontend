@@ -12,6 +12,7 @@ import teamInfo from './modules/teamInfo'
 import projectTasks from './modules/projectTasks'
 import projectInfo from './modules/projectInfo'
 import teamTasks from './modules/teamTasks'
+import statistics from './modules/statistics'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -24,6 +25,7 @@ export default new Vuex.Store({
     projectTasks,
     teamTasks,
     projectInfo,
+    statistics,
   },
   state: {},
   mutations: {},
