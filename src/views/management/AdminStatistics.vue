@@ -329,7 +329,7 @@ export default {
         } else {
           const tHeader = ['时间', '用户数']
           const filterVal = ['日期', '总用户量']
-          const list = this.lineChartThirtyData.rows.reverse()
+          const list = this.lineChartThirtyData.rows
           const data = this.formatJson(filterVal, list)
           export_json_to_excel(tHeader, data, '用户量变化数据')
         }
