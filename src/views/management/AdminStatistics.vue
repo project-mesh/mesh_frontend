@@ -62,6 +62,7 @@
 <script>
 import China from 'echarts/map/json/china.json'
 import { mapGetters, mapActions } from 'vuex'
+import moment from 'moment'
 
 export default {
   name: 'Statistics',
@@ -93,6 +94,7 @@ export default {
       'avgTeamProject',
       'currentTotalUser',
       'historyTotalUser',
+      'timeInterval',
     ]),
     lineChartSevenData() {
       const columns = ['日期', '总用户量']

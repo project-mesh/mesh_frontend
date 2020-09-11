@@ -7,7 +7,13 @@
       </a-input-search>
     </div>
     <div id="userShowTitle">搜索结果</div>
-    <a-table :columns="columns" :data-source="data" id="userQueryShowTable" bordered>
+    <a-table
+      :columns="columns"
+      :data-source="data"
+      :row-key="'username'"
+      id="userQueryShowTable"
+      bordered
+    >
       <template slot="avatar" slot-scope="avatar">
         <a-avatar :key="avatar">
           {{ avatar }}
@@ -140,41 +146,85 @@ const columns = [
   },
 ]
 
-const data = []
-import { mapActions } from 'vuex'
+const genderConvert = (gender) => {
+  const genderMap = {
+    1: '男',
+    男: 1,
+    0: '女',
+    女: 0,
+    '-1': '',
+  }
+
+  if (gender in genderMap) return genderMap[gender]
+
+  return -1
+}
+
+const statusConvert = (status) => {
+  const statusMap = {
+    0: '',
+    1: '摸鱼',
+    2: '会议',
+    3: '生病',
+    4: '休假',
+    5: '出差',
+    6: '在家',
+    7: '运动',
+    8: '游戏',
+    '': 0,
+    摸鱼: 1,
+    会议: 2,
+    生病: 3,
+    休假: 4,
+    出差: 5,
+    在家: 6,
+    运动: 7,
+    游戏: 8,
+  }
+
+  if (status in statusMap) return statusMap[status]
+
+  return 0
+}
+
+import { mapActions, mapGetters } from 'vuex'
+import _ from 'lodash'
 
 export default {
   components: {},
   data() {
-    this.cacheData = data.map((item) => ({ ...item }))
-    this.cachePassword = ''
     return {
-      data,
+      data: [],
+      cacheData: [],
+      cachePassword: '',
       columns,
       editingKey: '',
     }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['username']),
+  },
   mounted() {},
   methods: {
-    ...mapActions(['queryUsers', 'updateUserPasswordAdmin']),
+    ...mapActions(['queryUserInfo', 'updateUserPasswordAdmin', 'updateUserInfo']),
     onKeywordSearch(value) {
-      this.queryUsers({ keyword: value })
-        .then((response) => {
-          data.splice(0, data.length)
-          let queryUser
-          for (queryUser in response.data) {
-            data.push({
+      this.queryUserInfo({ keyword: value, username: this.username })
+        .then((res) => {
+          this.data.length = 0
+          res.data.users.forEach((queryUser) => {
+            this.data.push({
               username: queryUser.username,
               avatar: queryUser.avatar,
               nickname: queryUser.nickname,
-              gender: queryUser.gender,
+              gender: genderConvert(queryUser.gender),
               birthday: queryUser.birthday,
               address: queryUser.address,
-              status: queryUser.status,
+              status: statusConvert(queryUser.status),
               description: queryUser.description,
             })
-          }
+          })
+
+          this.cacheData = _.cloneDeep(this.data)
         })
         .catch((error) => {
           this.$notification.error({
@@ -185,7 +235,7 @@ export default {
     },
     handleChange(value, username, column) {
       const newData = [...this.data]
-      const target = newData.filter((item) => username === item.username)[0]
+      const target = newData.find((item) => username === item.username)
       if (target) {
         target[column] = value
         this.data = newData
@@ -196,7 +246,7 @@ export default {
     },
     edit(username) {
       const newData = [...this.data]
-      const target = newData.filter((item) => username === item.username)[0]
+      const target = newData.find((item) => username === item.username)
       this.editingKey = username
       if (target) {
         target.editable = true
@@ -215,51 +265,61 @@ export default {
     save(username) {
       const newData = [...this.data]
       const newCacheData = [...this.cacheData]
-      const target = newData.filter((item) => username === item.username)[0]
-      const targetCache = newCacheData.filter((item) => username === item.username)[0]
+      const target = newData.find((item) => username === item.username)
+      const targetCache = newCacheData.find((item) => username === item.username)
       if (target.editable) {
         if (target && targetCache) {
-          this.updateUserInformation({
-            username: username,
-            nickname: newCacheData.nickname,
-            gender: newCacheData.gender,
-            birthday: newCacheData.birthday,
-            address: newCacheData.address,
-            status: newCacheData.status,
-            description: newCacheData.description,
-          }).catch((error) => {
-            this.$notification.error({
-              message: '修改信息失败',
-              description: `${error.name}: ${error.message}`,
-            })
+          this.updateUserInfo({
+            username,
+            nickname: target.nickname,
+            gender: genderConvert(target.gender),
+            birthday: target.birthday,
+            address: target.address,
+            status: statusConvert(target.status),
+            description: target.description,
           })
+            .then((res) => {
+              console.log('updateUserInfomation success, response: ', res)
+            })
+            .catch((err) => {
+              this.$notification.error({
+                message: '修改信息失败',
+                description: `${err.name}: ${err.message}`,
+              })
+            })
           delete target.editable
           this.data = newData
           Object.assign(targetCache, target)
           this.cacheData = newCacheData
         }
-        this.editingKey = ''
       } else {
-        this.updateUserPasswordAdmin({ username: username, password: this.cachePassword }).catch(
-          (error) => {
+        this.updateUserPasswordAdmin({ username, password: this.cachePassword })
+          .then((res) => {
+            console.log('updateUserPasswordAdmin success, response: ', res)
+          })
+          .catch((err) => {
             this.$notification.error({
               message: '修改密码失败',
-              description: `${error.name}: ${error.message}`,
+              description: `${err.name}: ${err.message}`,
             })
-          }
-        )
+          })
         this.cachePassword = ''
         delete target.changingPassword
         this.data = newData
       }
+
+      this.editingKey = ''
     },
     cancel(username) {
       const newData = [...this.data]
-      const target = newData.filter((item) => username === item.username)[0]
+      const target = newData.find((item) => username === item.username)
       this.editingKey = ''
       if (target.editable) {
         if (target) {
-          Object.assign(target, this.cacheData.filter((item) => username === item.username)[0])
+          Object.assign(
+            target,
+            this.cacheData.find((item) => username === item.username)
+          )
           delete target.editable
           this.data = newData
         }

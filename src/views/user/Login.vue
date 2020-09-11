@@ -112,7 +112,7 @@ export default {
                 if (!this.teams || this.teams.length === 0) {
                   this.$router.push({ name: 'noTeam' })
                 } else this.$router.push({ name: 'projectList' })
-              } else this.$router.push({ name: 'manage' })
+              } else this.$router.push({ name: 'management' })
               // 延迟 1 秒显示欢迎信息
               setTimeout(() => {
                 this.$notification.success({

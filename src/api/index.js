@@ -169,8 +169,8 @@ const apiMap = {
     url: '/register',
     method: 'post',
   },
-  updateUserAvatar: {
-    url: '/user/avatar',
+  updateUserInfo: {
+    url: '/user',
     method: 'patch',
   },
   updateUserPassword: {
@@ -190,8 +190,12 @@ const apiMap = {
     method: 'get',
   },
   queryUserStatistics: {
-    url: 'stastistics/user',
+    url: '/stastistics/user',
     methodL: 'get',
+  },
+  updateUserPasswordAdmin: {
+    url: '/admin/password',
+    method: 'patch',
   },
 }
 

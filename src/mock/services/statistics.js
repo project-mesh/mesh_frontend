@@ -5,21 +5,22 @@ import { teams, teamMembers, users, projects } from './data'
 const getUserInfo = (data) => {
   let usersCopy = utils.deepCopy(users)
 
-  usersCopy = usersCopy
-    .filter(
-      (user) =>
-        user.username.match(data.keyword) ||
+  usersCopy = usersCopy.filter(
+    (user) =>
+      user.role === 'user' &&
+      (user.username.match(data.keyword) ||
         user.nickname.match(data.keyword) ||
-        user.description.match(data.keyword)
-    )
-    .forEach((user) => {
-      user.teams = []
-      teamMembers
-        .filter((member) => member.username === user.username)
-        .forEach((member) => {
-          user.teams.push(teams.find((team) => team.teamId === member.teamId))
-        })
-    })
+        user.description.match(data.keyword))
+  )
+
+  usersCopy.forEach((user) => {
+    user.teams = []
+    teamMembers
+      .filter((member) => member.username === user.username)
+      .forEach((member) => {
+        user.teams.push(teams.find((team) => team.teamId === member.teamId))
+      })
+  })
 
   return utils.builder({ users: usersCopy })
 }
