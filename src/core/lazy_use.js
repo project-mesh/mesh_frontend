@@ -100,6 +100,7 @@ Vue.use(Statistic)
 Vue.use(Descriptions)
 Vue.use(Calendar)
 Vue.use(Collapse)
+Vue.use(Popover)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

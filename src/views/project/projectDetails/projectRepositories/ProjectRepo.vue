@@ -23,9 +23,18 @@
       <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
     </a-modal>
 
-    <a-list size="large" :data-source="filteredProjects" :pagination="pagination(filteredProjects)">
-      <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
-        <a-list-item-meta :title="item.knowledgeName">
+    <a-list
+      size="large"
+      :data-source="teamKBWithFormatedCreateTime"
+      :pagination="pagination(teamKBWithFormatedCreateTime)"
+    >
+      <a-list-item
+        slot="renderItem"
+        key="item.knowledgeId"
+        slot-scope="item, index"
+        :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
+      >
+        <a-list-item-meta :title="item.knowledgeName" :style="{ marginLeft: '50px' }">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
           <a-avatar slot="avatar" :src="getAvatar(item.uploaderName)" />
         </a-list-item-meta>
@@ -222,14 +231,21 @@ export default {
   height: 48px;
   line-height: 48px;
 }
-
+.ant-list-item-meta-content {
+  margin-left: 20px;
+}
 .list-content {
   display: flex;
   justify-content: space-between;
   width: 25%;
   margin: 0 50px;
 }
-
+.changeColor {
+  background-color: #f0f0f0;
+}
+.changeWidth {
+  background-color: #ffffff;
+}
 .list-content-item {
   color: rgba(0, 0, 0, 0.45);
   display: inline-block;
