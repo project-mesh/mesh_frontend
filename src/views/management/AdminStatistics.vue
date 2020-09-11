@@ -6,7 +6,7 @@
           <a-card title="总体数据" :style="{ height: '100%' }">
             <ve-histogram :data="histoChartData" :settings="histoChartSettings"></ve-histogram>
             <div slot="actions" style="height: inherit">
-              <a-button type="primary" @click="export2Excel">导出数据到本地</a-button>
+              <a-button type="primary" @click="export2Excel('histoChart')">导出数据到本地</a-button>
             </div>
           </a-card>
         </a-col>
@@ -14,7 +14,7 @@
           <a-card title="用户分布" :style="{ height: '100%' }">
             <ve-map :data="mapChartData" :settings="mapChartSettings"></ve-map>
             <div slot="actions" style="height: inherit">
-              <a-button type="primary" @click="export2Excel">导出数据到本地</a-button>
+              <a-button type="primary" @click="export2Excel('mapChart')">导出数据到本地</a-button>
             </div>
           </a-card>
         </a-col>
@@ -33,7 +33,7 @@
             <ve-line v-if="lineChartShowSeven" :data="lineChartSevenData"></ve-line>
             <ve-line v-if="!lineChartShowSeven" :data="lineChartThirtyData"></ve-line>
             <div slot="actions" style="height: inherit">
-              <a-button type="primary" @click="export2Excel">导出数据到本地</a-button>
+              <a-button type="primary" @click="export2Excel('lineChart')">导出数据到本地</a-button>
             </div>
           </a-card>
         </a-col>
@@ -50,7 +50,7 @@
             <ve-pie v-if="pieChartShowAge" :data="pieChartAgeData"></ve-pie>
             <ve-pie v-if="!pieChartShowAge" :data="pieChartGenderData"></ve-pie>
             <div slot="actions" style="height: inherit">
-              <a-button type="primary" @click="export2Excel">导出数据到本地</a-button>
+              <a-button type="primary" @click="export2Excel('pieChart')">导出数据到本地</a-button>
             </div>
           </a-card>
         </a-col>
@@ -73,20 +73,11 @@ export default {
     this.histoChartSettings = {
       axisSite: { right: ['团队平均成员数', '团队平均项目数'] },
       yAxisType: ['KMB', 'normal'],
-      yAxisName: ['在线用户量', '平均数'],
+      yAxisName: ['在线用户', '平均数'],
     }
     return {
       pieChartShowAge: true,
       lineChartShowSeven: true,
-      mapChartData: {
-        columns: ['位置', '用户数'],
-        rows: [
-          { 位置: '吉林', 用户数: 123 },
-          { 位置: '北京', 用户数: 1223 },
-          { 位置: '上海', 用户数: 2123 },
-          { 位置: '浙江', 用户数: 4123 },
-        ],
-      },
       lineChartSevenData: {
         columns: ['日期', '总用户量'],
         rows: [
@@ -134,37 +125,6 @@ export default {
           { 日期: '1/30', 总用户量: 4593 },
         ],
       },
-      histoChartData: {
-        columns: ['日期', '当前在线用户数', '团队平均成员数', '团队平均项目数'],
-        rows: [
-          {
-            日期: Date().toLocaleString(),
-            当前在线用户数: 100,
-            团队平均成员数: 8.71,
-            团队平均项目数: 2.98,
-          },
-        ],
-      },
-      pieChartAgeData: {
-        columns: ['年龄段', '用户数'],
-        rows: [
-          { 年龄段: '18岁及以下', 用户数: 1393 },
-          { 年龄段: '19岁-29岁', 用户数: 3530 },
-          { 年龄段: '29岁-39岁', 用户数: 2923 },
-          { 年龄段: '39岁-49岁', 用户数: 1723 },
-          { 年龄段: '49岁-59岁', 用户数: 3792 },
-          { 年龄段: '60岁及以上', 用户数: 4593 },
-          { 年龄段: '未填写年龄', 用户数: 1123 },
-        ],
-      },
-      pieChartGenderData: {
-        columns: ['性别', '用户数'],
-        rows: [
-          { 性别: '男性', 用户数: 1393 },
-          { 性别: '女性', 用户数: 3530 },
-          { 性别: '未知', 用户数: 2923 },
-        ],
-      },
     }
   },
   computed: {
@@ -201,7 +161,21 @@ export default {
 
       return { columns, rows: rows.reverse() }
     },
-    mapMountChartData() {
+    histoChartData() {
+      const columns = ['日期', '当前在线用户数', '团队平均成员数', '团队平均项目数']
+      const rows = []
+      rows.push({
+        日期: '获取时间：' + this.formatTimestamp(),
+        当前在线用户数: this.currentOnlineUser,
+        团队平均成员数: this.avgTeamUser,
+        团队平均项目数: this.avgTeamProject,
+      })
+      return {
+        columns,
+        rows,
+      }
+    },
+    mapChartData() {
       const columns = ['位置', '用户数']
       const rows = []
 
@@ -210,6 +184,8 @@ export default {
 
         if (location.endsWith('省')) {
           location = location.slice(0, -1)
+        } else if (location.endsWith('维吾尔自治区')) {
+          location = location.slice(0, -6)
         } else if (location.endsWith('族自治区') || location.endsWith('特别行政区')) {
           location = location.slice(0, -5)
         } else if (location.endsWith('自治区')) {
@@ -226,10 +202,9 @@ export default {
         rows,
       }
     },
-    pieChartData() {
+    pieChartGenderData() {
       const columns = ['性别', '用户数']
       const rows = []
-
       rows.push(
         {
           性别: '男',
@@ -244,7 +219,62 @@ export default {
           用户数: this.unknownUser,
         }
       )
-
+      return {
+        columns,
+        rows,
+      }
+    },
+    pieChartAgeData() {
+      const columns = ['年龄段', '用户数']
+      const rows = []
+      let userAges = new Array(0, 0, 0, 0, 0, 0, 0)
+      for (let item in this.userAge) {
+        if (this.userAge[item].age <= 0) {
+          userAges[6] += this.userAge[item].userCount
+        } else if (this.userAge[item].age <= 18) {
+          userAges[0] += this.userAge[item].userCount
+        } else if (this.userAge[item].age <= 29) {
+          userAges[1] += this.userAge[item].userCount
+        } else if (this.userAge[item].age <= 39) {
+          userAges[2] += this.userAge[item].userCount
+        } else if (this.userAge[item].age <= 49) {
+          userAges[3] += this.userAge[item].userCount
+        } else if (this.userAge[item].age <= 59) {
+          userAges[4] += this.userAge[item].userCount
+        } else if (this.userAge[item].age >= 60) {
+          userAges[5] += this.userAge[item].userCount
+        }
+      }
+      rows.push(
+        {
+          年龄段: '18岁及以下',
+          用户数: userAges[0],
+        },
+        {
+          年龄段: '19岁-29岁',
+          用户数: userAges[1],
+        },
+        {
+          年龄段: '29岁-39岁',
+          用户数: userAges[2],
+        },
+        {
+          年龄段: '39岁-49岁',
+          用户数: userAges[3],
+        },
+        {
+          年龄段: '49岁-59岁',
+          用户数: userAges[4],
+        },
+        {
+          年龄段: '60岁及以上',
+          用户数: userAges[5],
+        },
+        {
+          年龄段: '未填写年龄',
+          用户数: userAges[6],
+        }
+      )
       return {
         columns,
         rows,
@@ -252,6 +282,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['queryGeneralStatistics', 'queryTotalUser', 'queryUserStatistics']),
     pieChartShowAgeAction() {
       this.pieChartShowAge = true
     },
@@ -264,24 +295,53 @@ export default {
     lineChartShowThirtyAction() {
       this.lineChartShowSeven = false
     },
-    ...mapActions(['queryGeneralStatistics', 'queryTotalUser', 'queryUserStatistics']),
+    formatTimestamp() {
+      let formatDate = new Date()
+      let year = formatDate.getFullYear()
+      let month = formatDate.getMonth() + 1
+      let date = formatDate.getDate()
+      let hour = formatDate.getHours()
+      let minute = formatDate.getMinutes()
+      let currentDate = year + '-'
+      function add0(m) {
+        return m < 10 ? '0' + m : m
+      }
+      currentDate += add0(month) + '-' + add0(date) + ' ' + add0(hour) + ':' + add0(minute)
+      return currentDate
+    },
     //导出的方法
-    export2Excel() {
+    export2Excel(excel_type) {
       require.ensure([], () => {
         const { export_json_to_excel } = require('../../excel/Export2Excel')
-        const tHeader = ['任务名', '任务状态', '创建时间', '截止日期', '优先级', '创建人', '负责人'] // 设置Excel的表格第一行的标题
-        const filterVal = [
-          'taskName',
-          'status',
-          'createTime',
-          'deadline',
-          'priority',
-          'founder',
-          'principal',
-        ] // index、nickName、name是tableData里对象的属性
-        const list = this.formatedProjectTasks //把data里的tableData存到list
-        const data = this.formatJson(filterVal, list)
-        export_json_to_excel(tHeader, data, '统计数据') //导出Excel 文件名
+        if (excel_type === 'mapChart') {
+          const tHeader = ['位置', '用户数']
+          const filterVal = ['location', 'userCount']
+          const list = this.userLocation
+          const data = this.formatJson(filterVal, list)
+          export_json_to_excel(tHeader, data, '用户分布数据')
+        } else if (excel_type === 'histoChart') {
+          const tHeader = ['日期', '当前在线用户数', '团队平均成员数', '团队平均项目数']
+          const data = [
+            [this.formatTimestamp(), this.currentOnlineUser, this.avgTeamUser, this.avgTeamProject],
+          ]
+          export_json_to_excel(tHeader, data, '总体数据')
+        } else if (excel_type === 'pieChart') {
+          if (!this.pieChartShowAge) {
+            const tHeader = ['性别', '用户数']
+            const data = [
+              ['男', this.maleUser],
+              ['女', this.femaleUser],
+              ['未知', this.unknownUser],
+            ]
+            export_json_to_excel(tHeader, data, '性别分布数据')
+          } else {
+            const tHeader = ['年龄', '用户数']
+            const filterVal = ['age', 'userCount']
+            const list = this.userAge
+            const data = this.formatJson(filterVal, list)
+            export_json_to_excel(tHeader, data, '年龄分布数据')
+          }
+        }
       })
     },
     formatJson(filterVal, jsonData) {
