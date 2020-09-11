@@ -8,7 +8,7 @@ const projectInfo = {
     projectLogo: '',
     adminName: '',
     isPublic: null,
-    members: [],
+    projectMembers: [],
     knowledgeBase: [],
     bulletins: [],
   },
@@ -28,8 +28,8 @@ const projectInfo = {
     SET_ADMIN_NAME: (state, adminName) => {
       state.adminName = adminName
     },
-    SET_MEMBERS: (state, members) => {
-      state.members = members
+    SET_PROJECT_MEMBERS: (state, members) => {
+      state.projectMembers = members
     },
     SET_VISIBILITY: (state, isPublic) => {
       state.isPublic = isPublic
@@ -91,7 +91,7 @@ const projectInfo = {
               commit('SET_CREATE_TIME', project.createTime)
               commit('SET_PROJECT_LOGO', project.projectLogo)
               commit('SET_ADMIN_NAME', project.adminName)
-              commit('SET_MEMBERS', project.members)
+              commit('SET_PROJECT_MEMBERS', project.members)
               commit('SET_VISIBILITY', project.isPublic)
             }
             resolve(res)
@@ -112,7 +112,7 @@ const projectInfo = {
                 commit('SET_CREATE_TIME', project.createTime)
                 commit('SET_PROJECT_LOGO', project.projectLogo)
                 commit('SET_ADMIN_NAME', project.adminName)
-                commit('SET_MEMBERS', project.members)
+                commit('SET_PROJECT_MEMBERS', project.members)
                 commit('SET_VISIBILITY', project.isPublic)
               }
 
@@ -135,7 +135,7 @@ const projectInfo = {
                 commit('SET_CREATE_TIME', -1)
                 commit('SET_PROJECT_LOGO', '')
                 commit('SET_ADMIN_NAME', '')
-                commit('SET_MEMBERS', [])
+                commit('SET_PROJECT_MEMBERS', [])
                 commit('SET_VISIBILITY', null)
               }
 

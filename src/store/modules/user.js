@@ -192,6 +192,9 @@ const user = {
     updateUserPasswordAdmin(_, requestData) {
       return sendRequest('updateUserPasswordAdmin', requestData)
     },
+    queryUser(_, requestData) {
+      return sendRequest('queryUser', requestData)
+    },
   },
 }
 

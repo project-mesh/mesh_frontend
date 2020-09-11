@@ -2,15 +2,15 @@ import Mock from 'mockjs2'
 import * as utils from '../utils'
 import { teams, teamMembers, users, projects } from './data'
 
-const getUserInfo = (data) => {
+const getUserInfo = (queryParams) => {
   let usersCopy = utils.deepCopy(users)
 
   usersCopy = usersCopy.filter(
     (user) =>
       user.role === 'user' &&
-      (user.username.match(data.keyword) ||
-        user.nickname.match(data.keyword) ||
-        user.description.match(data.keyword))
+      (user.username.match(queryParams.keyword) ||
+        user.nickname.match(queryParams.keyword) ||
+        user.description.match(queryParams.keyword))
   )
 
   usersCopy.forEach((user) => {

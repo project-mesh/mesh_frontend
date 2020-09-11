@@ -71,7 +71,22 @@ const updateUserPasswordAdmin = (data) => {
   return utils.builder({})
 }
 
+const getAllUsers = (queryParams) => {
+  let usersCopy = utils.deepCopy(users)
+
+  usersCopy = usersCopy.filter(
+    (user) =>
+      user.role === 'user' &&
+      (user.username.match(queryParams.keyword) ||
+        user.nickname.match(queryParams.keyword) ||
+        user.description.match(queryParams.keyword))
+  )
+
+  return utils.builder({ users: usersCopy })
+}
+
 Mock.mock(/\/login/, 'post', utils.functionFactory(login))
 Mock.mock(/\/preference/, 'post', utils.functionFactory(updatePreference))
 Mock.mock(/\/user/, 'patch', utils.functionFactory(updateUserInfo))
 Mock.mock(/\/admin\/password/, 'patch', utils.functionFactory(updateUserPasswordAdmin))
+Mock.mock(/\/user/, 'get', utils.functionFactory(getAllUsers))

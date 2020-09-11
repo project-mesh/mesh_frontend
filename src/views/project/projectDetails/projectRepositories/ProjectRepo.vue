@@ -23,11 +23,7 @@
       <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
     </a-modal>
 
-    <a-list
-      size="large"
-      :data-source="teamKBWithFormatedCreateTime"
-      :pagination="pagination(teamKBWithFormatedCreateTime)"
-    >
+    <a-list size="large" :data-source="filteredProjects" :pagination="pagination(filteredProjects)">
       <a-list-item
         slot="renderItem"
         key="item.knowledgeId"

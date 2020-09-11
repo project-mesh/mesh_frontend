@@ -5,7 +5,13 @@
       <div>创建时间：{{ year }}年{{ month }}月{{ day }}日</div>
     </div>
     <div class="operate">
-      <a-button type="dashed" style="width: 100%" icon="plus" class="add-member" @click="addmember">
+      <a-button
+        type="dashed"
+        style="width: 100%"
+        icon="plus"
+        class="add-member"
+        @click="modalVisible = true"
+      >
         邀请成员
       </a-button>
     </div>
@@ -23,7 +29,7 @@
               <p>{{ item.username }}</p>
               <p>{{ item.username }}</p>
             </template>
-            <a-button type="link">{{ item.username }}</a-button>
+            <a style="margin-left: 10px">{{ item.username }}</a>
           </a-popover>
         </div>
         <div class="list-content">
@@ -33,22 +39,55 @@
         </div>
       </a-list-item>
     </a-list>
+    <a-modal
+      v-model="modalVisible"
+      title="邀请新成员"
+      width="500px"
+      centered
+      @cancel="hideModal"
+      @ok="handleOk"
+      :ok-button-props="{
+        props: {
+          disabled: !selectedUsername,
+          loading: inviting,
+        },
+      }"
+    >
+      <a-form :form="form">
+        <a-input-search
+          placeholder="输入关键词以搜索用户"
+          enter-button
+          v-model="keyword"
+          @search="onSearch"
+        />
+        <div v-if="userListVisible" class="scroll-container">
+          <div v-if="loading" class="loading-container">
+            <a-spin />
+          </div>
+          <a-radio-group v-else-if="users.length" v-model="selectedUsername">
+            <a-radio
+              v-for="user in users"
+              :key="user.username"
+              :style="radioStyle"
+              :value="user.username"
+              :disabled="isTeamMember(user)"
+            >
+              <a-avatar size="small" :src="user.avatar" />
+              <span style="margin-left: 10px; vertical-align: baseline">{{ user.username }}</span>
+            </a-radio>
+          </a-radio-group>
+          <div v-else style="color: red; text-align: center">无匹配用户</div>
+        </div>
+      </a-form>
+    </a-modal>
   </a-card>
 </template>
 
 <script>
-// 演示如何使用 this.$dialog 封装 modal 组件
-import TaskForm from './module/TaskForm'
-import ChangeForm from './module/ChangeForm'
-import Info from './components/Info'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
 export default {
   name: 'StandardList',
-  components: {
-    TaskForm,
-    Info,
-  },
   mixins: [teamMixin],
   data() {
     return {
@@ -57,103 +96,100 @@ export default {
       year: null,
       month: null,
       day: null,
+      modalVisible: false,
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 13 },
+      },
+      form: this.$form.createForm(this),
+      users: [],
+      userListVisible: false,
+      loading: false,
+      keyword: '',
+      selectedUsername: '',
+      radioStyle: {
+        display: 'block',
+        height: '30px',
+        lineHeight: '30px',
+      },
+      inviting: false,
     }
   },
   computed: {
-    ...mapGetters(['teamMembers', 'teamAdminName', 'teamName', 'teamCreateTime']),
+    ...mapGetters([
+      'username',
+      'teamMembers',
+      'teamAdminName',
+      'teamName',
+      'teamCreateTime',
+      'teams',
+      'teamId',
+    ]),
   },
   methods: {
-    addmember() {
-      this.$dialog(
-        TaskForm,
-        {
-          record: {},
-          on: {
-            ok() {
-              console.log('ok 回调')
-            },
-            cancel() {
-              console.log('cancel 回调')
-            },
-            close() {
-              console.log('modal close 回调')
-            },
-          },
-        },
-        // modal props
-        {
-          title: '邀请成员',
-          width: 700,
-          centered: true,
-          maskClosable: false,
-        }
-      )
-    },
-    edit(record) {
-      console.log('record', record)
-      this.$dialog(
-        TaskForm,
-        // component props
-        {
-          record,
-          on: {
-            ok() {
-              console.log('ok 回调')
-            },
-            cancel() {
-              console.log('cancel 回调')
-            },
-            close() {
-              console.log('modal close 回调')
-            },
-          },
-        },
-        // modal props
-        {
-          title: '操作',
-          width: 700,
-          centered: true,
-          maskClosable: false,
-        }
-      )
-    },
+    ...mapActions(['queryUser', 'joinTeam']),
+    addmember() {},
     dateChange(timeDate) {
       var date = new Date(timeDate) //获取一个时间对象
       this.year = date.getFullYear()
       this.month = date.getMonth() + 1
       this.day = date.getDate()
     },
-    change() {
-      this.$dialog(
-        ChangeForm,
-        // component props
-        {
-          record: {},
-          on: {
-            ok() {
-              console.log('ok 回调')
-            },
-            cancel() {
-              console.log('cancel 回调')
-            },
-            close() {
-              console.log('modal close 回调')
-            },
-          },
-        },
-        // modal props
-        {
-          title: '修改团队',
-          width: 700,
-          centered: true,
-          maskClosable: false,
-        }
-      )
+    isTeamMember(user) {
+      return this.teamMembers.findIndex((member) => member.username === user.username) !== -1
+    },
+    onSearch() {
+      this.userListVisible = true
+      this.loading = true
+
+      this.queryUser({
+        username: this.username,
+        keyword: this.keyword,
+      })
+        .then((res) => {
+          const { data } = res
+          if (data.isSuccess) {
+            this.users = data.users
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    hideModal() {
+      this.modalVisible = false
+      this.userListVisible = false
+      this.loading = false
+      this.users = []
+    },
+    handleOk() {
+      this.inviting = true
+      this.joinTeam({
+        teamId: this.teamId,
+        username: this.selectedUsername,
+      })
+        .then(() => {
+          console.log('邀请新成员成功')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '邀请新成员失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.inviting = false
+          this.selectedUsername = ''
+          this.hideModal()
+        })
     },
   },
   mounted() {
     if (!this.teams || this.teams.length === 0) {
-      console.log('!!!!!!!!!!!!!!!!')
       this.$router.replace({ name: 'noTeam' })
     }
   },
@@ -210,5 +246,20 @@ export default {
 }
 .add-member {
   margin-bottom: 10px;
+}
+
+.scroll-container {
+  overflow: auto;
+  padding: 8px 24px;
+  max-height: 300px;
+  position: relative;
+}
+
+.loading-container {
+  position: absolute;
+  width: 100%;
+  top: 20px;
+  left: 0;
+  text-align: center;
 }
 </style>

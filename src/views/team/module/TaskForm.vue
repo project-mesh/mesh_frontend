@@ -1,19 +1,13 @@
 <template>
   <a-form @submit="handleSubmit" :form="form">
     <a-form-item label="成员姓名" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-input
-        v-decorator="['title', { rules: [{ required: true, message: '请输入新增成员' }] }]"
-      />
+      <a-input-search placeholder="输入关键词以搜索用户" enter-button @search="onSearch" />
     </a-form-item>
     <a-form-item label="职位" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-select v-decorator="['owner', { rules: [{ required: true, message: '请选择成员职位' }] }]">
-        <a-select-option :value="0">组长</a-select-option>
         <a-select-option :value="1">管理员</a-select-option>
         <a-select-option :value="2">成员</a-select-option>
       </a-select>
-    </a-form-item>
-    <a-form-item label="标签" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-textarea v-decorator="['description']"></a-textarea>
     </a-form-item>
   </a-form>
 </template>
@@ -48,6 +42,7 @@ export default {
     this.record && this.form.setFieldsValue(pick(this.record, fields))
   },
   methods: {
+    onSearch() {},
     onOk() {
       console.log('监听了 modal ok 事件')
       return new Promise((resolve) => {

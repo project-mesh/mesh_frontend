@@ -173,6 +173,10 @@ const apiMap = {
     url: '/user',
     method: 'patch',
   },
+  queryUser: {
+    url: '/user',
+    method: 'get',
+  },
   updateUserPassword: {
     url: '/user/password',
     method: 'patch',

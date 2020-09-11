@@ -29,4 +29,18 @@ const getTeams = (queryParams) => {
   return utils.builder({ team })
 }
 
+const joinTeam = (data) => {
+  const currUser = users.find((user) => user.username === data.username)
+
+  if (!currUser) return utils.builder({}, 0, false, 'no such user')
+
+  teamMembers.push({
+    teamId: data.teamId,
+    username: data.username,
+  })
+
+  return getTeams(data)
+}
+
 Mock.mock(/\/team/, 'get', utils.functionFactory(getTeams))
+Mock.mock(/\/team\/join/, 'post', utils.functionFactory(joinTeam))

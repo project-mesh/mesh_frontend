@@ -276,6 +276,8 @@ for (let i = 0; i < 10; ++i) {
   }
 }
 
+console.log(teamMembers.filter((member) => member.teamId === '数据库'))
+
 // console.log('In data, pro: ', projects)
 // console.log('In data, teamMem: ', teamMembers)
 
