@@ -67,6 +67,7 @@ export default {
   name: 'Statistics',
   components: {},
   data() {
+    this.rowDataForExcel = []
     this.mapChartSettings = {
       mapOrigin: China,
     }
@@ -78,53 +79,6 @@ export default {
     return {
       pieChartShowAge: true,
       lineChartShowSeven: true,
-      lineChartSevenData: {
-        columns: ['日期', '总用户量'],
-        rows: [
-          { 日期: '1/1', 总用户量: 1393 },
-          { 日期: '1/2', 总用户量: 3530 },
-          { 日期: '1/3', 总用户量: 2923 },
-          { 日期: '1/4', 总用户量: 1723 },
-          { 日期: '1/5', 总用户量: 3792 },
-          { 日期: '1/6', 总用户量: 4593 },
-          { 日期: '1/7', 总用户量: 4593 },
-        ],
-      },
-      lineChartThirtyData: {
-        columns: ['日期', '总用户量'],
-        rows: [
-          { 日期: '1/1', 总用户量: 1393 },
-          { 日期: '1/2', 总用户量: 3530 },
-          { 日期: '1/3', 总用户量: 2923 },
-          { 日期: '1/4', 总用户量: 1723 },
-          { 日期: '1/5', 总用户量: 3792 },
-          { 日期: '1/6', 总用户量: 4593 },
-          { 日期: '1/7', 总用户量: 4593 },
-          { 日期: '1/8', 总用户量: 1393 },
-          { 日期: '1/9', 总用户量: 3530 },
-          { 日期: '1/10', 总用户量: 2923 },
-          { 日期: '1/11', 总用户量: 1723 },
-          { 日期: '1/12', 总用户量: 3792 },
-          { 日期: '1/13', 总用户量: 4593 },
-          { 日期: '1/14', 总用户量: 4593 },
-          { 日期: '1/15', 总用户量: 1393 },
-          { 日期: '1/16', 总用户量: 3530 },
-          { 日期: '1/17', 总用户量: 2923 },
-          { 日期: '1/18', 总用户量: 1723 },
-          { 日期: '1/19', 总用户量: 3792 },
-          { 日期: '1/20', 总用户量: 4593 },
-          { 日期: '1/21', 总用户量: 4593 },
-          { 日期: '1/22', 总用户量: 1393 },
-          { 日期: '1/23', 总用户量: 3530 },
-          { 日期: '1/24', 总用户量: 2923 },
-          { 日期: '1/25', 总用户量: 1723 },
-          { 日期: '1/26', 总用户量: 3792 },
-          { 日期: '1/27', 总用户量: 4593 },
-          { 日期: '1/28', 总用户量: 4593 },
-          { 日期: '1/29', 总用户量: 4593 },
-          { 日期: '1/30', 总用户量: 4593 },
-        ],
-      },
     }
   },
   computed: {
@@ -140,26 +94,57 @@ export default {
       'currentTotalUser',
       'historyTotalUser',
     ]),
-    histoMountChartData() {
-      const columns = ['日期', '累积用户数']
+    lineChartSevenData() {
+      const columns = ['日期', '总用户量']
       const rows = []
-
-      let year = new Date().getFullYear()
-      let month = new Date().getMonth() + 1
-
-      for (let i = 0; i < this.historyTotalUser.length; ++i) {
-        rows.push({
-          日期: `${year}年${month}月`,
-          累积用户数: this.historyTotalUser[i].totalUser,
-        })
-
-        if (--month === 0) {
-          --year
-          month = 12
+      const curDate = new Date()
+      let month = curDate.getMonth() + 1
+      let date = curDate.getDate()
+      rows.push({
+        日期: month + '/' + date,
+        总用户量: this.currentTotalUser,
+      })
+      if (this.historyTotalUser[0]) {
+        for (let i = 1; i < 7; ++i) {
+          let historyDate = new Date(curDate.getTime() - 24 * 60 * 60 * 1000 * i)
+          let month = historyDate.getMonth() + 1
+          let date = historyDate.getDate()
+          rows.push({
+            日期: month + '/' + date,
+            总用户量: this.historyTotalUser[i - 1].totalUser,
+          })
         }
       }
-
-      return { columns, rows: rows.reverse() }
+      return {
+        columns,
+        rows: rows.reverse(),
+      }
+    },
+    lineChartThirtyData() {
+      const columns = ['日期', '总用户量']
+      const rows = []
+      const curDate = new Date()
+      let month = curDate.getMonth() + 1
+      let date = curDate.getDate()
+      rows.push({
+        日期: month + '/' + date,
+        总用户量: this.currentTotalUser,
+      })
+      if (this.historyTotalUser[0]) {
+        for (let i = 1; i < 30; ++i) {
+          let historyDate = new Date(curDate.getTime() - 24 * 60 * 60 * 1000 * i)
+          let month = historyDate.getMonth() + 1
+          let date = historyDate.getDate()
+          rows.push({
+            日期: month + '/' + date,
+            总用户量: this.historyTotalUser[i - 1].totalUser,
+          })
+        }
+      }
+      return {
+        columns,
+        rows: rows.reverse(),
+      }
     },
     histoChartData() {
       const columns = ['日期', '当前在线用户数', '团队平均成员数', '团队平均项目数']
@@ -341,6 +326,12 @@ export default {
             const data = this.formatJson(filterVal, list)
             export_json_to_excel(tHeader, data, '年龄分布数据')
           }
+        } else {
+          const tHeader = ['时间', '用户数']
+          const filterVal = ['日期', '总用户量']
+          const list = this.lineChartThirtyData.rows.reverse()
+          const data = this.formatJson(filterVal, list)
+          export_json_to_excel(tHeader, data, '用户量变化数据')
         }
       })
     },
@@ -353,8 +344,8 @@ export default {
       this.queryGeneralStatistics(),
       this.queryUserStatistics(),
       this.queryTotalUser({
-        timeInterval: 10,
-        itemCount: 10,
+        timeInterval: 1, //单位是天
+        itemCount: 29, //加上当前用户量正好一共30条
       }).catch((err) => {}),
     ])
   },
