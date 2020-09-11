@@ -138,7 +138,7 @@ export const asyncRouterMap = [
         path: '/project_view',
         name: 'project_view',
         // TODO: 修改成对应页面
-        component: () => import('@/views/project_view/project_view'),
+        component: () => import('@/views/project_view/ProjectView'),
         meta: {
           title: '项目视图',
           icon: 'form',
