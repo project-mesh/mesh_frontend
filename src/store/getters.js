@@ -42,6 +42,7 @@ const getters = {
   avgTeamProject: (state) => state.statistics.avgTeamProject,
   currentTotalUser: (state) => state.statistics.currentTotalUser,
   historyTotalUser: (state) => state.statistics.historyTotalUser,
+  timeInterval: (state) => state.statistics.timeInterval,
 }
 
 export default getters

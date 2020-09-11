@@ -13,6 +13,7 @@ const statistics = {
     avgTeamProject: 0,
     currentTotalUser: 0,
     historyTotalUser: [],
+    timeInterval: 0,
   },
   mutations: {
     SET_USERS: (state, users) => {
@@ -48,6 +49,9 @@ const statistics = {
     SET_HISTORY_TOTAL_USER: (state, historyTotalUser) => {
       state.historyTotalUser = historyTotalUser
     },
+    SET_TIME_INTERVAL: (state, timeInterval) => {
+      state.timeInterval = timeInterval
+    },
   },
   actions: {
     queryUserInfo({ commit }, requestData) {
@@ -58,9 +62,10 @@ const statistics = {
             if (data.isSuccess) {
               commit('SET_USERS', data.users)
             }
+            console.log('response in queryUserInfo, response: ', res)
             resolve(res)
           })
-          .then((err) => {
+          .catch((err) => {
             console.log('error in queryUserInfo, err: ', err)
             reject(err)
           })
@@ -91,6 +96,7 @@ const statistics = {
           .then((res) => {
             const { data } = res
             if (data.isSuccess) {
+              commit('SET_TIME_INTERVAL', requestData.timeInterval)
               commit('SET_CURRENT_TOTAL_USER', data.currentTotalUser)
               commit('SET_HISTORY_TOTAL_USER', data.historyTotalUser)
             }

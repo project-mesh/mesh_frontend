@@ -33,6 +33,7 @@
 <script>
 import China from 'echarts/map/json/china.json'
 import { mapGetters, mapActions } from 'vuex'
+import moment from 'moment'
 
 export default {
   name: 'Statistics',
@@ -81,24 +82,21 @@ export default {
       'avgTeamProject',
       'currentTotalUser',
       'historyTotalUser',
+      'timeInterval',
     ]),
     histoChartData() {
       const columns = ['日期', '累积用户数']
       const rows = []
 
-      let year = new Date().getFullYear()
-      let month = new Date().getMonth() + 1
+      let curDate = moment().date()
 
       for (let i = 0; i < this.historyTotalUser.length; ++i) {
         rows.push({
-          日期: `${year}年${month}月`,
+          日期: moment()
+            .date(curDate - this.timeInterval * i)
+            .format('YYYY MM DD'),
           累积用户数: this.historyTotalUser[i].totalUser,
         })
-
-        if (--month === 0) {
-          --year
-          month = 12
-        }
       }
 
       return { columns, rows: rows.reverse() }
@@ -113,7 +111,6 @@ export default {
     //   ],
     // },
     mapChartData() {
-      console.log('userlocation: ', this.userLocation)
       const columns = ['位置', '用户数']
       const rows = []
 

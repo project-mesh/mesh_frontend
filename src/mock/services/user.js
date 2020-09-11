@@ -40,5 +40,38 @@ const updatePreference = (data) => {
   })
 }
 
+const updateUserInfo = (data) => {
+  const currUser = users.find((user) => user.username === data.username)
+
+  Object.keys(data).forEach((key) => {
+    if (key !== 'password' && key in currUser) {
+      currUser[key] = data[key]
+    }
+  })
+
+  const userCopy = utils.deepCopy(currUser)
+
+  userCopy.teams = []
+  teamMembers
+    .filter((teamMember) => teamMember.username === userCopy.username)
+    .forEach((teamMember) =>
+      userCopy.teams.push(teams.find((team) => team.teamId === teamMember.teamId))
+    )
+
+  return utils.builder({
+    ...userCopy,
+  })
+}
+
+const updateUserPasswordAdmin = (data) => {
+  const currUser = users.find((user) => user.username === data.username)
+
+  currUser.password = md5(data.password)
+
+  return utils.builder({})
+}
+
 Mock.mock(/\/login/, 'post', utils.functionFactory(login))
 Mock.mock(/\/preference/, 'post', utils.functionFactory(updatePreference))
+Mock.mock(/\/user/, 'patch', utils.functionFactory(updateUserInfo))
+Mock.mock(/\/admin\/password/, 'patch', utils.functionFactory(updateUserPasswordAdmin))

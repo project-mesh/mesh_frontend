@@ -71,28 +71,28 @@ const user = {
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         sendRequest('login', userInfo)
-          .then((response) => {
-            // console.log(response.data.token)
-            const token = response.data.token
+          .then((res) => {
+            // console.log(res.data.token)
+            const token = res.data.token
             console.log('token: ', token)
             storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', token)
-            commit('SET_USERNAME', response.data.username)
-            commit('SET_ROLE', response.data.role)
-            commit('SET_AVATAR', response.data.avatar)
-            commit('SET_TEAMS', response.data.teams)
-            commit('SET_PREFERENCE', response.data.preference)
-            commit('SET_ADDRESS', response.data.address)
-            commit('SET_NICKNAME', response.data.nickname)
-            commit('SET_BIRTHDAY', response.data.birthday)
-            commit('SET_GENDER', response.data.gender)
-            commit('SET_DESCRIPTION', response.data.description)
-            commit('SET_STATUS', response.data.status)
-            // commit('SET_TEAMID', response.data.preference.preferenceTeam)
-            resolve(response)
+            commit('SET_USERNAME', res.data.username)
+            commit('SET_ROLE', res.data.role)
+            commit('SET_AVATAR', res.data.avatar)
+            commit('SET_TEAMS', res.data.teams)
+            commit('SET_PREFERENCE', res.data.preference)
+            commit('SET_ADDRESS', res.data.address)
+            commit('SET_NICKNAME', res.data.nickname)
+            commit('SET_BIRTHDAY', res.data.birthday)
+            commit('SET_GENDER', res.data.gender)
+            commit('SET_DESCRIPTION', res.data.description)
+            commit('SET_STATUS', res.data.status)
+            // commit('SET_TEAMID', res.data.preference.preferenceTeam)
+            resolve(res)
           })
-          .catch((error) => {
-            reject(error)
+          .catch((err) => {
+            reject(err)
           })
       })
     },
@@ -154,14 +154,30 @@ const user = {
           .catch((err) => reject(err))
       })
     },
-    updateUserAvatar({ commit }, requestData) {
+    updateUserInfo({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
-        sendRequest('updateUserAvatar', requestData)
+        sendRequest('updateUserInfo', requestData)
           .then((res) => {
-            commit('SET_AVATAR', requestData.avatar)
+            const { data } = res
+            if (data.isSuccess && data.username === state.username) {
+              commit('SET_USERNAME', data.username)
+              commit('SET_ROLE', data.role)
+              commit('SET_AVATAR', data.avatar)
+              commit('SET_TEAMS', data.teams)
+              commit('SET_PREFERENCE', data.preference)
+              commit('SET_ADDRESS', data.address)
+              commit('SET_NICKNAME', data.nickname)
+              commit('SET_BIRTHDAY', data.birthday)
+              commit('SET_GENDER', data.gender)
+              commit('SET_DESCRIPTION', data.description)
+              commit('SET_STATUS', data.status)
+            }
             resolve(res)
           })
-          .catch((err) => reject(err))
+          .catch((err) => {
+            console.log('error in updateUserInfo, error: ', err)
+            reject(err)
+          })
       })
     },
     updateUserPassword({ commit }, requestData) {
@@ -172,6 +188,9 @@ const user = {
           })
           .catch((err) => reject(err))
       })
+    },
+    updateUserPasswordAdmin(_, requestData) {
+      return sendRequest('updateUserPasswordAdmin', requestData)
     },
   },
 }
