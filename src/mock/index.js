@@ -18,8 +18,8 @@ if (true) {
   require('./services/task')
   require('./services/project')
   require('./services/team')
-  require('./services/user')
   require('./services/statistics')
+  require('./services/user')
 
   Mock.setup({
     timeout: 800, // setter delay time

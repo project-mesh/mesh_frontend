@@ -24,11 +24,22 @@
       >
         <div class="avator-card">
           <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
-          <a-popover title="成员信息">
-            <template slot="content">
-              <p>{{ item.username }}</p>
-              <p>{{ item.username }}</p>
-            </template>
+          <a-popover title="成员任务">
+            <a-list
+              v-if="teamMemberTask(item.username).length"
+              size="small"
+              slot="content"
+              :data-source="teamMemberTask(item.username)"
+            >
+              <a-list-item slot="renderItem" slot-scope="task">
+                <router-link
+                  :to="{ name: 'statistics', query: { teamId, projectId: task.projectId } }"
+                >
+                  {{ task.taskName }}
+                </router-link>
+              </a-list-item>
+            </a-list>
+            <span v-else slot="content">该成员暂无任务</span>
             <a style="margin-left: 10px">{{ item.username }}</a>
           </a-popover>
         </div>
@@ -128,6 +139,7 @@ export default {
       'teamCreateTime',
       'teams',
       'teamId',
+      'teamTasks',
     ]),
   },
   methods: {
@@ -186,6 +198,9 @@ export default {
           this.selectedUsername = ''
           this.hideModal()
         })
+    },
+    teamMemberTask(username) {
+      return this.teamTasks.filter((task) => task.principal === username)
     },
   },
   mounted() {
