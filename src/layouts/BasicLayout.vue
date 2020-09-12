@@ -148,7 +148,7 @@ export default {
       'queryTeamKB',
       'queryNotification',
     ]),
-    ...mapMutations(['TOGGLE_CREATING_TEAM']),
+    ...mapMutations(['ADD_NEW_TEAM', 'TOGGLE_CREATING_TEAM']),
     i18nRender,
     handleSubmit(e) {
       console.log('创建新团队')
@@ -161,6 +161,10 @@ export default {
           this.createTeam({ username: store.getters.username, teamName: values.teamName })
             .then((response) => {
               console.log('success,boy', response)
+              // 增加新建的团队到团队列表
+              this.ADD_NEW_TEAM(response.data.team)
+              console.log('after add new team', store.getters.teams)
+              // 更新当前团队下的项目，消息和知识库
               promises.push(this.queryNotification({ username: this.username }))
               const requestData = { username: this.username, teamId: response.data.team.teamId }
               promises.push(this.queryTeam(requestData), this.queryTeamKB(requestData))

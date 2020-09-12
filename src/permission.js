@@ -63,6 +63,8 @@ function handle(to, from, next) {
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // strt progress bar
+  console.log(Cookies.get())
+  console.log('state.teams is', store.getters.teams)
   if (Cookies.get(store.getters.sessionKey)) {
     if (!store.getters.username) {
       store
@@ -88,6 +90,7 @@ router.beforeEach((to, from, next) => {
       // 在免登录白名单，直接进入
       next()
     } else {
+      alert('2')
       next({ path: loginRoutePath })
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
