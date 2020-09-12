@@ -122,7 +122,7 @@ import allCity from './cities.js'
 const IconFont = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_2053325_5hl9fgurem.js',
 })
-const city = allCity.city
+// const city = allCity.city
 
 export default {
   components: {
@@ -134,7 +134,7 @@ export default {
   data() {
     return {
       // cropper
-      city,
+      city: [],
       statusStr: '3', //在数据库中存的是数字，这里需要一步数字转换字符串
       gender: 1,
       birthDayStr: '2000-06-09',
@@ -313,8 +313,8 @@ export default {
       this.gender = 0
     },
   },
-  mounted() {
-    console.log('wzzzzzzzzj', city)
+  async created() {
+    this.city = Object.freeze(allCity.city)
   },
 }
 </script>
