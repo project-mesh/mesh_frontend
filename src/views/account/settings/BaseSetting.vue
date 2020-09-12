@@ -35,9 +35,9 @@
           </a-form-item>
           <a-form-item label="状态" has-feedback>
             <a-select
-              :value="statusStr"
               v-decorator="['select', { rules: [{ required: true, message: '挑一个自己的状态' }] }]"
               placeholder="挑一个自己的状态"
+              @change="handleChange"
             >
               <a-select-option value="1">
                 <icon-font type="icon-yao" />
@@ -164,6 +164,10 @@ export default {
     ...mapActions(['updateUserPassword']),
     setavatar(url) {
       this.option.img = url
+    },
+    handleChange(value) {
+      this.statusStr = value
+      console.log(this.statusStr)
     },
     add() {
       this.$dialog(
