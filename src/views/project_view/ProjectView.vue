@@ -1,14 +1,23 @@
 <template>
-  <a-row :gutter="[8, 8]">
-    <a-col :span="8" v-for="(taskListWithTag, taskListIndex) in tasks" :key="taskListIndex">
-      <task-list :task-list-with-tag="taskListWithTag" ghost-class="task-list"></task-list>
-    </a-col>
-  </a-row>
+  <a-card :bordered="false" :body-style="{ padding: 0 }" :loading="boardLoading">
+    <a-row :gutter="[8, 8]">
+      <a-col :span="8" v-for="(taskListWithStatus, taskListIndex) in tasks" :key="taskListIndex">
+        <task-list
+          :tasks="taskListWithStatus.tasks"
+          :status="taskListWithStatus.status"
+          :set-task="setSelectedTask"
+          @end="onDragEnd"
+          ghost-class="task-list"
+        ></task-list>
+      </a-col>
+    </a-row>
+  </a-card>
 </template>
 <script>
 import TaskList from './TaskList'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -24,80 +33,79 @@ export default {
         name: 'taskList',
       },
       form: this.$form.createForm(this),
+      boardLoading: false,
+      selectedTask: null,
       tasks: [
         {
-          tag: '开发中',
-          tasks: [
-            {
-              tag: '开发中',
-              taskId: 'aklgnlkjsald',
-              taskName: 'UI/UX设计',
-              isFinished: false,
-              priority: 1,
-              createTime: '16546513231',
-              deadline: '2020-06-18',
-              description: '任务内容详细描述xxxxxxxx',
-              founder: '刘雪迪',
-              principal: '蒋金峰',
-              subTasks: [],
-            },
-            {
-              tag: '开发中',
-              taskId: 'aklgnlkjsald',
-              taskName: '444',
-              isFinished: false,
-              priority: 1,
-              createTime: '16546513231',
-              deadline: '2020-06-18',
-              description: '任务内容详细描述xxxxxxxx',
-              founder: '迪',
-              principal: '峰',
-              subTasks: [],
-            },
-            {
-              tag: '开发中',
-              taskId: 'aklgnlkjsald',
-              taskName: '1111',
-              isFinished: false,
-              priority: 1,
-              createTime: '16546513231',
-              deadline: '2020-06-18',
-              description: '任务内容详细描述xxxxxxxx',
-              founder: '刘',
-              principal: '峰',
-              subTasks: [],
-            },
-          ],
+          status: '开发中',
+          tasks: [],
         },
         {
-          tag: '开发完毕',
-          tasks: [
-            {
-              tag: '开发完毕',
-              taskId: 'aklgnlkjsald',
-              taskName: '222',
-              isFinished: false,
-              priority: 1,
-              createTime: '16546513231',
-              deadline: '2020-06-18',
-              description: '任务内容详细描述xxxxxxxx',
-              founder: '雪',
-              principal: '蒋',
-              subTasks: [],
-            },
-          ],
+          status: '已逾期',
+          tasks: [],
         },
         {
-          tag: '已逾期',
+          status: '已完成',
           tasks: [],
         },
       ],
     }
   },
+  computed: {
+    ...mapGetters(['username', 'projectId']),
+  },
   methods: {
-    setDrag(value) {
-      this.drag = value
+    ...mapActions(['queryProjectTasks', 'updateTask']),
+    setSelectedTask(task) {
+      this.selectedTask = task
     },
+    onDragEnd($event) {
+      const toStatus = $event.to.dataset.status
+      const fromStatus = $event.from.dataset.status
+      if (toStatus !== fromStatus && this.selectedTask) {
+        let isFinished = toStatus === '已完成'
+        this.selectedTask.isFinished = isFinished
+        this.selectedTask.status = toStatus
+        const requestData = {
+          username: this.username,
+          projectId: this.projectId,
+          taskId: this.selectedTask.taskId,
+          isFinished,
+        }
+
+        this.updateTask(requestData)
+          .then(() => {
+            console.log('updateTask success')
+          })
+          .catch((err) => {
+            this.$notification.error({
+              message: '更新任务信息失败',
+              description: err.message,
+            })
+          })
+      }
+    },
+  },
+  mounted() {
+    this.boardLoading = true
+    this.queryProjectTasks({
+      username: this.username,
+      projectId: this.$route.query.projectId,
+    })
+      .then((res) => {
+        const { tasks: resTasks } = res.data
+
+        resTasks.forEach((task) => {
+          this.tasks.find((taskList) => taskList.status === task.status).tasks.push(task)
+        })
+      })
+      .catch((err) => {
+        this.$notification.error({
+          message: '查询项目任务失败',
+          description: err.message,
+        })
+      })
+      .finally(() => (this.boardLoading = false))
   },
 }
 </script>

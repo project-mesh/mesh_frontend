@@ -30,19 +30,7 @@ export default {
         }
       },
     },
-    showTaskList: {
-      type: null,
-      default: function () {
-        return null
-      },
-    },
   },
-  methods: {
-    showTaskInfo: function () {
-      if (this.showTaskList) {
-        this.showTaskList()
-      }
-    },
-  },
+  methods: {},
 }
 </script>

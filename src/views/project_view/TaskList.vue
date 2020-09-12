@@ -1,6 +1,6 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
-  <a-card class="task-list" style="display: inline-block" :title="taskListWithTag.tag">
+  <a-card class="task-list" style="display: inline-block" :title="status">
     <a-modal
       centered
       :width="700"
@@ -14,16 +14,21 @@
     </a-modal>
     <draggable
       group="taskGroup"
-      :list="taskListWithTag.tasks"
+      :list="tasks"
       :move="moveTask"
-      v-bind="dragOptions"
+      :animation="200"
       :empty-insert-threshold="200"
-      @start="drag = true"
-      @end="drag = false"
+      @start="onDragStart"
+      @end="onDragEnd"
     >
-      <transition-group type="transition" :name="!drag ? 'flip-list' : null">
-        <div class="task-info" v-for="(task, taskIndex) in taskListWithTag.tasks" :key="taskIndex">
-          <task-info :task="task" :show-task-templatest="showTask"></task-info>
+      <transition-group :data-status="status" type="transition" :name="!drag ? 'flip-list' : null">
+        <div
+          class="task-info"
+          v-for="(task, taskIndex) in tasks"
+          :key="taskIndex"
+          @click="showTask(task)"
+        >
+          <task-info :task="task"></task-info>
         </div>
       </transition-group>
       <a-button slot="footer" block type="primary" @click="addTask">+ 任务</a-button>
@@ -35,6 +40,8 @@
 import draggable from 'vuedraggable'
 import TaskInfo from './TaskInfo'
 import ShowTaskForm from './ShowTaskForm'
+import { mapGetters, vuex } from 'vuex'
+
 export default {
   components: {
     //调用组件
@@ -54,25 +61,35 @@ export default {
     }
   },
   props: {
-    taskListWithTag: {
-      type: Object,
-      default: function () {
-        return {
-          tag: '新建',
-          tasks: [],
-        }
-      },
+    // taskListWithStatus: {
+    //   type: Object,
+    //   default: function () {
+    //     return {
+    //       status: '新建',
+    //       tasks: [],
+    //     }
+    //   },
+    // },
+    status: {
+      type: String,
+      required: true,
+    },
+    tasks: {
+      type: Array,
+      required: true,
+    },
+    setTask: {
+      type: Function,
+      required: true,
     },
   },
   computed: {
-    dragOptions() {
-      return {
-        animation: 200,
-        // group: 'description',
-        // disabled: false,
-        // ghostClass: 'ghost',
-      }
-    },
+    // dragOptions() {
+    //   return {
+    //     animation: 200,
+    //   }
+    // },
+    ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
     showTask: function () {
@@ -95,17 +112,28 @@ export default {
     addTag: function () {
       this.showModal()
     },
-
+    onDragStart() {
+      console.log('dragStart')
+      this.drag = true
+    },
+    onDragEnd(evt) {
+      this.$emit('end', evt)
+    },
     moveTask: function (evt, originalEvt) {
-      // var toElement = evt.relatedContext.element.tag
-      // var fromElement = evt.draggedContext.element.taskName
-      console.log('realtedContext', evt.relatedContext)
-      console.log('draggedContext', evt.draggedContext)
-      return true
-      // console.log('taskMove拖动中')
+      if (
+        this.projectAdminName !== this.username &&
+        evt.draggedContext.element.principal !== this.username
+      )
+        return false
 
-      // console.log(fromElement + ' is moved to ' + toElement)
-      // console.log(evt)
+      if (
+        evt.to.dataset.status === '已逾期' ||
+        (evt.from.dataset.status === '已逾期' && evt.to.dataset.status === '开发中')
+      )
+        return false
+
+      this.setTask(evt.draggedContext.element)
+      return true
     },
   },
 }
