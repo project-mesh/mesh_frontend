@@ -42,6 +42,12 @@ function handle(to, from, next) {
       // alert('hello')
       store.dispatch('GenerateRoutes', role)
       router.addRoutes(store.getters.addRouters)
+
+      if (
+        store.getters.role === 'user' &&
+        (!store.getters.teams || store.getters.teams.length === 0)
+      )
+        return next({ name: 'noTeam' })
       next({ ...to })
     } else {
       console.log(to)

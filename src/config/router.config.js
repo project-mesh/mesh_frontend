@@ -79,12 +79,23 @@ export const asyncRouterMap = [
                   permission: ['user'],
                 },
               },
+              // {
+              //   path: '/project_view',
+              //   name: 'project_view',
+              //   // TODO: 修改成对应页面
+              //   component: () => import('@/views/project_view/ProjectView'),
+              //   meta: {
+              //     title: '项目视图',
+              //     icon: 'form',
+              //     permission: ['user'],
+              //   },
+              // },
               // 任务看板
               {
                 path: '/project/detail/task-board',
                 name: 'taskBoard',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
+                component: () => import('@/views/project_view/ProjectView'),
                 meta: {
                   title: '任务看板',
                   keepAlive: true,
@@ -147,7 +158,6 @@ export const asyncRouterMap = [
           permission: ['user'],
         },
       },
-
       // 日历页面
       {
         path: '/calendar',
