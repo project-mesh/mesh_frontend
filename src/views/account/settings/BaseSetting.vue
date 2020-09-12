@@ -9,7 +9,7 @@
               <icon-font
                 type="icon-xingbienanxianxing"
                 id="gender-male"
-                :class="{ blue: isMale && !unChoose }"
+                :class="{ blue: gender === 1 }"
                 @click="chooseMale"
               />
             </a-tooltip>
@@ -17,7 +17,7 @@
               <icon-font
                 type="icon-xingbienvxianxing"
                 id="gender-female"
-                :class="{ pink: !isMale && !unChoose }"
+                :class="{ pink: gender === 2 }"
                 @click="chooseFemale"
               />
             </a-tooltip>
@@ -25,7 +25,7 @@
               <icon-font
                 type="icon-xingbie"
                 id="gender-unknown"
-                :class="{ purple: unChoose }"
+                :class="{ purple: gender === 0 }"
                 @click="chooseUnknown"
               />
             </a-tooltip>
@@ -35,7 +35,7 @@
           </a-form-item>
           <a-form-item label="状态" has-feedback>
             <a-select
-              :value="status"
+              :value="statusStr"
               v-decorator="['select', { rules: [{ required: true, message: '挑一个自己的状态' }] }]"
               placeholder="挑一个自己的状态"
             >
@@ -135,10 +135,8 @@ export default {
     return {
       // cropper
       city,
-      status: '3', //在数据库中存的是数字，这里需要一步数字转换字符串
+      statusStr: '3', //在数据库中存的是数字，这里需要一步数字转换字符串
       gender: 1,
-      isMale: true,
-      unChoose: false,
       birthDayStr: '2000-06-09',
       shengxiaoTag: '生肖：兔',
       shengxiaoIcon: 'icon-tuxiao',
@@ -306,17 +304,12 @@ export default {
       }
     },
     chooseMale() {
-      this.$set(this, 'isMale', true)
-      this.$set(this, 'unChoose', false)
       this.gender = 1
     },
     chooseFemale() {
-      this.$set(this, 'isMale', false)
-      this.$set(this, 'unChoose', false)
       this.gender = 2
     },
     chooseUnknown() {
-      this.$set(this, 'unChoose', true)
       this.gender = 0
     },
   },
