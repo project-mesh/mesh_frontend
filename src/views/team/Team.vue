@@ -18,6 +18,7 @@
       >
         <div class="avator-card">
           <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
+<<<<<<< Updated upstream
           <a-popover title="成员信息">
             <template slot="content">
               <p>{{ item.username }}</p>
@@ -25,6 +26,25 @@
             </template>
             <a-button type="link">{{ item.username }}</a-button>
           </a-popover>
+=======
+          <a-dropdown>
+            <a class="ant-dropdown-link" @click="(e) => e.preventDefault()">
+              {{ item.username }}
+              <a-icon type="VNode" />
+            </a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a href="javascript:;" class="popcard">1st menu item</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a href="javascript:;" class="popcard">2nd menu item</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a href="javascript:;" class="popcard">3rd menu item</a>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+>>>>>>> Stashed changes
         </div>
         <div class="list-content">
           <div class="list-content-item">
@@ -205,4 +225,10 @@ export default {
 .add-member {
   margin-bottom: 10px;
 }
+<<<<<<< Updated upstream
+=======
+.popcard {
+  width: 300px;
+}
+>>>>>>> Stashed changes
 </style>
