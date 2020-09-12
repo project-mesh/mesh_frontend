@@ -122,7 +122,6 @@ import allCity from './cities.js'
 const IconFont = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_2053325_5hl9fgurem.js',
 })
-// const city = allCity.city
 
 export default {
   components: {
@@ -130,79 +129,16 @@ export default {
     CodeForm,
     IconFont,
   },
-  computed: mapGetters(['username']),
-  data() {
-    return {
-      // cropper
-      city: [],
-      statusStr: '3', //在数据库中存的是数字，这里需要一步数字转换字符串
-      gender: 1,
-      birthDayStr: '2000-06-09',
-      shengxiaoTag: '生肖：兔',
-      shengxiaoIcon: 'icon-tuxiao',
-      xingzuoTag: '星座：巨蟹座',
-      xingzuoIcon: 'icon-juxiezuo',
-      preview: {},
-      option: {
-        img: '/avatar2.jpg',
-        info: true,
-        size: 1,
-        outputType: 'jpeg',
-        canScale: false,
-        autoCrop: true,
-        // 只有自动截图开启 宽度高度才生效
-        autoCropWidth: 180,
-        autoCropHeight: 180,
-        fixedBox: true,
-        // 开启宽度和高度比例
-        fixed: true,
-        fixedNumber: [1, 1],
-      },
-    }
+  computed: {
+    ...mapGetters(['username']),
   },
-  methods: {
-    ...mapActions(['updateUserPassword']),
-    setavatar(url) {
-      this.option.img = url
-    },
-    handleChange(value) {
-      this.statusStr = value
-      console.log(this.statusStr)
-    },
-    add() {
-      this.$dialog(
-        CodeForm,
-        // component props
-        {
-          record: {},
-          on: {
-            ok() {
-              alert('外部ok')
-              console.log('ok 回调')
-            },
-            cancel() {
-              console.log('cancel 回调')
-            },
-            close() {
-              console.log('modal close 回调')
-            },
-          },
-        },
-        // modal props
-        {
-          title: '修改密码',
-          width: 700,
-          centered: true,
-          maskClosable: false,
-        }
-      )
-    },
-    dealBirthday() {
-      var oriStr = this.birthDayStr
-      var dateStr = oriStr.split('-')
-      var yearNum = parseInt(dateStr[0])
-      var xingzuoNum = parseInt(dateStr[1] + dateStr[2])
-      var shengXiaoNum = yearNum % 12
+  watch: {
+    birthDayStr: function (newValue) {
+      let oriStr = newValue
+      let dateStr = oriStr.split('-')
+      let yearNum = parseInt(dateStr[0])
+      let xingzuoNum = parseInt(dateStr[1] + dateStr[2])
+      let shengXiaoNum = yearNum % 12
       //从猴开始，0为猴
       switch (shengXiaoNum) {
         case 0: {
@@ -306,7 +242,82 @@ export default {
         this.$set(this, 'xingzuoTag', '星座：摩羯座')
         this.$set(this, 'xingzuoIcon', 'icon-mojiezuo')
       }
+      console.log(this.shengxiaoTag)
+      console.log(this.xingzuoTag)
     },
+  },
+  data() {
+    return {
+      // cropper
+      city: [],
+      statusStr: '3', //在数据库中存的是数字，这里需要一步数字转换字符串
+      gender: 1,
+      birthDayStr: '2000-06-09',
+      shengxiaoTag: '生肖：兔',
+      shengxiaoIcon: 'icon-tuxiao',
+      xingzuoTag: '星座：巨蟹座',
+      xingzuoIcon: 'icon-juxiezuo',
+      preview: {},
+      form: this.$form.createForm(this),
+      option: {
+        img: '/avatar2.jpg',
+        info: true,
+        size: 1,
+        outputType: 'jpeg',
+        canScale: false,
+        autoCrop: true,
+        // 只有自动截图开启 宽度高度才生效
+        autoCropWidth: 180,
+        autoCropHeight: 180,
+        fixedBox: true,
+        // 开启宽度和高度比例
+        fixed: true,
+        fixedNumber: [1, 1],
+      },
+    }
+  },
+  methods: {
+    ...mapActions(['updateUserPassword']),
+    setavatar(url) {
+      this.option.img = url
+    },
+    handleChange(value) {
+      this.statusStr = value
+      console.log(this.statusStr)
+    },
+    onChange(date, dateString) {
+      this.birthDayStr = dateString
+      console.log(this.birthDayStr)
+    },
+    add() {
+      this.$dialog(
+        CodeForm,
+        // component props
+        {
+          record: {},
+          on: {
+            ok() {
+              alert('外部ok')
+              console.log('ok 回调')
+            },
+            cancel() {
+              console.log('cancel 回调')
+            },
+            close() {
+              console.log('modal close 回调')
+            },
+          },
+        },
+        // modal props
+        {
+          title: '修改密码',
+          width: 700,
+          centered: true,
+          maskClosable: false,
+        }
+      )
+    },
+    dealBirthday() {},
     chooseMale() {
       this.gender = 1
     },
