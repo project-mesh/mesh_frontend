@@ -15,7 +15,6 @@
         邀请成员
       </a-button>
     </div>
-
     <a-list size="large">
       <a-list-item
         :key="index"

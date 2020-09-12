@@ -64,6 +64,9 @@ const user = {
     SET_STATUS: (state, status) => {
       state.status = status
     },
+    ADD_NEW_TEAM: (state, newTeam) => {
+      state.teams.push(newTeam)
+    },
   },
 
   actions: {
@@ -72,24 +75,27 @@ const user = {
       return new Promise((resolve, reject) => {
         sendRequest('login', userInfo)
           .then((res) => {
-            // console.log(res.data.token)
-            const token = res.data.token
-            console.log('token: ', token)
-            storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
-            commit('SET_TOKEN', token)
-            commit('SET_USERNAME', res.data.username)
-            commit('SET_ROLE', res.data.role)
-            commit('SET_AVATAR', res.data.avatar)
-            commit('SET_TEAMS', res.data.teams)
-            commit('SET_PREFERENCE', res.data.preference)
-            commit('SET_ADDRESS', res.data.address)
-            commit('SET_NICKNAME', res.data.nickname)
-            commit('SET_BIRTHDAY', res.data.birthday)
-            commit('SET_GENDER', res.data.gender)
-            commit('SET_DESCRIPTION', res.data.description)
-            commit('SET_STATUS', res.data.status)
-            // commit('SET_TEAMID', res.data.preference.preferenceTeam)
-            resolve(res)
+            if (!res.data.isSuccess) {
+              reject(res.data.msg)
+            } else {
+              const token = res.data.token
+              console.log('token: ', token)
+              storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
+              commit('SET_TOKEN', token)
+              commit('SET_USERNAME', res.data.username)
+              commit('SET_ROLE', res.data.role)
+              commit('SET_AVATAR', res.data.avatar)
+              commit('SET_TEAMS', res.data.teams)
+              commit('SET_PREFERENCE', res.data.preference)
+              commit('SET_ADDRESS', res.data.address)
+              commit('SET_NICKNAME', res.data.nickname)
+              commit('SET_BIRTHDAY', res.data.birthday)
+              commit('SET_GENDER', res.data.gender)
+              commit('SET_DESCRIPTION', res.data.description)
+              commit('SET_STATUS', res.data.status)
+              // commit('SET_TEAMID', res.data.preference.preferenceTeam)
+              resolve(res)
+            }
           })
           .catch((err) => {
             reject(err)

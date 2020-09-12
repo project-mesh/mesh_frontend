@@ -15,7 +15,7 @@ import Export2Excel from './excel/Export2Excel.js'
 
 // mock
 // WARNING: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.
-import './mock'
+// import './mock'
 
 import bootstrap from './core/bootstrap'
 import './core/lazy_use'

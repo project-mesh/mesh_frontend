@@ -249,6 +249,7 @@ export default {
       'teamId',
     ]),
     filteredProjects() {
+      console.log('about filter, teamProjects is:', this.teamProjects)
       return this.teamProjects.filter((project) =>
         project.projectName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
       )

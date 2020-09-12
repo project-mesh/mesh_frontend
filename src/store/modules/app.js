@@ -1,4 +1,5 @@
 import storage from 'store'
+import Cookies from 'js-cookie'
 import {
   SIDEBAR_TYPE,
   TOGGLE_MOBILE_TYPE,
@@ -25,6 +26,8 @@ const app = {
     weak: false,
     lang: 'zh-CN',
     _antLocale: {},
+    sessionKey: '.AspNetCore.Session',
+    creatingTeam: false,
   },
   mutations: {
     [SIDEBAR_TYPE]: (state, type) => {
@@ -61,6 +64,9 @@ const app = {
     [TOGGLE_WEAK]: (state, mode) => {
       state.weak = mode
       storage.set(TOGGLE_WEAK, mode)
+    },
+    TOGGLE_CREATING_TEAM: (state, bool) => {
+      state.creatingTeam = bool
     },
   },
   actions: {

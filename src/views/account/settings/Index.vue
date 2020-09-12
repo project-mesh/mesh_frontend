@@ -17,6 +17,9 @@
             <a-menu-item key="/account/settings/base">
               <router-link :to="{ name: 'baseSettings' }">基本设置</router-link>
             </a-menu-item>
+            <a-menu-item key="/account/settings/custom">
+              <router-link :to="{ name: 'customSettings' }">个性化设置</router-link>
+            </a-menu-item>
           </a-menu>
         </div>
         <div class="account-settings-info-right">

@@ -5,7 +5,7 @@ import store from '@/store'
 
 const teamInfo = {
   state: {
-    teamId: '',
+    teamId: -1,
     createTime: 0,
     teamName: '',
     adminName: '',
@@ -104,7 +104,9 @@ const teamInfo = {
       return new Promise((resolve, reject) => {
         sendRequest('createTeam', requestData)
           .then((res) => {
-            console.log('res from createTeam action is:', res)
+            console.log('response from createTeam action is:', res)
+            //新建团队没有返回任务列表，增加一个空列表避免undefined
+            res.data.team.teamProjects = []
             commit('SET_ALL', res.data.team)
             resolve(res)
           })

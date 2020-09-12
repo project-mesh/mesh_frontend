@@ -43,6 +43,8 @@ const getters = {
   currentTotalUser: (state) => state.statistics.currentTotalUser,
   historyTotalUser: (state) => state.statistics.historyTotalUser,
   timeInterval: (state) => state.statistics.timeInterval,
+  sessionKey: (state) => state.app.sessionKey,
+  isCreatingTeam: (state) => state.app.creatingTeam,
 }
 
 export default getters

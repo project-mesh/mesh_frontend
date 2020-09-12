@@ -22,16 +22,36 @@
     <template v-slot:footerRender>
       <global-footer />
     </template>
+    <a-modal v-model="isCreatingTeam" title="创建新团队" centered @ok="handleSubmit">
+      <!-- 项目创建表单 -->
+      <a-form
+        :form="form"
+        :label-col="{ span: 5 }"
+        :wrapper-col="{ span: 16 }"
+        @submit="handleSubmit"
+      >
+        <a-form-item label="团队名称">
+          <a-input
+            v-decorator="[
+              'teamName',
+              { rules: [{ required: true, message: '请输入新团队的名称!' }] },
+            ]"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
     <router-view />
   </pro-layout>
 </template>
 
 <script>
+import store from '../store'
 import { updateTheme } from '@ant-design-vue/pro-layout'
 import SettingDrawer from '@/components/SettingDrawer'
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 import { SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
 import storage from 'store'
+import { timeFix } from '@/utils/util'
 
 import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
@@ -75,7 +95,10 @@ export default {
       query: {},
 
       // 是否手机模式
-      isMobile: storage.get(TOGGLE_MOBILE_TYPE, false),
+      isMobile: false,
+
+      //创建新团队
+      form: this.$form.createForm(this),
     }
   },
   computed: {
@@ -83,7 +106,7 @@ export default {
       // 动态主路由
       mainMenu: (state) => state.permission.addRouters,
     }),
-    ...mapGetters(['preference', 'username']),
+    ...mapGetters(['preference', 'username', 'isCreatingTeam', 'notifications', 'teamId']),
   },
   created() {
     const routes = this.mainMenu.find((item) => item.path === '/')
@@ -114,7 +137,64 @@ export default {
     updateTheme(this.settings.primaryColor)
   },
   methods: {
-    ...mapActions(['updatePreferenceColor', 'updatePreferenceLayout']),
+    ...mapActions([
+      'updatePreferenceColor',
+      'updatePreferenceLayout',
+      'createTeam',
+      'queryTeam',
+      'queryTeamKB',
+      'queryNotification',
+    ]),
+    ...mapMutations(['ADD_NEW_TEAM', 'TOGGLE_CREATING_TEAM']),
+    handleSubmit(e) {
+      console.log('创建新团队')
+      e.preventDefault()
+      this.TOGGLE_CREATING_TEAM(false)
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+          const promises = []
+          this.createTeam({ username: store.getters.username, teamName: values.teamName })
+            .then((response) => {
+              console.log('success,boy', response)
+              // 增加新建的团队到团队列表
+              this.ADD_NEW_TEAM(response.data.team)
+              console.log('after add new team', store.getters.teams)
+              // 更新当前团队下的项目，消息和知识库
+              promises.push(this.queryNotification({ username: this.username }))
+              const requestData = { username: this.username, teamId: response.data.team.teamId }
+              promises.push(this.queryTeam(requestData), this.queryTeamKB(requestData))
+              // 异步显示成功信息
+              setTimeout(() => {
+                this.$notification.success({
+                  message: '创建成功',
+                  description: `${timeFix()}，已成功创建新团队`,
+                })
+              }, 0)
+            })
+            .catch((err) => {
+              console.log('error, boy: ', err)
+              this.$notification.error({
+                message: '创建失败',
+                description: err,
+              })
+            })
+          if (promises.length) {
+            Promise.all(promises)
+              .then(() => {
+                this.$notification.success({ message: '团队信息加载成功！' })
+              })
+              .catch((err) => {
+                this.$notification.error({
+                  message: '请求团队信息失败，请重试',
+                  description: `${err.name}: ${err.message}`,
+                })
+                this.$router.push('/404')
+              })
+          }
+        }
+      })
+    },
     handleMediaQuery(val) {
       this.query = val
       if (this.isMobile && !val['screen-xs']) {
@@ -125,7 +205,6 @@ export default {
         this.isMobile = true
         this.collapsed = false
         this.settings.contentWidth = false
-        // this.settings.fixSiderbar = false
       }
     },
     handleCollapse(val) {
