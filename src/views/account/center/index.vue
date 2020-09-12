@@ -10,6 +10,7 @@
           @tabChange="(key) => handleTabChange(key, 'noTitleKey')"
         >
           <team-tasks-page v-if="noTitleKey === 'teamTasks'"></team-tasks-page>
+          <team-notice-page v-if="noTitleKey === 'teamNotice'"></team-notice-page>
         </a-card>
       </a-col>
     </a-row>
@@ -19,7 +20,7 @@
 <script>
 import { PageView, RouteView } from '@/layouts'
 import { mapActions, mapGetters } from 'vuex'
-import { TeamTasksPage } from './page'
+import { TeamTasksPage, TeamNoticePage } from './page'
 import teamMixin from '@/utils/mixins/teamMixin'
 
 export default {
@@ -28,6 +29,7 @@ export default {
     RouteView,
     PageView,
     TeamTasksPage,
+    TeamNoticePage,
   },
   data() {
     return {
@@ -38,6 +40,10 @@ export default {
         {
           key: 'teamTasks',
           tab: '任务(8)',
+        },
+        {
+          key: 'teamNotice',
+          tab: '通知(8)',
         },
       ],
       noTitleKey: 'teamTasks',
