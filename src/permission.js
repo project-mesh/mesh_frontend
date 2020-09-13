@@ -40,23 +40,27 @@ function handle(to, from, next) {
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // strt progress bar
-  console.log(Cookies.get())
-  console.log('state.teams is', store.getters.teams)
-  if (Cookies.get(store.getters.sessionKey)) {
+  // console.log(Cookies.get())
+  // console.log('state.teams is', store.getters.teams)
+  // if (Cookies.get(store.getters.sessionKey)) {
+  if (storage.get(ACCESS_TOKEN)) {
     if (!store.getters.username) {
       store
-        .dispatch('Login')
+        // .dispatch('Login')
+        .dispatch('Login', { token: storage.get(ACCESS_TOKEN) })
         .then((res) => {
-          if (res.isSuccess) {
+          if (res.data.isSuccess) {
+            console.log('success')
             handle(to, from, next)
           } else {
+            console.log('fail')
             store.dispatch('Logout')
           }
         })
         .catch((err) => {
           console.log('in begin login err is:', err)
           store.dispatch('Logout')
-          Cookies.remove(store.getters.sessionKey)
+          // Cookies.remove(store.getters.sessionKey)
           next({ path: loginRoutePath })
         })
     } else {

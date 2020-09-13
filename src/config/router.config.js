@@ -14,6 +14,8 @@ const guard = (to, from, next) => {
 
   const teamId = store.getters.teamId || store.getters.preference.preferenceTeam
 
+  console.log('in guard, teamId: ', teamId)
+
   next({ ...to, query: { teamId } })
 }
 
