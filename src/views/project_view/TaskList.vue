@@ -1,7 +1,7 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
   <div>
-    <a-card class="task-list" style="display: inline-block" :title="status">
+    <a-card class="task-list" style="display: inline-block" :title="priorityName">
       <draggable
         group="taskGroup"
         :list="tasks"
@@ -65,8 +65,12 @@ export default {
     //     }
     //   },
     // },
-    status: {
+    priorityName: {
       type: String,
+      required: true,
+    },
+    priority: {
+      type: Number,
       required: true,
     },
     tasks: {

@@ -1,17 +1,17 @@
 <template>
   <div>
-    <task-detail
-      :visible="drawerVisible"
-      :task="selectedTask"
-      @closeTaskDetail="closeTaskDetail"
-      @close="closeTaskDetail"
-    ></task-detail>
+    <task-detail :visible="drawerVisible" :task="selectedTask"></task-detail>
     <a-card :bordered="false" :body-style="{ padding: 0 }" :loading="boardLoading">
       <a-row :gutter="[8, 8]">
-        <a-col :span="8" v-for="(taskListWithStatus, taskListIndex) in tasks" :key="taskListIndex">
+        <a-col
+          :span="6"
+          v-for="(taskListWithPriority, taskListIndex) in tasks"
+          :key="taskListIndex"
+        >
           <task-list
-            :tasks="taskListWithStatus.tasks"
-            :status="taskListWithStatus.status"
+            :tasks="taskListWithPriority.tasks"
+            :priority="taskListWithPriority.priority"
+            :priorityg-name="taskListWithPriority.priorityName"
             :set-task="setSelectedTask"
             @end="onDragEnd"
             @showTaskDetail="showTaskDetail"
@@ -47,30 +47,25 @@ export default {
       form: this.$form.createForm(this),
       boardLoading: false,
       selectedTask: null,
-      task: {
-        taskId: '',
-        taskName: 'ddd',
-        isFinished: false,
-        priority: 0,
-        createTime: '0',
-        deadline: '1970-01-01',
-        description: '',
-        founder: '',
-        principal: '',
-        subTasks: [],
-        status: '',
-      },
       tasks: [
         {
-          status: '开发中',
+          priority: 0,
+          priorityName: '极高',
           tasks: [],
         },
         {
-          status: '已逾期',
+          priority: 1,
+          priorityName: '较高',
           tasks: [],
         },
         {
-          status: '已完成',
+          priority: 2,
+          priorityName: '普通',
+          tasks: [],
+        },
+        {
+          priority: 3,
+          priorityName: '低',
           tasks: [],
         },
       ],
@@ -98,12 +93,14 @@ export default {
       this.selectedTask = task
     },
     onDragEnd($event) {
-      const toStatus = $event.to.dataset.status
-      const fromStatus = $event.from.dataset.status
-      if (toStatus !== fromStatus && this.selectedTask) {
-        let isFinished = toStatus === '已完成'
-        this.selectedTask.isFinished = isFinished
-        this.selectedTask.status = toStatus
+      const toPriority = $event.to.dataset.priority
+      const fromPriority = $event.from.dataset.priority
+      // todo: 发送请求
+      /*
+      if (toPriority !== fromPriority && this.selectedTask) {
+        let isFinished = (toPriority === this.selectedTask.isFinished = isFinished)
+        this.selectedTask.priority = toPriority
+        // todo: 
         const requestData = {
           username: this.username,
           projectId: this.projectId,
@@ -122,6 +119,7 @@ export default {
             })
           })
       }
+      */
     },
   },
   mounted() {
@@ -134,7 +132,7 @@ export default {
         const { tasks: resTasks } = res.data
 
         resTasks.forEach((task) => {
-          this.tasks.find((taskList) => taskList.status === task.status).tasks.push(task)
+          this.tasks.find((taskList) => taskList.priority === task.priority).tasks.push(task)
         })
       })
       .catch((err) => {
