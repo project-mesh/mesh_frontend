@@ -1,5 +1,5 @@
 <template>
-  <a-drawer :title="task.taskName" width="540" :closable="true" :visible="visible">
+  <a-drawer :title="task.taskName" width="540" :closable="true" :visible="visible" @close="close">
     <a-descriptions class="drawer-content" size="large" column="3">
       <a-descriptions-item label="创建者">
         {{ task.founder }}
@@ -86,6 +86,9 @@ export default {
     },
   },
   methods: {
+    close: function () {
+      this.visible = false
+    },
     closeTaskDetail: function () {
       console.log('close')
       this.$emit('closeTaskDetail')
