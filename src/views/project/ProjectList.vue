@@ -152,6 +152,20 @@
         </a-form-item>
       </a-form>
     </a-modal>
+    <a-modal v-model="addMember" title="邀请新成员" centered @ok="handleMemberSubmit">
+      <!-- 邀请成员 -->
+      <a-select
+        mode="multiple"
+        placeholder="添加你想邀请的成员"
+        :value="selectedItems"
+        style="width: 100%"
+        @change="handleMemberChange"
+      >
+        <a-select-option v-for="item in this.teamMembers" :key="item" :value="item">
+          {{ item.username }}
+        </a-select-option>
+      </a-select>
+    </a-modal>
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="teamProjects">
         <a-list-item slot="renderItem" slot-scope="item">
@@ -184,6 +198,7 @@
               />
               <template slot="actions" class="ant-card-actions">
                 <a-icon key="edit" type="edit" @click="() => (modifyProjForm = true)" />
+                <a-icon type="usergroup-add" @click="() => (addMember = true)" />
                 <a-icon
                   key="delete"
                   type="delete"
@@ -208,6 +223,8 @@ import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
 
+const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+
 //图片转 base64
 function getBase64(img, callback) {
   const reader = new FileReader()
@@ -217,7 +234,12 @@ function getBase64(img, callback) {
 export default {
   name: 'Project',
   mixins: [teamMixin],
-  computed: mapGetters(['teamProjects', 'preference', 'username', 'teamAdminName', 'teamMembers']),
+  computed: {
+    ...mapGetters(['teamProjects', 'preference', 'username', 'teamAdminName', 'teamMembers']),
+    filteredOptions() {
+      return OPTIONS.filter((o) => !this.selectedItems.includes(o))
+    },
+  },
   watch: {
     ['$route.query.teamId']() {
       this.loadTeamInfo()
@@ -260,6 +282,9 @@ export default {
     },
     handleChange({ fileList }) {
       this.fileList = fileList
+    },
+    handleMemberChange(selectedItems) {
+      this.selectedItems = selectedItems
     },
     //删除项目
     handleProjectDelete(projectId, projectName) {
@@ -315,9 +340,11 @@ export default {
       listVisible: false, //是否显示列表 true显示列表 false显示卡片
       createProjForm: false, //显示创建项目的表单
       modifyProjForm: false, //现实修改项目信息的表单
+      addMember: false, //显示添加项目成员的表单
       previewVisible: false,
       previewImage: '',
       fileList: [],
+      selectedItems: [], //选中的成员名单
       form: this.$form.createForm(this),
     }
   },
