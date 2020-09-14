@@ -45,6 +45,15 @@
             <a-descriptions-item label="描述" span="3">{{ task.description }}</a-descriptions-item>
           </a-descriptions>
         </a-collapse-panel>
+        <a-collapse-panel disabled :show-arrow="false">
+          <a-input
+            v-model="newSubTaskName"
+            slot="header"
+            placeholder="按enter添加 按esc退出"
+            @keyup.enter="finishEditting"
+            @keyup.esc="exitEditting"
+          ></a-input>
+        </a-collapse-panel>
       </a-collapse>
       <template slot="actions" class="ant-card-actions">
         <a-icon key="delete" type="delete" @click="deleteTask(task)" />
@@ -66,6 +75,7 @@ export default {
   data() {
     return {
       activeKey: [],
+      newSubTaskName: '',
     }
   },
 
@@ -106,6 +116,25 @@ export default {
     },
   },
   methods: {
+    finishEditting: function () {
+      if (this.newSubTaskName) {
+        this.$message.info('新建项目：' + this.newSubTaskName)
+        this.addTask()
+      }
+    },
+    exitEditting: function () {
+      this.newTaskName = ''
+    },
+    addSubTask: function () {
+      let formData = {
+        username: '', // todo: 当前用户名
+        taskName: this.newTaskName,
+        description: '',
+        principal: '', //todo: 当前用户名
+      }
+      // todo: 交互
+      this.newSubTaskName = ''
+    },
     moment,
     formatTimeStamp: function (timeStamp) {
       return moment(timeStamp).format('YYYY-MM-DD')
