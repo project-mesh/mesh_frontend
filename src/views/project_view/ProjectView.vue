@@ -1,6 +1,10 @@
 <template>
   <div>
-    <task-detail :visible="drawerVisible" :task="selectedTask"></task-detail>
+    <task-detail :visible="detailDrawerVisible" @edit="enterEdittingMode"></task-detail>
+    <editting-task-detail
+      :visible="edittingDrawerVisible"
+      @edit="enterEdittingMode"
+    ></editting-task-detail>
     <a-card :bordered="false" :body-style="{ padding: 0 }" :loading="boardLoading">
       <a-row :gutter="[8, 8]">
         <a-col
@@ -11,7 +15,7 @@
           <task-list
             :tasks="taskListWithPriority.tasks"
             :priority="taskListWithPriority.priority"
-            :priorityg-name="taskListWithPriority.priorityName"
+            :priority-name="taskListWithPriority.priorityName"
             :set-task="setSelectedTask"
             @end="onDragEnd"
             @showTaskDetail="showTaskDetail"
@@ -26,6 +30,7 @@
 <script>
 import TaskList from './TaskList'
 import TaskDetail from './TaskDetail'
+import EdittingTaskDetail from './EdittingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import { mapGetters, mapActions } from 'vuex'
@@ -35,12 +40,14 @@ export default {
     //调用组件
     TaskList,
     TaskDetail,
+    EdittingTaskDetail,
   },
   mixins: [teamMixin, projectMixin],
 
   data() {
     return {
-      drawerVisible: false,
+      detailDrawerVisible: false,
+      edittingDrawerVisible: false,
       drag: false,
       taskListGroup: {
         name: 'taskList',
@@ -51,22 +58,22 @@ export default {
       tasks: [
         {
           priority: 0,
-          priorityName: '极高',
+          priorityName: '较低',
           tasks: [],
         },
         {
           priority: 1,
-          priorityName: '较高',
-          tasks: [],
-        },
-        {
-          priority: 2,
           priorityName: '普通',
           tasks: [],
         },
         {
+          priority: 2,
+          priorityName: '较高',
+          tasks: [],
+        },
+        {
           priority: 3,
-          priorityName: '低',
+          priorityName: '极高',
           tasks: [],
         },
       ],
@@ -81,19 +88,12 @@ export default {
       // todo : 新建时关闭其他列表，需要兄弟间传值
     },
     showTaskDetail(task) {
-      console.log('[ProjectView:showTaskDetail]')
-      console.log(task)
       this.setSelectedTask(task)
       if (this.selectedTask) {
-        this.drawerVisible = true
+        this.detailDrawerVisible = true
       }
     },
 
-    closeTaskDetail() {
-      close.log('parent close')
-      this.drawerVisible = false
-      this.selectedTask = null
-    },
     setSelectedTask(task) {
       this.selectedTask = task
     },
@@ -106,7 +106,6 @@ export default {
         this.edittingDrawerVisible = false
       }
     },
-
     onDragEnd($event) {
       const toPriority = $event.to.dataset.priority
       const fromPriority = $event.from.dataset.priority
