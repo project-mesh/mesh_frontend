@@ -1,45 +1,40 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
-  <a-card class="task-list" style="display: inline-block" :title="status">
-    <a-modal
-      centered
-      :width="700"
-      :visible="visible"
-      :confirm-loading="confirmLoading"
-      :title="modalTitle"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
-      <show-task-form></show-task-form>
-    </a-modal>
-    <draggable
-      group="taskGroup"
-      :list="tasks"
-      :move="moveTask"
-      :animation="200"
-      :empty-insert-threshold="200"
-      @start="onDragStart"
-      @end="onDragEnd"
-    >
-      <transition-group :data-status="status" type="transition" :name="!drag ? 'flip-list' : null">
-        <div
-          class="task-info"
-          v-for="(task, taskIndex) in tasks"
-          :key="taskIndex"
-          @click="showTask(task)"
+  <div>
+    <a-card class="task-list" style="display: inline-block" :title="status">
+      <draggable
+        group="taskGroup"
+        :list="tasks"
+        :move="moveTask"
+        :animation="200"
+        :empty-insert-threshold="200"
+        @start="onDragStart"
+        @end="onDragEnd"
+      >
+        <transition-group
+          :data-status="status"
+          type="transition"
+          :name="!drag ? 'flip-list' : null"
         >
-          <task-info :task="task"></task-info>
-        </div>
-      </transition-group>
-      <a-button slot="footer" block type="primary" @click="addTask">+ 任务</a-button>
-    </draggable>
-  </a-card>
+          <div
+            class="task-info"
+            v-for="(task, taskIndex) in tasks"
+            :key="taskIndex"
+            @click="clickTaskInfo(task)"
+          >
+            <task-info :task="task"></task-info>
+          </div>
+        </transition-group>
+        <a-button slot="footer" block type="primary" @click="addTask">+ 任务</a-button>
+      </draggable>
+    </a-card>
+  </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
 import TaskInfo from './TaskInfo'
-import ShowTaskForm from './ShowTaskForm'
+import TaskDetail from './TaskDetail'
 import { mapGetters, vuex } from 'vuex'
 
 export default {
@@ -47,11 +42,11 @@ export default {
     //调用组件
     draggable,
     TaskInfo,
-    ShowTaskForm,
+    TaskDetail,
   },
   data: function () {
     return {
-      visible: false,
+      visible: true,
       taskGroup: {
         name: 'task',
       },
@@ -92,8 +87,10 @@ export default {
     ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
-    showTask: function () {
-      this.showModal()
+    clickTaskInfo: function (task) {
+      console.log(task)
+      console.log(task.taskId + ' is clicked')
+      this.$emit('showTaskDetail', task)
     },
     addTask: function () {
       this.showModal()

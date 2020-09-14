@@ -1,20 +1,30 @@
 <template>
-  <a-card :bordered="false" :body-style="{ padding: 0 }" :loading="boardLoading">
-    <a-row :gutter="[8, 8]">
-      <a-col :span="8" v-for="(taskListWithStatus, taskListIndex) in tasks" :key="taskListIndex">
-        <task-list
-          :tasks="taskListWithStatus.tasks"
-          :status="taskListWithStatus.status"
-          :set-task="setSelectedTask"
-          @end="onDragEnd"
-          ghost-class="task-list"
-        ></task-list>
-      </a-col>
-    </a-row>
-  </a-card>
+  <div>
+    <task-detail
+      :visible="drawerVisible"
+      :task="selectedTask"
+      @closeTaskDetail="closeTaskDetail"
+      @close="closeTaskDetail"
+    ></task-detail>
+    <a-card :bordered="false" :body-style="{ padding: 0 }" :loading="boardLoading">
+      <a-row :gutter="[8, 8]">
+        <a-col :span="8" v-for="(taskListWithStatus, taskListIndex) in tasks" :key="taskListIndex">
+          <task-list
+            :tasks="taskListWithStatus.tasks"
+            :status="taskListWithStatus.status"
+            :set-task="setSelectedTask"
+            @end="onDragEnd"
+            @showTaskDetail="showTaskDetail"
+            ghost-class="task-list"
+          ></task-list>
+        </a-col>
+      </a-row>
+    </a-card>
+  </div>
 </template>
 <script>
 import TaskList from './TaskList'
+import TaskDetail from './TaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import { mapGetters, mapActions } from 'vuex'
@@ -23,11 +33,13 @@ export default {
   components: {
     //调用组件
     TaskList,
+    TaskDetail,
   },
   mixins: [teamMixin, projectMixin],
+
   data() {
     return {
-      visible: false,
+      drawerVisible: false,
       drag: false,
       taskListGroup: {
         name: 'taskList',
@@ -35,6 +47,19 @@ export default {
       form: this.$form.createForm(this),
       boardLoading: false,
       selectedTask: null,
+      task: {
+        taskId: '',
+        taskName: 'ddd',
+        isFinished: false,
+        priority: 0,
+        createTime: '0',
+        deadline: '1970-01-01',
+        description: '',
+        founder: '',
+        principal: '',
+        subTasks: [],
+        status: '',
+      },
       tasks: [
         {
           status: '开发中',
@@ -56,6 +81,19 @@ export default {
   },
   methods: {
     ...mapActions(['queryProjectTasks', 'updateTask']),
+    showTaskDetail(task) {
+      console.log('[ProjectView:showTaskDetail]')
+      console.log(task)
+      this.setSelectedTask(task)
+      if (this.selectedTask) {
+        this.drawerVisible = true
+      }
+    },
+    closeTaskDetail() {
+      close.log('parent close')
+      this.drawerVisible = false
+      this.selectedTask = null
+    },
     setSelectedTask(task) {
       this.selectedTask = task
     },
