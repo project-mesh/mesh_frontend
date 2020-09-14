@@ -38,20 +38,20 @@
     >
       <!-- 项目创建表单 -->
       <a-form
-        :form="form"
+        :form="createForm"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 16 }"
         @submit="handleCreateSubmit"
       >
         <a-form-item label="项目名称">
           <a-input
-            v-decorator="['projName', { rules: [{ required: true, message: '请输入项目名称!' }] }]"
+            v-decorator="['prjName', { rules: [{ required: true, message: '请输入项目名称!' }] }]"
           />
         </a-form-item>
         <a-form-item label="项目权限">
           <a-select
             v-decorator="[
-              'projAuthority',
+              'prjAuthority',
               { rules: [{ required: true, message: '请选择项目权限!' }] },
             ]"
             placeholder="公有/私有"
@@ -63,7 +63,7 @@
         <a-form-item label="项目负责人">
           <a-select
             v-decorator="[
-              'projAdmin',
+              'prjAdmin',
               { rules: [{ required: true, message: '请选择项目负责人!' }] },
             ]"
             placeholder="选择项目管理员"
@@ -84,6 +84,7 @@
             :file-list="fileList"
             @preview="handlePreview"
             @change="handleChange"
+            v-decorator="['prjLogo']"
           >
             <div v-if="fileList.length < 1">
               <a-icon type="plus" />
@@ -105,7 +106,7 @@
     >
       <!-- 项目创建表单 -->
       <a-form
-        :form="form"
+        :form="updateForm"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 16 }"
         @submit="handleUpdateSubmit"
@@ -113,9 +114,8 @@
         <a-form-item label="项目名称">
           <a-input
             v-decorator="[
-              'projName',
+              'prjName',
               {
-                initialValue: (selectedUpdatePrj && selectedUpdatePrj.projectName) || '',
                 rules: [{ required: true, message: '请输入项目名称!' }],
               },
             ]"
@@ -124,7 +124,7 @@
         <a-form-item label="项目权限">
           <a-select
             v-decorator="[
-              'projAuthority',
+              'prjAuthority',
               { rules: [{ required: true, message: '请选择项目权限!' }] },
             ]"
             placeholder="公有/私有"
@@ -136,7 +136,7 @@
         <a-form-item label="项目负责人">
           <a-select
             v-decorator="[
-              'projAdmin',
+              'prjAdmin',
               { rules: [{ required: true, message: '请选择项目负责人!' }] },
             ]"
             placeholder="选择项目管理员"
@@ -157,6 +157,7 @@
             :file-list="fileList"
             @preview="handlePreview"
             @change="handleChange"
+            v-decorator="['prjLogo']"
           >
             <div v-if="fileList.length < 1">
               <a-icon type="plus" />
@@ -229,6 +230,7 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
+import pick from 'lodash.pick'
 
 //图片转 base64
 function getBase64(img, callback) {
@@ -309,9 +311,6 @@ export default {
       const vm = this
       this.$confirm({
         title: '您是否要删除该团队?',
-        // okButtonProps: {
-        //   loading: this.deleteLoading,
-        // },
         content: (h) =>
           h('div', { style: { color: 'red' } }, [`请确认即将删除的团队名称：${prj.projectName}`]),
         onOk() {
@@ -341,15 +340,15 @@ export default {
     handleCreateSubmit(e) {
       e.preventDefault()
       this.createLoading = true
-      this.form.validateFields((err, values) => {
+      this.createForm.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
           this.createProject({
             username: store.getters.username,
             teamId: store.getters.teamId,
-            projectName: values.projName,
-            adminName: values.projAdmin,
-            isPublic: values.projAuthority !== 'private',
+            projectName: values.prjName,
+            adminName: values.prjAdmin,
+            isPublic: values.prjAuthority === 'public',
           })
             .then((response) => {
               console.log('success,boy', response)
@@ -375,16 +374,16 @@ export default {
     handleUpdateSubmit(e) {
       e.preventDefault()
       this.updateLoading = true
-      this.form.validateFields((err, values) => {
+      this.updateForm.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
           this.updateProject({
             username: store.getters.username,
             teamId: store.getters.teamId,
             projectId: this.selectedUpdatePrj.projectId,
-            projectName: values.projName,
-            adminName: values.projAdmin,
-            isPublic: values.projAuthority !== 'private',
+            projectName: values.prjName,
+            adminName: values.prjAdmin,
+            isPublic: values.prjAuthority === 'public',
           })
             .then((response) => {
               console.log('success,boy', response)
@@ -413,6 +412,19 @@ export default {
     showUpdatePrjForm(prj) {
       this.selectedUpdatePrj = prj
       this.modifyProjForm = true
+
+      if (Object.keys(prj).length) {
+        this.$nextTick(() => {
+          const formData = {
+            prjName: prj.projectName,
+            prjAuthority: prj.isPublic ? 'public' : 'private',
+            prjLogo: prj.projectLogo,
+            prjAdmin: prj.adminName,
+          }
+
+          this.updateForm.setFieldsValue(formData)
+        })
+      }
     },
   },
   data() {
@@ -423,7 +435,8 @@ export default {
       previewVisible: false,
       previewImage: '',
       fileList: [],
-      form: this.$form.createForm(this),
+      updateForm: this.$form.createForm(this, { name: 'update' }),
+      createForm: this.$form.createForm(this, { name: 'create' }),
       filterText: '',
       selectedUpdatePrj: null,
       createLoading: false,

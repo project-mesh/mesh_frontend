@@ -4,7 +4,6 @@ import { teams, teamMembers, users } from './data'
 import md5 from 'md5'
 
 const login = (data) => {
-  console.log('login!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   const usersCopy = utils.deepCopy(users)
 
   data.password && (data.password = md5(data.password))

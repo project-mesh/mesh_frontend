@@ -3,7 +3,7 @@
     <a-form-item label="标题" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-input
         v-decorator="[
-          'title',
+          'knowledgeName',
           {
             initialValue: isCreateForm ? '' : record.knowledgeName,
             rules: [{ required: isCreateForm, message: '请输入知识库标题' }],
@@ -14,7 +14,7 @@
     <a-form-item label="外部链接" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-input
         v-decorator="[
-          'link',
+          'hyperlink',
           {
             initialValue: isCreateForm ? '' : record.hyperlink,
             rules: [{ required: isCreateForm, message: '请输入外部链接', pattern: /.*/ }],
@@ -27,6 +27,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import pick from 'lodash.pick'
 
 export default {
   name: 'TaskForm',
@@ -48,6 +49,13 @@ export default {
       },
       form: this.$form.createForm(this),
     }
+  },
+  watch: {
+    record(newRecord) {
+      this.$nextTick(() => {
+        this.form.setFieldsValue(pick(newRecord, ['knowledgeName', 'hyperlink']))
+      })
+    },
   },
   computed: {
     ...mapGetters(['username', 'projectId']),
@@ -72,8 +80,8 @@ export default {
             const requestData = {
               username: this.username,
               projectId: this.projectId,
-              knowledgeName: values.title,
-              hyperlink: values.link,
+              knowledgeName: values.knowledgeName,
+              hyperlink: values.hyperlink,
             }
 
             if (!this.isCreateForm) requestData.knowledgeId = this.record.knowledgeId
