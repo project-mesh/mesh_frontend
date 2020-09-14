@@ -1,6 +1,10 @@
 <template>
   <div>
-    <task-detail :visible="detailDrawerVisible" @edit="enterEdittingMode"></task-detail>
+    <task-detail
+      :visible="detailDrawerVisible"
+      :task="selectedTask"
+      @edit="enterEdittingMode"
+    ></task-detail>
     <editting-task-detail
       :visible="edittingDrawerVisible"
       @edit="enterEdittingMode"
