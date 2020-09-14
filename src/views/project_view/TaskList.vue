@@ -25,7 +25,19 @@
             <task-info :task="task"></task-info>
           </div>
         </transition-group>
-        <a-button slot="footer" block type="primary" @click="addTask">+ 任务</a-button>
+        <div slot="footer">
+          <a-textarea
+            v-if="textareaVisible"
+            placeholder="请输入新项目名
+按enter确认 按esc取消"
+            allow-clear
+            @keyup.enter="finishEditting"
+            @keyup.esc="exitEditting"
+            auto-size="{minRows: 3, maxRows: 20}"
+            v-model="newTaskName"
+          />
+          <a-button v-else block type="primary" @click="showTextarea">+ 任务</a-button>
+        </div>
       </draggable>
     </a-card>
   </div>
@@ -33,6 +45,7 @@
 
 <script>
 import draggable from 'vuedraggable'
+import moment from 'moment'
 import TaskInfo from './TaskInfo'
 import TaskDetail from './TaskDetail'
 import { mapGetters, vuex } from 'vuex'
@@ -46,10 +59,11 @@ export default {
   },
   data: function () {
     return {
-      visible: true,
+      textareaVisible: false,
       taskGroup: {
         name: 'task',
       },
+      newTaskName: '',
       modalTitle: '新建',
       confirmLoading: false,
       drag: false,
@@ -91,17 +105,42 @@ export default {
     ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
+    showTextarea: function () {
+      this.textareaVisible = true
+      this.$emit('edit-new-task-name', this.priority)
+    },
+
+    finishEditting: function () {
+      if (this.newTaskName) {
+        this.$message.info('新建项目：' + this.newTaskName)
+        this.addTask()
+      }
+      this.textareaVisible = false
+    },
+    exitEditting: function () {
+      this.newTaskName = ''
+      this.textareaVisible = false
+    },
+    addTask: function () {
+      let formData = {
+        username: '', // todo: 当前用户名
+        taskName: this.newTaskName,
+        priority: this.priority,
+        deadline: moment().format('YYYY-MM-DD'), // today
+        description: '',
+        principal: '', //todo: 当前用户名
+      }
+
+      // todo: 交互
+      this.newTaskName = ''
+    },
+
     clickTaskInfo: function (task) {
       console.log(task)
       console.log(task.taskId + ' is clicked')
       this.$emit('showTaskDetail', task)
     },
-    addTask: function () {
-      this.showModal()
-    },
-    showModal: function () {
-      this.visible = true
-    },
+
     handleOk: function () {
       // todo: something
       this.visible = false
@@ -121,18 +160,6 @@ export default {
       this.$emit('end', evt)
     },
     moveTask: function (evt, originalEvt) {
-      if (
-        this.projectAdminName !== this.username &&
-        evt.draggedContext.element.principal !== this.username
-      )
-        return false
-
-      if (
-        evt.to.dataset.status === '已逾期' ||
-        (evt.from.dataset.status === '已逾期' && evt.to.dataset.status === '开发中')
-      )
-        return false
-
       this.setTask(evt.draggedContext.element)
       return true
     },

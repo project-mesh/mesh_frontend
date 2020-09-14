@@ -15,6 +15,7 @@
             :set-task="setSelectedTask"
             @end="onDragEnd"
             @showTaskDetail="showTaskDetail"
+            @edit-new-task-name="closeIndifferentTextarea"
             ghost-class="task-list"
           ></task-list>
         </a-col>
@@ -76,6 +77,9 @@ export default {
   },
   methods: {
     ...mapActions(['queryProjectTasks', 'updateTask']),
+    closeIndifferentTextarea(priority) {
+      // todo : 新建时关闭其他列表，需要兄弟间传值
+    },
     showTaskDetail(task) {
       console.log('[ProjectView:showTaskDetail]')
       console.log(task)
@@ -84,6 +88,7 @@ export default {
         this.drawerVisible = true
       }
     },
+
     closeTaskDetail() {
       close.log('parent close')
       this.drawerVisible = false
@@ -92,6 +97,16 @@ export default {
     setSelectedTask(task) {
       this.selectedTask = task
     },
+    enterEdittingMode(isEdittingMode) {
+      console.log(isEdittingMode)
+      this.detailDrawerVisible = false
+      if (isEdittingMode) {
+        this.edittingDrawerVisible = true
+      } else {
+        this.edittingDrawerVisible = false
+      }
+    },
+
     onDragEnd($event) {
       const toPriority = $event.to.dataset.priority
       const fromPriority = $event.from.dataset.priority
@@ -100,7 +115,7 @@ export default {
       if (toPriority !== fromPriority && this.selectedTask) {
         let isFinished = (toPriority === this.selectedTask.isFinished = isFinished)
         this.selectedTask.priority = toPriority
-        // todo: 
+        // todo:
         const requestData = {
           username: this.username,
           projectId: this.projectId,
