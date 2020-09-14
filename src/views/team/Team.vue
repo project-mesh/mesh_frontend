@@ -16,40 +16,37 @@
       </a-button>
     </div>
 
-    <a-list size="large">
-      <a-list-item
-        :key="index"
-        v-for="(item, index) in teamMembers"
-        :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
-      >
-        <div class="avator-card">
-          <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
-          <a-popover title="成员任务">
-            <a-list
-              v-if="teamMemberTask(item.username).length"
-              size="small"
-              slot="content"
-              :data-source="teamMemberTask(item.username)"
-            >
-              <a-list-item slot="renderItem" slot-scope="task">
-                <router-link
-                  :to="{ name: 'statistics', query: { teamId, projectId: task.projectId } }"
-                >
-                  {{ task.taskName }}
-                </router-link>
-              </a-list-item>
-            </a-list>
-            <span v-else slot="content">该成员暂无任务</span>
-            <a style="margin-left: 10px">{{ item.username }}</a>
-          </a-popover>
-        </div>
-        <div class="list-content">
-          <div class="list-content-item">
-            <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
-          </div>
-        </div>
-      </a-list-item>
-    </a-list>
+    <a-table
+      :columns="columns"
+      row-key="username"
+      :data-source="teamMembers"
+      :pagination="pagination(teamMembers)"
+    >
+      <template slot="username" slot-scope="text, item">
+        <a-avatar shape="circle" :src="item.avatar" />
+        <a-popover title="成员任务">
+          <a-list
+            v-if="teamMemberTask(item.username).length"
+            size="small"
+            slot="content"
+            :data-source="teamMemberTask(item.username)"
+          >
+            <a-list-item slot="renderItem" slot-scope="task">
+              <router-link
+                :to="{ name: 'statistics', query: { teamId, projectId: task.projectId } }"
+              >
+                {{ task.taskName }}
+              </router-link>
+            </a-list-item>
+          </a-list>
+          <span v-else slot="content">该成员暂无任务</span>
+          <a style="margin-left: 10px">{{ item.username }}</a>
+        </a-popover>
+      </template>
+      <template slot="job" slot-scope="text, item">
+        <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
+      </template>
+    </a-table>
     <a-modal
       v-model="modalVisible"
       title="邀请新成员"
@@ -97,12 +94,30 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
+import pagination from '@/utils/mixins/paginationMixin'
+import paginationMixin from '@/utils/mixins/paginationMixin'
+
+const columns = [
+  {
+    title: '成员',
+    dataIndex: 'username',
+    key: 'username',
+    scopedSlots: { customRender: 'username' },
+    ellipsis: true,
+  },
+  {
+    title: '职位',
+    key: 'job',
+    scopedSlots: { customRender: 'job' },
+    ellipsis: true,
+  },
+]
 export default {
   name: 'StandardList',
-  mixins: [teamMixin],
+  mixins: [teamMixin, paginationMixin],
   data() {
     return {
-      // data,
+      columns,
       status: 'all',
       year: null,
       month: null,
