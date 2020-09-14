@@ -110,7 +110,7 @@ export default {
     },
     editTask: function (task) {
       this.$message.warning('进入编辑模式')
-      //todo: 通信
+      this.$emit('edit', true)
     },
     deleteTask: function (task) {
       this.$message.warning('确认删除？')
