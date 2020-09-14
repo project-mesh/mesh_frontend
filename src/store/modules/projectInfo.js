@@ -167,7 +167,7 @@ const projectInfo = {
           .catch((err) => reject(err))
       })
     },
-    joinProject({ commit, rootGetters }, requestData) {
+    joinProject({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('joinProject', requestData)
           .then((res) => {
@@ -175,10 +175,13 @@ const projectInfo = {
             if (data.isSuccess) {
               const { project } = data
 
-              if (requestData.teamId === rootGetters.teamId)
-                commit('ADD_PROJECT', project, { root: true })
+              if (requestData.projectId === state.projectId) {
+                commit('SET_PROJECT_MEMBERS', project.members)
+              }
+              return resolve(res)
             }
-            resolve(res)
+
+            reject(new Error(data.msg))
           })
           .catch((err) => reject(err))
       })

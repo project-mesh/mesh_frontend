@@ -170,7 +170,7 @@
         </a-form-item>
       </a-form>
     </a-modal>
-    <a-modal v-model="addMember" title="邀请新成员" centered @ok="handleMemberSubmit">
+    <a-modal v-model="addMember" title="邀请新成员" centered @ok="handleInviteMember">
       <!-- 邀请成员 -->
       <a-select
         mode="multiple"
@@ -227,8 +227,8 @@
                 <a :disabled="username !== item.adminName" @click="showUpdatePrjForm(item)">
                   <a-icon key="edit" type="edit" />
                 </a>
-                <a>
-                  <a-icon type="usergroup-add" @click="() => (addMember = true)" />
+                <a @click="showInviteForm(item)">
+                  <a-icon type="usergroup-add" />
                 </a>
                 <a :disabled="username !== item.adminName" @click="handleProjectDelete(item)">
                   <a-icon key="delete" type="delete" />
@@ -294,6 +294,7 @@ export default {
       'updatePreferenceShowMode',
       'deleteProject',
       'updateProject',
+      'joinProject',
     ]),
     tryJumpToProjectDetail(projectId) {
       this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
@@ -453,6 +454,49 @@ export default {
           this.updateForm.setFieldsValue(formData)
         })
       }
+    },
+    handleInviteMember() {
+      console.log(this.selectedItems)
+
+      if (!this.selectedItems || this.selectedItems.length === 0) return this.hideInviteForm()
+
+      const promises = []
+
+      this.selectedItems.forEach((username) =>
+        promises.push(
+          this.joinProject({
+            username,
+            teamId: this.teamId,
+            projectId: this.selectedUpdatePrj.projectId,
+          })
+        )
+      )
+
+      if (promises.length) {
+        return Promise.all(promises)
+          .then(() => {
+            console.log('add project members success!, new members: ', this.selectedItems)
+          })
+          .catch((err) => {
+            this.$notification.error({
+              message: '成功添加新项目成员',
+              description: err.message,
+            })
+          })
+          .finally(() => {
+            this.hideInviteForm()
+          })
+      }
+
+      this.hideInviteForm()
+    },
+    showInviteForm(prj) {
+      this.addMember = true
+      this.selectedUpdatePrj = prj
+    },
+    hideInviteForm() {
+      this.addMember = false
+      this.selectedUpdatePrj = null
     },
   },
   data() {
