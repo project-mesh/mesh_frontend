@@ -1,11 +1,12 @@
 <!-- 展示任务基本信息的小框-->
 <template>
   <a-descriptions size="small" :title="task.taskName" column="3">
-    <a-descriptions-item label="创建者">{{ task.founder }}</a-descriptions-item>
-    <a-descriptions-item label="创建时间" span="2">{{ formattedCreateTime }}</a-descriptions-item>
+    <a-descriptions-item label="创建时间" span="3">{{ formattedCreateTime }}</a-descriptions-item>
 
-    <a-descriptions-item label="负责人">{{ task.principal }}</a-descriptions-item>
-    <a-descriptions-item label="截止日期" span="2">{{ task.deadline }}</a-descriptions-item>
+    <a-descriptions-item label="截止日期" span="3">{{ task.deadline }}</a-descriptions-item>
+
+    <a-descriptions-item label="创建者" span="1">{{ task.founder }}</a-descriptions-item>
+    <a-descriptions-item label="负责人" span="1">{{ task.principal }}</a-descriptions-item>
   </a-descriptions>
 </template>
 <script>

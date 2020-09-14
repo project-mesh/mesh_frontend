@@ -1,25 +1,40 @@
 <template>
   <a-drawer :title="task.taskName" width="540" :closable="true" :visible="visible" @close="close">
-    <a-descriptions class="drawer-content" size="large" column="3">
-      <a-descriptions-item label="创建者">
-        {{ task.founder }}
-      </a-descriptions-item>
-      <a-descriptions-item label="创建时间" span="2">{{ formattedCreateTime }}</a-descriptions-item>
+    <a-card>
+      <a-descriptions class="drawer-content" size="large" column="3">
+        <a-descriptions-item label="创建者">
+          {{ task.founder }}
+        </a-descriptions-item>
+        <a-descriptions-item label="创建时间" span="2">
+          {{ formattedCreateTime }}
+        </a-descriptions-item>
 
-      <a-descriptions-item label="负责人">{{ task.principal }}</a-descriptions-item>
-      <a-descriptions-item label="截止日期" span="2" contenteditable="true">
-        {{ task.deadline }}
-      </a-descriptions-item>
-      <a-descriptions-item label="优先级" span="1">{{ task.priority }}</a-descriptions-item>
-      <a-descriptions-item label="状态" span="1">{{ task.status }}</a-descriptions-item>
+        <a-descriptions-item label="负责人">{{ task.principal }}</a-descriptions-item>
+        <a-descriptions-item label="截止日期" span="2" contenteditable="true">
+          {{ task.deadline }}
+        </a-descriptions-item>
+        <a-descriptions-item label="优先级" span="1">{{ task.priority }}</a-descriptions-item>
+        <a-descriptions-item label="状态" span="1">{{ task.status }}</a-descriptions-item>
 
-      <a-descriptions-item label="已完成" span="1">
-        {{ task.isFinished ? '是' : '否' }}
-      </a-descriptions-item>
+        <a-descriptions-item label="已完成" span="1">
+          {{ task.isFinished ? '是' : '否' }}
+        </a-descriptions-item>
 
-      <a-descriptions-item label="描述" span="3">{{ task.description }}</a-descriptions-item>
-      <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
-    </a-descriptions>
+        <a-descriptions-item label="描述" span="3">{{ task.description }}</a-descriptions-item>
+        <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
+      </a-descriptions>
+      <template slot="actions" class="ant-card-actions">
+        <a-icon key="delete" type="delete" @click="deleteTask(task)" />
+        <a-icon key="edit" type="edit" @click="editTask(task)" />
+        <a-icon
+          v-if="task.isFinished"
+          key="check-square"
+          type="check-square"
+          @click="finishTask(task, false)"
+        />
+        <a-icon v-else key="check" type="check" @click="finishTask(task, true)" />
+      </template>
+    </a-card>
   </a-drawer>
 </template>
 <script>
@@ -36,7 +51,7 @@ export default {
     visible: {
       type: Boolean,
       default: function () {
-        return true
+        return false
       },
     },
 
@@ -86,12 +101,23 @@ export default {
     },
   },
   methods: {
+    finishTask: function (task, status) {
+      this.updateTask(task, 'isFinished', status)
+    },
+    updateTask: function (task, key, value) {
+      task[key] = value
+      //todo: 通信
+    },
+    editTask: function (task) {
+      this.$message.warning('进入编辑模式')
+      //todo: 通信
+    },
+    deleteTask: function (task) {
+      this.$message.warning('确认删除？')
+      //todo: 通信
+    },
     close: function () {
       this.visible = false
-    },
-    closeTaskDetail: function () {
-      console.log('close')
-      this.$emit('closeTaskDetail')
     },
   },
 }
