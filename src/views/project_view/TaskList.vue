@@ -19,6 +19,10 @@
           <div
             class="task-info"
             v-for="(task, taskIndex) in tasks"
+            v-show="
+              (task.principal === username || !onlyViewMine) &&
+              (!task.isFinished || !onlyNotFinished)
+            "
             :key="taskIndex"
             @click="clickTaskInfo(task)"
           >
@@ -94,6 +98,18 @@ export default {
     setTask: {
       type: Function,
       required: true,
+    },
+    onlyViewMine: {
+      type: Boolean,
+      default: function () {
+        return false
+      },
+    },
+    onlyNotFinished: {
+      type: Boolean,
+      default: function () {
+        return false
+      },
     },
   },
   computed: {

@@ -52,6 +52,7 @@
             placeholder="按enter添加 按esc退出"
             @keyup.enter="finishEditting"
             @keyup.esc="exitEditting"
+            @blur="exitEditting"
           ></a-input>
         </a-collapse-panel>
       </a-collapse>

@@ -9,6 +9,19 @@
       :visible="edittingDrawerVisible"
       @edit="enterEdittingMode"
     ></editting-task-detail>
+    <span
+      style="
+         {
+          display: block;
+          text-align: right;
+          padding: 8px 16px;
+          border-bottom: 1px solid #e3e3e3;
+        }
+      "
+    >
+      <a-checkbox @change="onOnlyNotFinishedChange">仅显示未完成</a-checkbox>
+      <a-checkbox @change="onOnlyViewMineChange">只看我负责的</a-checkbox>
+    </span>
     <a-card :bordered="false" :body-style="{ padding: 0 }" :loading="boardLoading">
       <a-row :gutter="[8, 8]">
         <a-col
@@ -21,6 +34,8 @@
             :priority="taskListWithPriority.priority"
             :priority-name="taskListWithPriority.priorityName"
             :set-task="setSelectedTask"
+            :only-view-mine="onlyViewMine"
+            :only-not-finished="onlyNotFinished"
             @end="onDragEnd"
             @showTaskDetail="showTaskDetail"
             @edit-new-task-name="closeIndifferentTextarea"
@@ -50,6 +65,8 @@ export default {
 
   data() {
     return {
+      onlyNotFinished: false,
+      onlyViewMine: false,
       detailDrawerVisible: false,
       edittingDrawerVisible: false,
       drag: false,
@@ -88,9 +105,19 @@ export default {
   },
   methods: {
     ...mapActions(['queryProjectTasks', 'updateTask']),
+    // 筛选器
+    onOnlyNotFinishedChange(e) {
+      this.onlyNotFinished = e.target.checked
+    },
+
+    onOnlyViewMineChange(e) {
+      this.onlyViewMine = e.target.checked
+    },
+    //
     closeIndifferentTextarea(priority) {
       // todo : 新建时关闭其他列表，需要兄弟间传值
     },
+    // 抽屉相关
     showTaskDetail(task) {
       this.setSelectedTask(task)
       if (this.selectedTask) {
