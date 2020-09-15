@@ -264,13 +264,6 @@ export default {
 .admin-info {
   padding-bottom: 10px;
 }
-.avator-card {
-  padding-left: 20px;
-}
-.ant-card {
-  width: 90%;
-  margin-left: 5%;
-}
 .list-content-item {
   color: rgba(0, 0, 0, 0.45);
   display: inline-block;
