@@ -340,7 +340,6 @@ export default {
           record: {},
           on: {
             ok() {
-              alert('外部ok')
               console.log('ok 回调')
             },
             cancel() {

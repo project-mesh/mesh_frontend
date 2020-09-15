@@ -122,18 +122,18 @@ export default {
     ...mapActions(['updateUserPassword']),
     onOk() {
       // this.handleSubmit()
-      console.log('监听了 modal ok 事件')
+      console.log('监听了 model ok 事件')
       console.log(this.form)
       return new Promise((resolve, reject) => {
         if (this.handleSubmit()) {
           resolve(true)
         } else {
-          reject('表单校验失败')
+          resolve('表单格式不符合要求')
         }
       })
     },
     onCancel() {
-      console.log('监听了 modal cancel 事件')
+      console.log('监听了 model cancel 事件')
       return new Promise((resolve) => {
         resolve(true)
       })
@@ -153,14 +153,32 @@ export default {
             username: this.username,
             oldPassword: values.oldPassword,
             password: values.password,
-          }).catch((error) => {
-            this.$notification.error({
-              message: '修改密码失败',
-              description: `${error.name}: ${error.message}`,
-            })
           })
+            .then((res) => {
+              if (res.data.isSuccess) {
+                this.$notification.success({
+                  message: '修改密码成功！',
+                })
+                return true
+              } else {
+                this.$notification.error({
+                  message: '修改密码失败',
+                  description: `${res.data.msg}`,
+                })
+                return false
+              }
+            })
+            .catch((error) => {
+              this.$notification.error({
+                message: '修改密码失败',
+                description: `${error.name}: ${error.message}`,
+              })
+            })
           return true
         } else {
+          this.$notification.error({
+            message: '表单格式不符合要求',
+          })
           return false
         }
       })
