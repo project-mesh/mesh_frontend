@@ -16,7 +16,7 @@ const user = {
     age: null,
     gender: '',
     description: '',
-    status: [],
+    status: '1',
   },
 
   mutations: {
@@ -62,7 +62,11 @@ const user = {
       state.description = description
     },
     SET_STATUS: (state, status) => {
-      state.status = status
+      if (status === 0) {
+        state.status = ''
+      } else {
+        state.status = status.toString()
+      }
     },
     ADD_NEW_TEAM: (state, newTeam) => {
       state.teams.push(newTeam)

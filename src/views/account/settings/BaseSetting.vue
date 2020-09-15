@@ -31,11 +31,17 @@
             </a-tooltip>
           </a-form-item>
           <a-form-item label="昵称">
-            <a-input placeholder="给自己起个名字" />
+            <a-input v-decorator="['username']" />
           </a-form-item>
           <a-form-item label="状态" has-feedback>
             <a-select
-              v-decorator="['select', { rules: [{ required: true, message: '挑一个自己的状态' }] }]"
+              v-decorator="[
+                'select',
+                {
+                  rules: [{ required: true, message: '挑一个自己的状态' }],
+                  initialValue: status,
+                },
+              ]"
               placeholder="挑一个自己的状态"
               @change="handleChange"
             >
@@ -95,7 +101,7 @@
             <a-textarea v-decorator="['description']" placeholder="介绍一下自己"></a-textarea>
           </a-form-item>
           <a-form-item>
-            <a-button type="primary">保存</a-button>
+            <a-button type="primary" @click="saveSettings">保存</a-button>
             <a-button class="operate" style="margin-left: 8px" @click="add">修改密码</a-button>
           </a-form-item>
         </a-form>
@@ -129,7 +135,7 @@ export default {
     IconFont,
   },
   computed: {
-    ...mapGetters(['username']),
+    ...mapGetters(['username', 'status', 'nickname']),
   },
   watch: {
     birthDayStr: function (newValue) {
@@ -249,7 +255,7 @@ export default {
     return {
       // cropper
       city: [],
-      statusStr: '3', //在数据库中存的是数字，这里需要一步数字转换字符串
+      statusStr: '1', //在数据库中存的是数字，这里需要一步数字转换字符串
       gender: 1,
       birthDayStr: '2000-06-09',
       shengxiaoTag: '生肖：兔',
@@ -280,8 +286,16 @@ export default {
     setavatar(url) {
       this.option.img = url
     },
+    saveSettings() {
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+        }
+      })
+    },
     handleChange(value) {
       this.statusStr = value
+      value = '5'
       console.log(this.statusStr)
     },
     onChange(date, dateString) {
@@ -329,6 +343,7 @@ export default {
   },
   async created() {
     this.city = Object.freeze(allCity.city)
+    console.log('test console, status is:', this.status)
   },
 }
 </script>

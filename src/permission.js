@@ -42,34 +42,15 @@ router.beforeEach((to, from, next) => {
   NProgress.start() // strt progress bar
   console.log(Cookies.get())
   console.log('state.teams is', store.getters.teams)
-  if (Cookies.get(store.getters.sessionKey)) {
-    if (!store.getters.username) {
-      store
-        .dispatch('Login')
-        .then((res) => {
-          if (res.isSuccess) {
-            handle(to, from, next)
-          } else {
-            store.dispatch('Logout')
-          }
-        })
-        .catch((err) => {
-          console.log('in begin login err is:', err)
-          store.dispatch('Logout')
-          Cookies.remove(store.getters.sessionKey)
-          next({ path: loginRoutePath })
-        })
-    } else {
-      handle(to, from, next)
-    }
+  if (store.getters.username) {
+    handle(to, from, next)
   } else {
     if (whiteList.includes(to.name)) {
       // 在免登录白名单，直接进入
       next()
     } else {
-      alert('2')
+      store.dispatch('Logout')
       next({ path: loginRoutePath })
-      NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }
 })

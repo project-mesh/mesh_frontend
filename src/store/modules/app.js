@@ -26,7 +26,7 @@ const app = {
     weak: false,
     lang: 'zh-CN',
     _antLocale: {},
-    sessionKey: '.AspNetCore.Session',
+    sessionKey: '.AspNetCore.Session.haha',
     creatingTeam: false,
   },
   mutations: {

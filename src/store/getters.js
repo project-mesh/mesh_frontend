@@ -45,6 +45,8 @@ const getters = {
   timeInterval: (state) => state.statistics.timeInterval,
   sessionKey: (state) => state.app.sessionKey,
   isCreatingTeam: (state) => state.app.creatingTeam,
+  status: (state) => state.user.status,
+  nickname: (state) => state.user.nickname,
 }
 
 export default getters

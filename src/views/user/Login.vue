@@ -133,6 +133,9 @@ export default {
             })
             .catch((err) => {
               console.log('error, boy: ', err)
+              this.$notification.error({
+                message: err,
+              })
             })
         }
       })

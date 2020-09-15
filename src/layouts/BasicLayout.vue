@@ -171,6 +171,8 @@ export default {
                   description: `${timeFix()}，已成功创建新团队`,
                 })
               }, 0)
+              // 跳转到团队路由界面
+              this.$router.push({ name: 'membersList' })
             })
             .catch((err) => {
               console.log('error, boy: ', err)
