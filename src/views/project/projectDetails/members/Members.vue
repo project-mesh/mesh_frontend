@@ -2,8 +2,8 @@
   <a-table
     :columns="columns"
     row-key="username"
-    :data-source="teamMembers"
-    :pagination="pagination(teamMembers)"
+    :data-source="projectMembers"
+    :pagination="pagination(projectMembers)"
     @change="onChange"
   >
     <span slot="username" slot-scope="text, item">
@@ -33,11 +33,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
-import pagination from '@/utils/mixins/paginationMixin'
+import projectMixin from '@/utils/mixins/projectMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
+
 export default {
   name: 'StandardList',
-  mixins: [teamMixin, paginationMixin],
+  mixins: [teamMixin, projectMixin, paginationMixin],
   data() {
     return {
       status: 'all',
@@ -77,6 +78,8 @@ export default {
       'teams',
       'teamId',
       'teamTasks',
+      'projectMembers',
+      'projectTasks',
     ]),
     columns() {
       const columns = [
@@ -86,7 +89,7 @@ export default {
           key: 'username',
           scopedSlots: { customRender: 'username' },
           ellipsis: true,
-          sorter: (a, b) => a.username < b.username,
+          sorter: (a, b) => (a.username < b.username ? 1 : -1),
         },
         {
           title: '职位',
@@ -124,9 +127,6 @@ export default {
       this.month = date.getMonth() + 1
       this.day = date.getDate()
     },
-    isTeamMember(user) {
-      return this.teamMembers.findIndex((member) => member.username === user.username) !== -1
-    },
     onSearch() {
       this.userListVisible = true
       this.loading = true
@@ -151,7 +151,7 @@ export default {
       this.users = []
     },
     projectMemberTask(username) {
-      return this.teamTasks.filter((task) => task.principal === username)
+      return this.projectTasks.filter((task) => task.principal === username)
     },
     onChange(pagination, filters, sorter) {
       console.log('params', pagination, filters, sorter)
@@ -161,6 +161,8 @@ export default {
     if (!this.teams || this.teams.length === 0) {
       this.$router.replace({ name: 'noTeam' })
     }
+
+    this.$emit('load', 'projectMembers')
   },
   created() {
     this.dateChange(this.teamCreateTime)

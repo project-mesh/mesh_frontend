@@ -5,7 +5,7 @@ export default {
     ...mapGetters(['notifications', 'teamId', 'username', 'preference']),
   },
   methods: {
-    ...mapActions(['queryTeam', 'queryTeamKB', 'queryNotification']),
+    ...mapActions(['queryTeam', 'queryTeamKB', 'queryNotification', 'queryTeamTasks']),
     // 判断是否需要重新加载团队信息
     needToLoadTeamInfo() {
       const currentRoute = this.$route
@@ -44,7 +44,11 @@ export default {
         if (currentRoute.query && currentRoute.query.teamId)
           requestData.teamId = currentRoute.query.teamId
 
-        promises.push(this.queryTeam(requestData), this.queryTeamKB(requestData))
+        promises.push(
+          this.queryTeam(requestData),
+          this.queryTeamKB(requestData),
+          this.queryTeamTasks(requestData)
+        )
       }
       if (promises.length) {
         Promise.all(promises)
