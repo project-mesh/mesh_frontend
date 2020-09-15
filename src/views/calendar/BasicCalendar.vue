@@ -302,4 +302,7 @@ export default {
 .ant-fullcalendar-header .ant-radio-group {
   display: none;
 }
+#calendar {
+  /* background-color: #f7f7f7; */
+}
 </style>

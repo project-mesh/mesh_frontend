@@ -1,34 +1,38 @@
 <template>
-  <a-table
-    :columns="columns"
-    row-key="username"
-    :data-source="teamMembers"
-    :pagination="pagination(teamMembers)"
-    @change="onChange"
-  >
-    <span slot="username" slot-scope="text, item">
-      <a-avatar shape="circle" :src="item.avatar" />
-      <a-popover title="成员任务">
-        <a-list
-          v-if="projectMemberTask(item.username).length"
-          size="small"
-          slot="content"
-          :data-source="projectMemberTask(item.username)"
-        >
-          <a-list-item slot="renderItem" slot-scope="task">
-            <router-link :to="{ name: 'taskBoard', query: { teamId, projectId: task.projectId } }">
-              {{ task.taskName }}
-            </router-link>
-          </a-list-item>
-        </a-list>
-        <span v-else slot="content">该成员暂无任务</span>
-        <a style="margin-left: 10px">{{ item.username }}</a>
-      </a-popover>
-    </span>
-    <span slot="job" slot-scope="text, item">
-      <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
-    </span>
-  </a-table>
+  <div>
+    <a-table
+      :columns="columns"
+      row-key="username"
+      :data-source="teamMembers"
+      :pagination="pagination(teamMembers)"
+      @change="onChange"
+    >
+      <span slot="username" slot-scope="text, item">
+        <a-avatar shape="circle" :src="item.avatar" />
+        <a-popover title="成员任务">
+          <a-list
+            v-if="projectMemberTask(item.username).length"
+            size="small"
+            slot="content"
+            :data-source="projectMemberTask(item.username)"
+          >
+            <a-list-item slot="renderItem" slot-scope="task">
+              <router-link
+                :to="{ name: 'taskBoard', query: { teamId, projectId: task.projectId } }"
+              >
+                {{ task.taskName }}
+              </router-link>
+            </a-list-item>
+          </a-list>
+          <span v-else slot="content">该成员暂无任务</span>
+          <a style="margin-left: 10px">{{ item.username }}</a>
+        </a-popover>
+      </span>
+      <span slot="job" slot-scope="text, item">
+        <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
+      </span>
+    </a-table>
+  </div>
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex'
