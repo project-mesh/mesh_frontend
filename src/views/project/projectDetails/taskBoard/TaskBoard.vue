@@ -5,7 +5,7 @@
       :task="selectedTask"
       @edit="enterEdittingMode"
       @close="setDetailDrawerVisible(false)"
-      @taskUpdate="updateTask"
+      @taskUpdate="updateTaskLocal"
       @taskDelete="deleteTask"
     ></task-detail>
     <editting-task-detail
@@ -13,7 +13,7 @@
       :task="selectedTask"
       @edit="enterEdittingMode"
       @close="setEditingDrawerVisible(false)"
-      @taskUpdate="updateTask"
+      @taskUpdate="updateTaskLocal"
       @taskCreate="reloadTasks"
     ></editting-task-detail>
     <span
@@ -124,10 +124,6 @@ export default {
     onOnlyViewMineChange(e) {
       this.onlyViewMine = e.target.checked
     },
-    //
-    closeIndifferentTextarea(priority) {
-      // todo : 新建时关闭其他列表，需要兄弟间传值
-    },
     // 抽屉相关
     showTaskDetail(task) {
       this.setSelectedTask(task)
@@ -146,24 +142,24 @@ export default {
       }
     },
     onDragEnd($event) {
-      const toPriority = $event.to.dataset.priority
-      const fromPriority = $event.from.dataset.priority
-      // todo: 发送请求
-      /*
+      const toPriority = +$event.to.dataset.priority
+      const fromPriority = +$event.from.dataset.priority
+      console.log('dargEnd ', fromPriority, toPriority)
+
       if (toPriority !== fromPriority && this.selectedTask) {
-        let isFinished = (toPriority === this.selectedTask.isFinished = isFinished)
-        this.selectedTask.priority = toPriority
         // todo:
         const requestData = {
           username: this.username,
           projectId: this.projectId,
           taskId: this.selectedTask.taskId,
-          isFinished,
+          priority: toPriority,
         }
+
+        console.log(this.updateTask)
 
         this.updateTask(requestData)
           .then(() => {
-            console.log('updateTask success')
+            console.log('updateTaskPriority success')
           })
           .catch((err) => {
             this.$notification.error({
@@ -172,7 +168,6 @@ export default {
             })
           })
       }
-      */
     },
     setDetailDrawerVisible(value) {
       this.detailDrawerVisible = value
@@ -180,7 +175,7 @@ export default {
     setEditingDrawerVisible(value) {
       this.edittingDrawerVisible = value
     },
-    updateTask($event) {
+    updateTaskLocal($event) {
       if ('priority' in $event) {
         const oldPriority = this.selectedTask.priority
 

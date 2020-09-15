@@ -44,13 +44,13 @@ const getTeamTasks = (queryParams) => {
 //这个函数只更新了data.isFinished（给日历页面用的），正经写法我不清楚咋写，待修改 by xzc
 const updateProjectTasks = (data) => {
   console.log('In mock updateProjectTasks, data: ', data)
-  const currentTask = utils.deepCopy(
-    tasks.find(
-      (currentTask) =>
-        currentTask.taskId === data.taskId && currentTask.projectId === data.projectId
-    )
+  const currentTask = tasks.find(
+    (task) => task.taskId === data.taskId && task.projectId === data.projectId
   )
-  currentTask.isFinished = data.isFinished
+
+  Object.keys(data).forEach((key) => {
+    if (key in currentTask) currentTask[key] = data[key]
+  })
 
   setTaskStatus(currentTask)
 
