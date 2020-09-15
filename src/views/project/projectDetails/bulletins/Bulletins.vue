@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <a-card :bordered="false" :loading="cardLoading">
+    <div slot="extra">
+      <a-button :disabled="username !== projectAdminName" type="primary" @click="newBulletin">
+        发布新公告
+        <a-icon type="notification" />
+      </a-button>
+    </div>
     <a-modal
       :width="700"
       centered
@@ -10,6 +16,17 @@
       @cancel="handleCancel"
     >
       <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
+    </a-modal>
+    <a-modal
+      :width="700"
+      centered
+      :visible="newVisible"
+      :confirm-loading="newConfirmLoading"
+      title="发布"
+      @ok="handleNewOk"
+      @cancel="handleNewCancel"
+    >
+      <NewForm :record="selectedItem" ref="newForm"></NewForm>
     </a-modal>
     <a-list
       size="large"
@@ -30,11 +47,12 @@
         <div>{{ bulletin.createTimeDisplay }}</div>
       </a-list-item>
     </a-list>
-  </div>
+  </a-card>
 </template>
 
 <script>
 import TaskForm from './TaskForm'
+import NewForm from './NewForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
@@ -45,12 +63,15 @@ import _ from 'lodash'
 export default {
   components: {
     TaskForm,
+    NewForm,
   },
   mixins: [teamMixin, projectMixin, paginationMixin],
   data() {
     return {
       visible: false,
       confirmLoading: false,
+      newVisible: false,
+      newConfirmLoading: false,
       selectedItem: null,
       deleteLoading: [],
     }
@@ -74,6 +95,9 @@ export default {
     edit(bulletin) {
       this.selectedItem = bulletin
       this.visible = true
+    },
+    newBulletin() {
+      this.newVisible = true
     },
     removeBulletin(bulletin, index) {
       this.$set(this.deleteLoading, index, true)
@@ -107,8 +131,14 @@ export default {
           this.confirmLoading = false
         })
     },
+    handleNewOk() {
+      this.newVisible = false
+    },
     handleCancel() {
       this.visible = false
+    },
+    handleNewCancel() {
+      this.newVisible = false
     },
   },
   mounted() {
