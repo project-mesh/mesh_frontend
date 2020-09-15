@@ -179,7 +179,7 @@ const apiMap = {
   },
   updateUserPassword: {
     url: '/user/password',
-    method: 'patch',
+    method: 'post',
   },
   queryUserInfo: {
     url: '/stastistics/search-user',

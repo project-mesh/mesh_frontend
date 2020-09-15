@@ -31,12 +31,12 @@
             </a-tooltip>
           </a-form-item>
           <a-form-item label="昵称">
-            <a-input v-decorator="['username']" />
+            <a-input v-decorator="['nickname', { initialValue: nickname }]" />
           </a-form-item>
           <a-form-item label="状态" has-feedback>
             <a-select
               v-decorator="[
-                'select',
+                'status',
                 {
                   rules: [{ required: true, message: '挑一个自己的状态' }],
                   initialValue: status,
@@ -76,7 +76,7 @@
             </a-select>
           </a-form-item>
           <a-form-item label="生日">
-            <a-date-picker @change="onChange" placeholder="生日" />
+            <a-date-picker @change="onChange" :default-value="moment(birthday, dateFormat)" />
             <a-tooltip :title="xingzuoTag">
               <icon-font :type="xingzuoIcon" class="xingzuo" @click="dealBirthday" />
             </a-tooltip>
@@ -125,6 +125,7 @@ import { Icon } from 'ant-design-vue'
 import AvatarModal from './AvatarModal'
 import CodeForm from './CodeForm'
 import allCity from './cities.js'
+import moment from 'moment'
 const IconFont = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_2053325_5hl9fgurem.js',
 })
@@ -135,10 +136,10 @@ export default {
     IconFont,
   },
   computed: {
-    ...mapGetters(['username', 'status', 'nickname']),
+    ...mapGetters(['username', 'status', 'nickname', 'birthday']),
   },
   watch: {
-    birthDayStr: function (newValue) {
+    birthdayStr: function (newValue) {
       let oriStr = newValue
       let dateStr = oriStr.split('-')
       let yearNum = parseInt(dateStr[0])
@@ -255,13 +256,14 @@ export default {
     return {
       // cropper
       city: [],
+      birthdayStr: this.birthday,
       statusStr: '1', //在数据库中存的是数字，这里需要一步数字转换字符串
       gender: 1,
-      birthDayStr: '2000-06-09',
       shengxiaoTag: '生肖：兔',
       shengxiaoIcon: 'icon-tuxiao',
       xingzuoTag: '星座：巨蟹座',
       xingzuoIcon: 'icon-juxiezuo',
+      dateFormat: 'YYYY/MM/DD',
       preview: {},
       form: this.$form.createForm(this),
       option: {
@@ -282,7 +284,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['updateUserPassword']),
+    ...mapActions(['updateUserPassword', 'updateUserInfo']),
+    moment,
     setavatar(url) {
       this.option.img = url
     },
@@ -290,6 +293,33 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
+          values.city = values.city[0] + ' ' + values.city[1] + ' ' + values.city[2]
+          console.log('new values of form: ', values)
+          this.updateUserInfo({
+            username: this.username,
+            nickname: values.nickname,
+            status: values.status,
+            address: values.city,
+            description: values.description,
+            birthday: this.birthdayStr,
+          })
+            .then((res) => {
+              if (res.isSuccess) {
+                this.$notification.success({
+                  message: '修改个人信息成功！',
+                })
+              } else {
+                this.$notification.error({
+                  message: '修改个人信息失败，请重试',
+                })
+              }
+            })
+            .catch((err) => {
+              this.$notification.error({
+                message: '修改个人信息失败，请重试',
+                description: `${err.name}: ${err.message}`,
+              })
+            })
         }
       })
     },
@@ -299,8 +329,8 @@ export default {
       console.log(this.statusStr)
     },
     onChange(date, dateString) {
-      this.birthDayStr = dateString
-      console.log(this.birthDayStr)
+      this.birthdayStr = dateString
+      console.log('onChange about birthday:', this.birthdayStr)
     },
     add() {
       this.$dialog(
@@ -344,6 +374,7 @@ export default {
   async created() {
     this.city = Object.freeze(allCity.city)
     console.log('test console, status is:', this.status)
+    console.log('test console, birthday is:', this.birthday)
   },
 }
 </script>

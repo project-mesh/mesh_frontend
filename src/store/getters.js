@@ -47,6 +47,8 @@ const getters = {
   isCreatingTeam: (state) => state.app.creatingTeam,
   status: (state) => state.user.status,
   nickname: (state) => state.user.nickname,
+  birthday: (state) => state.user.birthday,
+  address: (state) => state.user.address,
 }
 
 export default getters

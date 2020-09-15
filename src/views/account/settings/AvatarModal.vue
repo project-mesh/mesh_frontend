@@ -72,8 +72,11 @@ export default {
       previews: {},
     }
   },
+  computed: {
+    ...mapGetters(['username', 'nickname']),
+  },
   methods: {
-    ...mapActions(['updateUserAvatar']),
+    ...mapActions(['updateUserInfo']),
     edit(id) {
       this.visible = true
       this.id = id
@@ -116,7 +119,11 @@ export default {
       // 输出
       this.$refs.cropper.getCropData((data) => {
         console.log('getCropData', data)
-        this.updateUserAvatar({ username: this.username, avatar: data }).catch((error) => {
+        this.updateUserInfo({
+          username: this.username,
+          nickname: this.nickname,
+          avatar: data,
+        }).catch((error) => {
           this.$notification.error({
             message: '更新头像失败',
             description: `${error.name}: ${error.message}`,

@@ -107,6 +107,7 @@ export default {
     this.record && this.form.setFieldsValue(pick(this.record, fields))
   },
   computed: {
+    ...mapGetters(['username', 'nickname']),
     passwordLevelClass() {
       return levelClass[this.state.passwordLevel]
     },
@@ -149,6 +150,7 @@ export default {
           this.state.passwordLevelChecked = false
           console.log('will call register api by values:', values)
           this.updateUserPassword({
+            username: this.username,
             oldPassword: values.oldPassword,
             password: values.password,
           }).catch((error) => {
