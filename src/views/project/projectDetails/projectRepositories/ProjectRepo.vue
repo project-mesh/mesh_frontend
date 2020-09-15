@@ -24,15 +24,9 @@
     </a-modal>
 
     <a-list size="large" :data-source="filteredProjects" :pagination="pagination(filteredProjects)">
-      <a-list-item
-        slot="renderItem"
-        key="item.knowledgeId"
-        slot-scope="item, index"
-        :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
-      >
+      <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
         <a-list-item-meta :title="item.knowledgeName" :style="{ marginLeft: '50px' }">
           <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
-          <a-avatar slot="avatar" :src="getAvatar(item.uploaderName)" />
         </a-list-item-meta>
         <div slot="actions">
           <a @click="edit(item)" :disabled="!isProjectAdminOrUploader(item)">编辑</a>
@@ -55,9 +49,12 @@
           </a-dropdown>
         </div> -->
         <div class="list-content">
-          <div class="list-content-item">
-            <span>上传人</span>
-            <p>{{ item.uploaderName }}</p>
+          <div class="name-group">
+            <a-avatar slot="avatar" :src="getAvatar(item.uploaderName)" />
+            <div class="list-content-item">
+              <span>上传人</span>
+              <p>{{ item.uploaderName }}</p>
+            </div>
           </div>
           <div class="list-content-item">
             <span>上传时间</span>
@@ -222,11 +219,12 @@ export default {
   margin-right: 10px;
 }
 
-.ant-avatar-lg {
-  width: 48px;
-  height: 48px;
-  line-height: 48px;
+.name-group {
+  width: 150px;
+  display: flex;
+  justify-content: space-around;
 }
+
 .ant-list-item-meta-content {
   margin-left: 20px;
 }
@@ -236,9 +234,6 @@ export default {
   width: 25%;
   margin: 0 50px;
 }
-.changeColor {
-  background-color: #f0f0f0;
-}
 .changeWidth {
   background-color: #ffffff;
 }
@@ -247,10 +242,8 @@ export default {
   display: inline-block;
   vertical-align: middle;
   font-size: 14px;
-  margin-left: 40px;
-  span {
-    line-height: 20px;
-  }
+  margin-left: 0px;
+
   p {
     margin-top: 4px;
     margin-bottom: 0;
