@@ -87,6 +87,7 @@ const user = {
               reject(res.data.msg)
             } else {
               const token = res.data.token
+              console.log('jojo!!!!', res.data.preference)
               console.log('token: ', token)
               storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
               commit('SET_TOKEN', token)

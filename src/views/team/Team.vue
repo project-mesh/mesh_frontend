@@ -156,16 +156,14 @@ export default {
     onSearch() {
       this.userListVisible = true
       this.loading = true
-
       this.queryUser({
         username: this.username,
         keyword: this.keyword,
       })
         .then((res) => {
           const { data } = res
-          if (data.isSuccess) {
-            this.users = data.users
-          }
+          console.log('onSearch', data)
+          this.users = data.users
         })
         .finally(() => {
           this.loading = false
