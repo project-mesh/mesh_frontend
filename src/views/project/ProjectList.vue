@@ -170,6 +170,24 @@
         </a-form-item>
       </a-form>
     </a-modal>
+    <a-modal v-model="addMember" title="邀请新成员" centered @ok="handleInviteMember">
+      <!-- 邀请成员 -->
+      <a-select
+        mode="multiple"
+        placeholder="添加你想邀请的成员"
+        :value="selectedItems"
+        style="width: 100%"
+        @change="handleMemberChange"
+      >
+        <a-select-option
+          v-for="item in this.teamMembers"
+          :key="item.username"
+          :value="item.username"
+        >
+          {{ item.username }}
+        </a-select-option>
+      </a-select>
+    </a-modal>
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="filteredProjects">
         <a-list-item slot="renderItem" slot-scope="item">
@@ -209,6 +227,9 @@
                 <a :disabled="username !== item.adminName" @click="showUpdatePrjForm(item)">
                   <a-icon key="edit" type="edit" />
                 </a>
+                <a @click="showInviteForm(item)">
+                  <a-icon type="usergroup-add" />
+                </a>
                 <a :disabled="username !== item.adminName" @click="handleProjectDelete(item)">
                   <a-icon key="delete" type="delete" />
                 </a>
@@ -230,7 +251,8 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
-import pick from 'lodash.pick'
+
+const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 
 //图片转 base64
 function getBase64(img, callback) {
@@ -256,6 +278,9 @@ export default {
         project.projectName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
       )
     },
+    filteredOptions() {
+      return OPTIONS.filter((o) => !this.selectedItems.includes(o))
+    },
   },
   watch: {
     ['$route.query.teamId']() {
@@ -269,6 +294,7 @@ export default {
       'updatePreferenceShowMode',
       'deleteProject',
       'updateProject',
+      'joinProject',
     ]),
     tryJumpToProjectDetail(projectId) {
       this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
@@ -305,6 +331,9 @@ export default {
     },
     handleChange({ fileList }) {
       this.fileList = fileList
+    },
+    handleMemberChange(selectedItems) {
+      this.selectedItems = selectedItems
     },
     //删除项目
     handleProjectDelete(prj) {
@@ -426,12 +455,56 @@ export default {
         })
       }
     },
+    handleInviteMember() {
+      console.log(this.selectedItems)
+
+      if (!this.selectedItems || this.selectedItems.length === 0) return this.hideInviteForm()
+
+      const promises = []
+
+      this.selectedItems.forEach((username) =>
+        promises.push(
+          this.joinProject({
+            username,
+            teamId: this.teamId,
+            projectId: this.selectedUpdatePrj.projectId,
+          })
+        )
+      )
+
+      if (promises.length) {
+        return Promise.all(promises)
+          .then(() => {
+            console.log('add project members success!, new members: ', this.selectedItems)
+          })
+          .catch((err) => {
+            this.$notification.error({
+              message: '成功添加新项目成员',
+              description: err.message,
+            })
+          })
+          .finally(() => {
+            this.hideInviteForm()
+          })
+      }
+
+      this.hideInviteForm()
+    },
+    showInviteForm(prj) {
+      this.addMember = true
+      this.selectedUpdatePrj = prj
+    },
+    hideInviteForm() {
+      this.addMember = false
+      this.selectedUpdatePrj = null
+    },
   },
   data() {
     return {
       listVisible: false, //是否显示列表 true显示列表 false显示卡片
       createProjForm: false, //显示创建项目的表单
       modifyProjForm: false, //现实修改项目信息的表单
+      addMember: false, //显示添加项目成员的表单
       previewVisible: false,
       previewImage: '',
       fileList: [],
@@ -441,6 +514,7 @@ export default {
       selectedUpdatePrj: null,
       createLoading: false,
       updateLoading: false,
+      selectedItems: [], //选中的成员名单
     }
   },
   mounted: function () {
