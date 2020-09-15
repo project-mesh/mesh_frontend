@@ -1,8 +1,10 @@
 <template>
   <a-card style="margin-top: 24px" :bordered="false" :title="teamName">
     <div class="admin-info">
-      <div>管理员：{{ teamAdminName }}</div>
-      <div>创建时间：{{ year }}年{{ month }}月{{ day }}日</div>
+      <div style="display: inline">管理员：{{ teamAdminName }}</div>
+      <div style="display: inline; margin-left: 5%">
+        创建时间：{{ year }}年{{ month }}月{{ day }}日
+      </div>
     </div>
     <div class="operate">
       <a-button
@@ -21,6 +23,7 @@
       row-key="username"
       :data-source="teamMembers"
       :pagination="pagination(teamMembers)"
+      @change="onChange"
     >
       <template slot="username" slot-scope="text, item">
         <a-avatar shape="circle" :src="item.avatar" />
@@ -97,27 +100,11 @@ import teamMixin from '@/utils/mixins/teamMixin'
 import pagination from '@/utils/mixins/paginationMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
 
-const columns = [
-  {
-    title: '成员',
-    dataIndex: 'username',
-    key: 'username',
-    scopedSlots: { customRender: 'username' },
-    ellipsis: true,
-  },
-  {
-    title: '职位',
-    key: 'job',
-    scopedSlots: { customRender: 'job' },
-    ellipsis: true,
-  },
-]
 export default {
   name: 'StandardList',
   mixins: [teamMixin, paginationMixin],
   data() {
     return {
-      columns,
       status: 'all',
       year: null,
       month: null,
@@ -156,6 +143,42 @@ export default {
       'teamId',
       'teamTasks',
     ]),
+    columns() {
+      const columns = [
+        {
+          title: '成员',
+          dataIndex: 'username',
+          key: 'username',
+          scopedSlots: { customRender: 'username' },
+          ellipsis: true,
+          sorter: (a, b) => a.username < b.username,
+        },
+        {
+          title: '职位',
+          key: 'job',
+          scopedSlots: { customRender: 'job' },
+          ellipsis: true,
+          filters: [
+            {
+              text: '管理员',
+              value: '管理员',
+            },
+            {
+              text: '组员',
+              value: '组员',
+            },
+          ],
+          onFilter: (value, record) => {
+            if (value == '管理员') {
+              return record.username === this.teamAdminName
+            } else {
+              return record.username !== this.teamAdminName
+            }
+          },
+        },
+      ]
+      return columns
+    },
   },
   methods: {
     ...mapActions(['queryUser', 'joinTeam']),
@@ -216,6 +239,9 @@ export default {
     },
     teamMemberTask(username) {
       return this.teamTasks.filter((task) => task.principal === username)
+    },
+    onChange(pagination, filters, sorter) {
+      console.log('params', pagination, filters, sorter)
     },
   },
   mounted() {
