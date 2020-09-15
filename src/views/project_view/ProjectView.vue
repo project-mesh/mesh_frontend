@@ -1,14 +1,14 @@
 <template>
   <div>
     <task-detail
-      :visible="detailDrawerVisible"
       :task="selectedTask"
-      @edit="enterEdittingMode"
+      :visible="detailDrawerVisible"
+      @edit="enterEditingMode"
     ></task-detail>
-    <editting-task-detail
-      :visible="edittingDrawerVisible"
-      @edit="enterEdittingMode"
-    ></editting-task-detail>
+    <editing-task-detail
+      :visible="editingDrawerVisible"
+      @edit="enterEditingMode"
+    ></editing-task-detail>
     <span
       style="
          {
@@ -49,7 +49,7 @@
 <script>
 import TaskList from './TaskList'
 import TaskDetail from './TaskDetail'
-import EdittingTaskDetail from './EdittingTaskDetail'
+import EditingTaskDetail from './EditingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import { mapGetters, mapActions } from 'vuex'
@@ -59,7 +59,7 @@ export default {
     //调用组件
     TaskList,
     TaskDetail,
-    EdittingTaskDetail,
+    EditingTaskDetail,
   },
   mixins: [teamMixin, projectMixin],
 
@@ -68,7 +68,7 @@ export default {
       onlyNotFinished: false,
       onlyViewMine: false,
       detailDrawerVisible: false,
-      edittingDrawerVisible: false,
+      editingDrawerVisible: false,
       drag: false,
       taskListGroup: {
         name: 'taskList',
@@ -128,13 +128,13 @@ export default {
     setSelectedTask(task) {
       this.selectedTask = task
     },
-    enterEdittingMode(isEdittingMode) {
-      console.log(isEdittingMode)
+    enterEditingMode(isEditingMode) {
+      console.log(isEditingMode)
       this.detailDrawerVisible = false
-      if (isEdittingMode) {
-        this.edittingDrawerVisible = true
+      if (isEditingMode) {
+        this.editingDrawerVisible = true
       } else {
-        this.edittingDrawerVisible = false
+        this.editingDrawerVisible = false
       }
     },
     onDragEnd($event) {

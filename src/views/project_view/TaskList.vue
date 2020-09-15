@@ -31,16 +31,20 @@
         </transition-group>
         <div slot="footer">
           <a-textarea
-            v-if="textareaVisible"
+            v-show="textareaVisible"
+            ref="textarea"
             placeholder="请输入新项目名
 按enter确认 按esc取消"
             allow-clear
-            @keyup.enter="finishEditting"
-            @keyup.esc="exitEditting"
-            auto-size="{minRows: 3, maxRows: 20}"
-            v-model="newTaskName"
+            @keyup.enter="finishEditing"
+            @keyup.esc="exitEditing"
+            @blur="exitEditing"
+            :auto-size="{ minRows: 3, maxRows: 20 }"
+            :value="newTaskName"
           />
-          <a-button v-else block type="primary" @click="showTextarea">+ 任务</a-button>
+          <a-button v-show="!textareaVisible" block type="primary" @click="showTextarea">
+            + 任务
+          </a-button>
         </div>
       </draggable>
     </a-card>
@@ -124,16 +128,19 @@ export default {
     showTextarea: function () {
       this.textareaVisible = true
       this.$emit('edit-new-task-name', this.priority)
+      console.log(this.$refs.textarea)
+      console.log(this.$refs.textarea.focus)
+      this.$refs.textarea.focus()
     },
 
-    finishEditting: function () {
+    finishEditing: function () {
       if (this.newTaskName) {
         this.$message.info('新建项目：' + this.newTaskName)
         this.addTask()
       }
       this.textareaVisible = false
     },
-    exitEditting: function () {
+    exitEditing: function () {
       this.newTaskName = ''
       this.textareaVisible = false
     },

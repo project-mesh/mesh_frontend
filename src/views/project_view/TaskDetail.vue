@@ -23,63 +23,54 @@
         <a-descriptions-item label="描述" span="3">{{ task.description }}</a-descriptions-item>
         <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
       </a-descriptions>
-      <a-collapse v-model="activeKey">
-        <a-collapse-panel
-          v-for="(subTask, subTaskIndex) in task.subTasks"
-          :key="subTaskIndex"
-          :header="subTask.taskName"
-        >
-          <a-descriptions class="drawer-content" size="small" column="3">
-            <a-descriptions-item label="创建者" span="1">
-              {{ task.founder }}
-            </a-descriptions-item>
-            <a-descriptions-item label="创建时间" span="2">
-              {{ formatTimeStamp(subTask.createTime) }}
-            </a-descriptions-item>
-
-            <a-descriptions-item label="负责人" span="1">{{ task.principal }}</a-descriptions-item>
-
-            <a-descriptions-item label="已完成" span="2">
-              {{ task.isFinished ? '是' : '否' }}
-            </a-descriptions-item>
-            <a-descriptions-item label="描述" span="3">{{ task.description }}</a-descriptions-item>
-          </a-descriptions>
-        </a-collapse-panel>
-        <a-collapse-panel disabled :show-arrow="false">
-          <a-input
-            v-model="newSubTaskName"
-            slot="header"
-            placeholder="按enter添加 按esc退出"
-            @keyup.enter="finishEditting"
-            @keyup.esc="exitEditting"
-            @blur="exitEditting"
-          ></a-input>
-        </a-collapse-panel>
-      </a-collapse>
+      <sub-task-list v-model="subTasks" />
       <template slot="actions" class="ant-card-actions">
         <a-icon key="delete" type="delete" @click="deleteTask(task)" />
         <a-icon key="edit" type="edit" @click="editTask(task)" />
         <a-icon
-          v-if="task.isFinished"
           key="check-square"
-          type="check-square"
-          @click="finishTask(task, false)"
+          :type="task.isFinished ? 'check-square' : 'border'"
+          @click="finishTask(task, !task.isFinished)"
         />
-        <a-icon v-else key="check" type="check" @click="finishTask(task, true)" />
       </template>
     </a-card>
   </a-drawer>
 </template>
 <script>
 import moment from 'moment'
+import SubTaskList from './SubTaskList'
 export default {
+  components: {
+    SubTaskList,
+    moment,
+  },
   data() {
     return {
       activeKey: [],
       newSubTaskName: '',
+      task: this.rawTask,
+      subTasks: [
+        {
+          taskId: 'aklgnlkzzzld',
+          taskName: '子任务名',
+          isFinished: true,
+          createTime: '16546513231',
+          description: '子任务描述',
+          founder: '子任务创建者',
+          principal: '子任务负责人',
+        },
+        {
+          taskId: 'aklgnlkjsald',
+          taskName: '子任名2',
+          isFinished: false,
+          createTime: '1654653445',
+          description: '子任务描述2',
+          founder: '子任务创建者2',
+          principal: '子任务负责人2',
+        },
+      ],
     }
   },
-
   props: {
     visible: {
       type: Boolean,
@@ -88,7 +79,7 @@ export default {
       },
     },
 
-    task: {
+    rawTask: {
       type: Object,
       default: function () {
         return {
@@ -117,13 +108,13 @@ export default {
     },
   },
   methods: {
-    finishEditting: function () {
+    finishEditing: function () {
       if (this.newSubTaskName) {
         this.$message.info('新建项目：' + this.newSubTaskName)
         this.addTask()
       }
     },
-    exitEditting: function () {
+    exitEditing: function () {
       this.newTaskName = ''
     },
     addSubTask: function () {
@@ -136,10 +127,11 @@ export default {
       // todo: 交互
       this.newSubTaskName = ''
     },
-    moment,
+
     formatTimeStamp: function (timeStamp) {
       return moment(timeStamp).format('YYYY-MM-DD')
     },
+    finishSubTask: function (task) {},
     finishTask: function (task, status) {
       this.updateTask(task, 'isFinished', status)
     },
