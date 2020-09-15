@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <a-card :bordered="false" :loading="cardLoading">
+    <div slot="extra">
+      <a-button :disabled="username !== projectAdminName" type="primary">
+        发布新公告
+        <a-icon type="notification" />
+      </a-button>
+    </div>
     <a-modal
       :width="700"
       centered
@@ -20,6 +26,7 @@
         <a-list-item-meta :description="bulletin.description">
           <a slot="title">{{ bulletin.bulletinName }}</a>
         </a-list-item-meta>
+        <div class="unread">.</div>
         <div slot="actions">
           <a @click="edit(bulletin)">详情</a>
           <a-divider type="vertical" />
@@ -30,7 +37,7 @@
         <div>{{ bulletin.createTimeDisplay }}</div>
       </a-list-item>
     </a-list>
-  </div>
+  </a-card>
 </template>
 
 <script>
@@ -120,5 +127,12 @@ export default {
 <style lang="less" scoped>
 div.ant-col.ant-col-md-24.ant-col-lg-17 {
   width: 200px;
+}
+.unread {
+  color: red;
+  margin-top: -7%;
+  right: 0%;
+  position: absolute;
+  font-size: 50px;
 }
 </style>
