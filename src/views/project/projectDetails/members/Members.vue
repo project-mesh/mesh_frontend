@@ -1,5 +1,24 @@
 <template>
   <div>
+    <div class="invite-group">
+      <!-- 邀请成员 -->
+      <a-select
+        class="invite-member"
+        mode="multiple"
+        placeholder="添加你想邀请的成员"
+        :value="selectedItems"
+        @change="handleMemberChange"
+      >
+        <a-select-option
+          v-for="item in this.teamMembers"
+          :key="item.username"
+          :value="item.username"
+        >
+          {{ item.username }}
+        </a-select-option>
+      </a-select>
+      <a-button type="primary" shape="circle" icon="usergroup-add" />
+    </div>
     <a-table
       :columns="columns"
       row-key="username"
@@ -69,6 +88,7 @@ export default {
         lineHeight: '30px',
       },
       inviting: false,
+      selectedItems: [], //选中的成员名单
     }
   },
   computed: {
@@ -131,6 +151,39 @@ export default {
     isTeamMember(user) {
       return this.teamMembers.findIndex((member) => member.username === user.username) !== -1
     },
+    handleMemberChange(selectedItems) {
+      this.selectedItems = selectedItems
+    },
+    handleInviteMember() {
+      console.log(this.selectedItems)
+      if (!this.selectedItems || this.selectedItems.length === 0) return this.hideInviteForm()
+      const promises = []
+      this.selectedItems.forEach((username) =>
+        promises.push(
+          this.joinProject({
+            username,
+            teamId: this.teamId,
+            projectId: this.selectedUpdatePrj.projectId,
+          })
+        )
+      )
+      if (promises.length) {
+        return Promise.all(promises)
+          .then(() => {
+            console.log('add project members success!, new members: ', this.selectedItems)
+          })
+          .catch((err) => {
+            this.$notification.error({
+              message: '成功添加新项目成员',
+              description: err.message,
+            })
+          })
+          .finally(() => {
+            this.hideInviteForm()
+          })
+      }
+      this.hideInviteForm()
+    },
     onSearch() {
       this.userListVisible = true
       this.loading = true
@@ -171,3 +224,15 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.invite-group {
+  width: 68%;
+  display: flex;
+  justify-content: space-between;
+}
+.invite-member {
+  margin-bottom: 10px;
+  width: 700px;
+}
+</style>
