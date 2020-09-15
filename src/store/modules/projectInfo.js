@@ -58,7 +58,7 @@ const projectInfo = {
       state.bulletins = bulletins
     },
     ADD_BULLETIN: (state, newBulletin) => {
-      state.bulletins.push(newBulletin)
+      state.bulletins.unshift(newBulletin)
     },
     REMOVE_BULLETIN: (state, bulletinId) => {
       const bulletinIndex = state.bulletins.findIndex(
@@ -75,7 +75,7 @@ const projectInfo = {
       if (bulletinIndex !== -1) state.bulletins.splice(bulletinIndex, 1, updatedBulletin)
     },
     ADD_NEW_MEMBER: (state, newMember) => {
-      state.members.push(newMember)
+      state.members.unshift(newMember)
     },
   },
   actions: {
@@ -206,8 +206,9 @@ const projectInfo = {
             const { data } = res
             if (data.isSuccess && requestData.projectId === state.projectId) {
               commit('ADD_BULLETIN', data.bulletin)
+              return resolve(res)
             }
-            resolve(res)
+            reject(new Error(res.data.msg))
           })
           .catch((err) => {
             reject(err)

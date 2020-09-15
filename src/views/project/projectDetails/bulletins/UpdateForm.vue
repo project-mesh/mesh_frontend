@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import pick from 'lodash.pick'
 import { mapGetters, mapActions } from 'vuex'
 
 // const fields = ['title', 'startAt', 'owner', 'description']
@@ -53,11 +52,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username', 'projectAdminName']),
+    ...mapGetters(['username', 'projectAdminName', 'projectId']),
   },
-  // mounted() {
-  //   this.record && this.form.setFieldsValue(pick(this.record, fields))
-  // },
+  watch: {
+    record(newRecord) {
+      this.form.setFieldsValue({
+        title: newRecord.bulletinName,
+        description: newRecord.description,
+      })
+    },
+  },
   methods: {
     ...mapActions(['updateBulletin']),
     handleSubmit() {
@@ -75,7 +79,7 @@ export default {
             const requestData = {
               username: this.username,
               bulletinId: this.record.bulletinId,
-              projectId: this.record.projectId,
+              projectId: this.projectId,
               bulletinName: values.title,
               description: values.description,
             }

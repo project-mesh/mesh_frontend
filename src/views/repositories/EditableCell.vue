@@ -6,7 +6,7 @@
     </div>
     <div v-else class="editable-cell-text-wrapper">
       <slot></slot>
-      <a-icon type="edit" class="editable-cell-icon" @click="edit" />
+      <a :disabled="disabled" @click="edit"><a-icon type="edit" class="editable-cell-icon" /></a>
     </div>
   </div>
 </template>
@@ -25,6 +25,10 @@ export default {
     validators: {
       type: Array,
       default: () => [],
+    },
+    disabled: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

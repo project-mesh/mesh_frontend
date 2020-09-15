@@ -30,6 +30,25 @@ const updateBulletin = (data) => {
   return utils.builder({ bulletin })
 }
 
+const createBulletin = (data) => {
+  const newBulletin = Mock.mock({
+    projectId: '',
+    bulletinId: '@id',
+    bulletinName: '@ctitle',
+    description: '@csentence',
+    createTime: Date.now(),
+  })
+
+  Object.keys(data).forEach((key) => {
+    if (key in newBulletin) newBulletin[key] = data[key]
+  })
+
+  bulletins.push(newBulletin)
+
+  return utils.builder({ bulletin: newBulletin })
+}
+
 Mock.mock(/\/bulletin/, 'get', utils.functionFactory(getBulletins))
 Mock.mock(/\/bulletin/, 'delete', utils.functionFactory(deleteBulletin))
 Mock.mock(/\/bulletin/, 'patch', utils.functionFactory(updateBulletin))
+Mock.mock(/\/bulletin/, 'post', utils.functionFactory(createBulletin))

@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import pick from 'lodash.pick'
 import { mapGetters, mapActions } from 'vuex'
 
 // const fields = ['title', 'startAt', 'owner', 'description']
@@ -41,10 +40,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username', 'projectAdminName']),
+    ...mapGetters(['username', 'projectAdminName', 'projectId']),
   },
   methods: {
-    ...mapActions(['updateBulletin']),
+    ...mapActions(['createBulletin']),
     handleSubmit() {
       return new Promise((resolve, reject) => {
         if (this.username !== this.projectAdminName) resolve()
@@ -59,11 +58,12 @@ export default {
 
             const requestData = {
               username: this.username,
+              projectId: this.projectId,
               bulletinName: values.title,
               description: values.description,
             }
 
-            this.updateBulletin(requestData).then(resolve).catch(reject)
+            this.createBulletin(requestData).then(resolve).catch(reject)
           } else reject(errors)
         })
       })

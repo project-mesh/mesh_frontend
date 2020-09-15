@@ -1,5 +1,5 @@
 <template>
-  <a-card :bordered="false" :loading="cardLoading">
+  <a-card :bordered="false">
     <div slot="extra">
       <a-button :disabled="username !== projectAdminName" type="primary" @click="newBulletin">
         发布新公告
@@ -9,24 +9,24 @@
     <a-modal
       :width="700"
       centered
-      :visible="visible"
-      :confirm-loading="confirmLoading"
+      :visible="updateFormVisible"
+      :confirm-loading="updateLoading"
       title="编辑"
-      @ok="handleOk"
-      @cancel="handleCancel"
+      @ok="handleUpdate"
+      @cancel="handleUpdateCancel"
     >
-      <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
+      <update-form :record="selectedItem" ref="updateForm"></update-form>
     </a-modal>
     <a-modal
       :width="700"
       centered
-      :visible="newVisible"
-      :confirm-loading="newConfirmLoading"
+      :visible="createFormVisible"
+      :confirm-loading="createLoading"
       title="发布"
-      @ok="handleNewOk"
-      @cancel="handleNewCancel"
+      @ok="handleCreate"
+      @cancel="handleCreateCancel"
     >
-      <NewForm :record="selectedItem" ref="newForm"></NewForm>
+      <create-form ref="createForm"></create-form>
     </a-modal>
     <a-list
       size="large"
@@ -51,8 +51,8 @@
 </template>
 
 <script>
-import TaskForm from './TaskForm'
-import NewForm from './NewForm'
+import UpdateForm from './UpdateForm'
+import CreateForm from './CreateForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
@@ -62,16 +62,16 @@ import _ from 'lodash'
 
 export default {
   components: {
-    TaskForm,
-    NewForm,
+    CreateForm,
+    UpdateForm,
   },
   mixins: [teamMixin, projectMixin, paginationMixin],
   data() {
     return {
-      visible: false,
-      confirmLoading: false,
-      newVisible: false,
-      newConfirmLoading: false,
+      updateFormVisible: false,
+      updateLoading: false,
+      createFormVisible: false,
+      createLoading: false,
       selectedItem: null,
       deleteLoading: [],
     }
@@ -94,10 +94,10 @@ export default {
     ...mapActions(['deleteBulletin']),
     edit(bulletin) {
       this.selectedItem = bulletin
-      this.visible = true
+      this.updateFormVisible = true
     },
     newBulletin() {
-      this.newVisible = true
+      this.createFormVisible = true
     },
     removeBulletin(bulletin, index) {
       this.$set(this.deleteLoading, index, true)
@@ -119,26 +119,41 @@ export default {
           })
         })
     },
-    handleOk() {
-      this.confirmLoading = true
-      this.$refs.taskForm
+    handleUpdate() {
+      this.updateLoading = true
+      this.$refs.updateForm
         .handleSubmit()
         .catch((err) => {
           console.error('updateBulletin fail, ', err)
         })
         .finally(() => {
-          this.visible = false
-          this.confirmLoading = false
+          this.updateFormVisible = false
+          this.updateLoading = false
         })
     },
-    handleNewOk() {
-      this.newVisible = false
+    handleCreate() {
+      this.createLoading = true
+      this.$refs.createForm
+        .handleSubmit()
+        .then(() => {
+          console.log('createBulletin seccess')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: 'createBulletin failed',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.createFormVisible = false
+          this.createLoading = false
+        })
     },
-    handleCancel() {
-      this.visible = false
+    handleUpdateCancel() {
+      this.updateFormVisible = false
     },
-    handleNewCancel() {
-      this.newVisible = false
+    handleCreateCancel() {
+      this.createFormVisible = false
     },
   },
   mounted() {
