@@ -66,7 +66,7 @@ const tasks = [
   },
 ]
 
-const subTasks = [
+let subTasks = [
   {
     parentTaskId: 'aklgnlkjsald',
     taskId: 'aklgnlknbcberui',
@@ -331,7 +331,7 @@ for (let i = 0; i < 300; ++i) {
     taskId: '@id',
     taskName: '@ctitle',
     'isFinished|1': true,
-    priority: random.natural(1, 3),
+    priority: random.natural(0, 3),
     createTime: Date.now(),
     deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
     description: '@cparagraph',

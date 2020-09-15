@@ -1,58 +1,46 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
-  <a-card class="task-list" :title="status">
-    <a-modal
-      centered
-      :width="700"
-      :visible="visible"
-      :confirm-loading="confirmLoading"
-      :title="modalTitle"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
-      <show-task-form></show-task-form>
-    </a-modal>
-    <draggable
-      group="taskGroup"
-      :list="tasks"
-      :move="moveTask"
-      :animation="200"
-      :empty-insert-threshold="200"
-      @start="onDragStart"
-      @end="onDragEnd"
-    >
-      <transition-group
-        class="data-span"
-        :data-status="status"
-        type="transition"
-        :name="!drag ? 'flip-list' : null"
+  <div>
+    <a-card class="task-list" :title="priorityName">
+      <draggable
+        group="taskGroup"
+        :list="tasks"
+        :move="moveTask"
+        :animation="200"
+        :empty-insert-threshold="200"
+        @start="onDragStart"
+        @end="onDragEnd"
       >
-        <div
-          class="task-info"
-          v-for="(task, taskIndex) in tasks"
-          :key="taskIndex"
-          @click="showTask(task)"
+        <transition-group
+          :data-priority="priority"
+          type="transition"
+          :name="!drag ? 'flip-list' : null"
         >
-          <task-info :task="task"></task-info>
+          <div
+            class="task-info"
+            v-for="(task, taskIndex) in tasks"
+            v-show="
+              (task.principal === username || !onlyViewMine) &&
+              (!task.isFinished || !onlyNotFinished)
+            "
+            :key="taskIndex"
+            @click="clickTaskInfo(task)"
+          >
+            <task-info :task="task"></task-info>
+          </div>
+        </transition-group>
+        <div slot="footer">
+          <a-button block type="primary" @click="tryCreateTask()">+ 任务</a-button>
         </div>
-      </transition-group>
-      <a-button
-        :disabled="username !== projectAdminName"
-        slot="footer"
-        block
-        type="primary"
-        @click="addTask"
-      >
-        + 任务
-      </a-button>
-    </draggable>
-  </a-card>
+      </draggable>
+    </a-card>
+  </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
+import moment from 'moment'
 import TaskInfo from './TaskInfo'
-import ShowTaskForm from './ShowTaskForm'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -60,11 +48,9 @@ export default {
     //调用组件
     draggable,
     TaskInfo,
-    ShowTaskForm,
   },
   data: function () {
     return {
-      visible: false,
       taskGroup: {
         name: 'task',
       },
@@ -83,8 +69,12 @@ export default {
     //     }
     //   },
     // },
-    status: {
+    priorityName: {
       type: String,
+      required: true,
+    },
+    priority: {
+      type: Number,
       required: true,
     },
     tasks: {
@@ -95,20 +85,47 @@ export default {
       type: Function,
       required: true,
     },
+    onlyViewMine: {
+      type: Boolean,
+      default: function () {
+        return false
+      },
+    },
+    onlyNotFinished: {
+      type: Boolean,
+      default: function () {
+        return false
+      },
+    },
+    tryCreateTask: {
+      type: Function,
+      required: true,
+    },
   },
   computed: {
     ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
-    showTask: function () {
-      this.showModal()
-    },
     addTask: function () {
-      this.showModal()
+      let formData = {
+        username: '', // todo: 当前用户名
+        taskName: this.newTaskName,
+        priority: this.priority,
+        deadline: moment().format('YYYY-MM-DD'), // today
+        description: '',
+        principal: '', //todo: 当前用户名
+      }
+
+      // todo: 交互
+      this.newTaskName = ''
     },
-    showModal: function () {
-      this.visible = true
+
+    clickTaskInfo: function (task) {
+      console.log(task)
+      console.log(task.taskId + ' is clicked')
+      this.$emit('showTaskDetail', task)
     },
+
     handleOk: function () {
       // todo: something
       this.visible = false
@@ -127,21 +144,7 @@ export default {
     onDragEnd(evt) {
       this.$emit('end', evt)
     },
-    moveTask: function (evt) {
-      if (
-        this.projectAdminName !== this.username &&
-        evt.draggedContext.element.principal !== this.username
-      )
-        return false
-
-      const fromStatus = (evt.from.dataset || evt.from.querySelector('.data-span').dataset).status
-      const toStatus = (evt.to.dataset || evt.to.querySelector('.data-span').dataset).status
-
-      console.log(fromStatus, toStatus)
-
-      if (toStatus === fromStatus) return true
-      if (toStatus === '已逾期' || (fromStatus === '已逾期' && toStatus === '开发中')) return false
-
+    moveTask: function (evt, originalEvt) {
       this.setTask(evt.draggedContext.element)
       return true
     },
