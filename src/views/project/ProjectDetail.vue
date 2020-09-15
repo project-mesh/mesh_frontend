@@ -26,6 +26,7 @@ export default {
         { key: 'taskBoard', tab: '看板' },
         { key: 'projectRepo', tab: '知识库' },
         { key: 'statistics', tab: '统计' },
+        { key: 'projectMember', tab: '成员' },
       ],
       activeKey: 'taskList',
     }

@@ -111,7 +111,6 @@ export const asyncRouterMap = [
                 meta: {
                   title: '统计',
                   keepAlive: true,
-                  icon: 'bar-chart',
                   permission: ['user'],
                 },
               },
@@ -130,12 +129,12 @@ export const asyncRouterMap = [
               },
               // 公告
               {
-                path: '/project/detail/bulletins',
-                name: 'bulletins',
+                path: '/project/detail/members',
+                name: 'projectMember',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/project/projectDetails/bulletins/Bulletins'),
+                component: () => import('@/views/project/projectDetails/members/Members'),
                 meta: {
-                  title: '公告',
+                  title: '成员',
                   keepAlive: true,
                   permission: ['user'],
                 },
