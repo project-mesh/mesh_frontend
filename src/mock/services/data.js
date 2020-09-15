@@ -163,7 +163,7 @@ const users = [
     birthday: random.date('yyyy-MM-dd'),
     gender: 1,
     description: '@csentence',
-    status: random.natural(0, 8),
+    status: random.natural(1, 7),
   }),
   Mock.mock({
     username: 'zengze',
@@ -182,7 +182,7 @@ const users = [
     birthday: random.date('yyyy-MM-dd'),
     gender: 1,
     description: '@csentence',
-    status: random.natural(0, 8),
+    status: random.natural(1, 7),
   }),
 ]
 
@@ -231,9 +231,9 @@ for (let i = 0; i < 28; ++i) {
       address: random.county(true),
       nickname: random.cname(),
       birthday: random.date('yyyy-MM-dd'),
-      gender: random.integer(-1, 1),
+      gender: random.integer(0, 2),
       description: '@csentence',
-      status: random.natural(0, 8),
+      status: random.natural(1, 7),
     })
   )
 }
