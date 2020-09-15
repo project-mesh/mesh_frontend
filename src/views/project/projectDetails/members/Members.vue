@@ -1,92 +1,169 @@
 <template>
-  <a-table :columns="columns" :data-source="data">
-    <a slot="name" slot-scope="text">{{ text }}</a>
-    <span slot="customTitle">
-      <a-icon type="smile-o" />
-      成员名
+  <a-table
+    :columns="columns"
+    row-key="username"
+    :data-source="teamMembers"
+    :pagination="pagination(teamMembers)"
+    @change="onChange"
+  >
+    <span slot="username" slot-scope="text, item">
+      <a-avatar shape="circle" :src="item.avatar" />
+      <a-popover title="成员任务">
+        <a-list
+          v-if="projectMemberTask(item.username).length"
+          size="small"
+          slot="content"
+          :data-source="projectMemberTask(item.username)"
+        >
+          <a-list-item slot="renderItem" slot-scope="task">
+            <router-link :to="{ name: 'taskBoard', query: { teamId, projectId: task.projectId } }">
+              {{ task.taskName }}
+            </router-link>
+          </a-list-item>
+        </a-list>
+        <span v-else slot="content">该成员暂无任务</span>
+        <a style="margin-left: 10px">{{ item.username }}</a>
+      </a-popover>
     </span>
-    <span slot="tags" slot-scope="tags">
-      <a-tag
-        v-for="tag in tags"
-        :key="tag"
-        :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
-      >
-        {{ tag.toUpperCase() }}
-      </a-tag>
-    </span>
-    <span slot="action" slot-scope="text, record">
-      <a>Invite 一 {{ record.name }}</a>
-      <a-divider type="vertical" />
-      <a>Delete</a>
-      <a-divider type="vertical" />
-      <a class="ant-dropdown-link">
-        More actions
-        <a-icon type="down" />
-      </a>
+    <span slot="job" slot-scope="text, item">
+      <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
     </span>
   </a-table>
 </template>
 <script>
-const columns = [
-  {
-    dataIndex: 'name',
-    key: 'name',
-    slots: { title: 'customTitle' },
-    scopedSlots: { customRender: 'name' },
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-  },
-  {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    scopedSlots: { customRender: 'tags' },
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
-]
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-]
-
+import { mapGetters, mapActions } from 'vuex'
+import teamMixin from '@/utils/mixins/teamMixin'
+import pagination from '@/utils/mixins/paginationMixin'
+import paginationMixin from '@/utils/mixins/paginationMixin'
 export default {
+  name: 'StandardList',
+  mixins: [teamMixin, paginationMixin],
   data() {
     return {
-      data,
-      columns,
+      status: 'all',
+      year: null,
+      month: null,
+      day: null,
+      modalVisible: false,
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 7 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 13 },
+      },
+      form: this.$form.createForm(this),
+      users: [],
+      userListVisible: false,
+      loading: false,
+      keyword: '',
+      selectedUsername: '',
+      radioStyle: {
+        display: 'block',
+        height: '30px',
+        lineHeight: '30px',
+      },
+      inviting: false,
     }
+  },
+  computed: {
+    ...mapGetters([
+      'username',
+      'teamMembers',
+      'teamAdminName',
+      'teamName',
+      'teamCreateTime',
+      'teams',
+      'teamId',
+      'teamTasks',
+    ]),
+    columns() {
+      const columns = [
+        {
+          title: '成员',
+          dataIndex: 'username',
+          key: 'username',
+          scopedSlots: { customRender: 'username' },
+          ellipsis: true,
+          sorter: (a, b) => a.username < b.username,
+        },
+        {
+          title: '职位',
+          key: 'job',
+          scopedSlots: { customRender: 'job' },
+          ellipsis: true,
+          filters: [
+            {
+              text: '管理员',
+              value: '管理员',
+            },
+            {
+              text: '组员',
+              value: '组员',
+            },
+          ],
+          onFilter: (value, record) => {
+            if (value == '管理员') {
+              return record.username === this.teamAdminName
+            } else {
+              return record.username !== this.teamAdminName
+            }
+          },
+        },
+      ]
+      return columns
+    },
+  },
+  methods: {
+    ...mapActions(['queryUser', 'joinTeam']),
+    addmember() {},
+    dateChange(timeDate) {
+      var date = new Date(timeDate) //获取一个时间对象
+      this.year = date.getFullYear()
+      this.month = date.getMonth() + 1
+      this.day = date.getDate()
+    },
+    isTeamMember(user) {
+      return this.teamMembers.findIndex((member) => member.username === user.username) !== -1
+    },
+    onSearch() {
+      this.userListVisible = true
+      this.loading = true
+      this.queryUser({
+        username: this.username,
+        keyword: this.keyword,
+      })
+        .then((res) => {
+          const { data } = res
+          if (data.isSuccess) {
+            this.users = data.users
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    hideModal() {
+      this.modalVisible = false
+      this.userListVisible = false
+      this.loading = false
+      this.users = []
+    },
+    projectMemberTask(username) {
+      return this.teamTasks.filter((task) => task.principal === username)
+    },
+    onChange(pagination, filters, sorter) {
+      console.log('params', pagination, filters, sorter)
+    },
+  },
+  mounted() {
+    if (!this.teams || this.teams.length === 0) {
+      this.$router.replace({ name: 'noTeam' })
+    }
+  },
+  created() {
+    this.dateChange(this.teamCreateTime)
   },
 }
 </script>
