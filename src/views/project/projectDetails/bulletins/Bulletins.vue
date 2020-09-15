@@ -1,7 +1,7 @@
 <template>
   <a-card :bordered="false" :loading="cardLoading">
     <div slot="extra">
-      <a-button :disabled="username !== projectAdminName" type="primary">
+      <a-button :disabled="username !== projectAdminName" type="primary" @click="newBulletin">
         发布新公告
         <a-icon type="notification" />
       </a-button>
@@ -17,6 +17,17 @@
     >
       <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
     </a-modal>
+    <a-modal
+      :width="700"
+      centered
+      :visible="newVisible"
+      :confirm-loading="newConfirmLoading"
+      title="发布"
+      @ok="handleNewOk"
+      @cancel="handleNewCancel"
+    >
+      <NewForm :record="selectedItem" ref="newForm"></NewForm>
+    </a-modal>
     <a-list
       size="large"
       :data-source="bulletinWithFormatedCreateTime"
@@ -26,7 +37,6 @@
         <a-list-item-meta :description="bulletin.description">
           <a slot="title">{{ bulletin.bulletinName }}</a>
         </a-list-item-meta>
-        <div class="unread">.</div>
         <div slot="actions">
           <a @click="edit(bulletin)">详情</a>
           <a-divider type="vertical" />
@@ -42,6 +52,7 @@
 
 <script>
 import TaskForm from './TaskForm'
+import NewForm from './NewForm'
 import { formatDateByPattern } from '@/utils/dateUtil'
 import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
@@ -52,12 +63,15 @@ import _ from 'lodash'
 export default {
   components: {
     TaskForm,
+    NewForm,
   },
   mixins: [teamMixin, projectMixin, paginationMixin],
   data() {
     return {
       visible: false,
       confirmLoading: false,
+      newVisible: false,
+      newConfirmLoading: false,
       selectedItem: null,
       deleteLoading: [],
     }
@@ -81,6 +95,9 @@ export default {
     edit(bulletin) {
       this.selectedItem = bulletin
       this.visible = true
+    },
+    newBulletin() {
+      this.newVisible = true
     },
     removeBulletin(bulletin, index) {
       this.$set(this.deleteLoading, index, true)
@@ -114,8 +131,14 @@ export default {
           this.confirmLoading = false
         })
     },
+    handleNewOk() {
+      this.newVisible = false
+    },
     handleCancel() {
       this.visible = false
+    },
+    handleNewCancel() {
+      this.newVisible = false
     },
   },
   mounted() {
@@ -127,12 +150,5 @@ export default {
 <style lang="less" scoped>
 div.ant-col.ant-col-md-24.ant-col-lg-17 {
   width: 200px;
-}
-.unread {
-  color: red;
-  margin-top: -7%;
-  right: 0%;
-  position: absolute;
-  font-size: 50px;
 }
 </style>
