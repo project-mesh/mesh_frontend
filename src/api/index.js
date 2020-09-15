@@ -59,7 +59,7 @@ const apiMap = {
   },
   queryNotification: {
     url: '/notification',
-    method: 'post',
+    method: 'get',
   },
   preferenceShowMode: {
     url: '/preference/show-mode',

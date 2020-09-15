@@ -1,6 +1,6 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
-  <a-card class="task-list" style="display: inline-block" :title="status">
+  <a-card class="task-list" :title="status">
     <a-modal
       centered
       :width="700"
@@ -21,7 +21,12 @@
       @start="onDragStart"
       @end="onDragEnd"
     >
-      <transition-group :data-status="status" type="transition" :name="!drag ? 'flip-list' : null">
+      <transition-group
+        class="data-span"
+        :data-status="status"
+        type="transition"
+        :name="!drag ? 'flip-list' : null"
+      >
         <div
           class="task-info"
           v-for="(task, taskIndex) in tasks"
@@ -31,7 +36,15 @@
           <task-info :task="task"></task-info>
         </div>
       </transition-group>
-      <a-button slot="footer" block type="primary" @click="addTask">+ 任务</a-button>
+      <a-button
+        :disabled="username !== projectAdminName"
+        slot="footer"
+        block
+        type="primary"
+        @click="addTask"
+      >
+        + 任务
+      </a-button>
     </draggable>
   </a-card>
 </template>
@@ -40,7 +53,7 @@
 import draggable from 'vuedraggable'
 import TaskInfo from './TaskInfo'
 import ShowTaskForm from './ShowTaskForm'
-import { mapGetters, vuex } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -84,11 +97,6 @@ export default {
     },
   },
   computed: {
-    // dragOptions() {
-    //   return {
-    //     animation: 200,
-    //   }
-    // },
     ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
@@ -119,18 +127,20 @@ export default {
     onDragEnd(evt) {
       this.$emit('end', evt)
     },
-    moveTask: function (evt, originalEvt) {
+    moveTask: function (evt) {
       if (
         this.projectAdminName !== this.username &&
         evt.draggedContext.element.principal !== this.username
       )
         return false
 
-      if (
-        evt.to.dataset.status === '已逾期' ||
-        (evt.from.dataset.status === '已逾期' && evt.to.dataset.status === '开发中')
-      )
-        return false
+      const fromStatus = (evt.from.dataset || evt.from.querySelector('.data-span').dataset).status
+      const toStatus = (evt.to.dataset || evt.to.querySelector('.data-span').dataset).status
+
+      console.log(fromStatus, toStatus)
+
+      if (toStatus === fromStatus) return true
+      if (toStatus === '已逾期' || (fromStatus === '已逾期' && toStatus === '开发中')) return false
 
       this.setTask(evt.draggedContext.element)
       return true
@@ -139,7 +149,7 @@ export default {
 }
 </script>
 <style>
-.task-list {
+.task-column {
   display: inline-block;
   vertical-align: top;
   width: 100%;

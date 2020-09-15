@@ -79,7 +79,7 @@ const user = {
 
   actions: {
     // 登录
-    Login({ commit }, userInfo) {
+    Login({ commit, state }, userInfo) {
       return new Promise((resolve, reject) => {
         sendRequest('login', userInfo)
           .then((res) => {

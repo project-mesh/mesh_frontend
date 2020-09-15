@@ -1,20 +1,20 @@
 <template>
-  <a-card :bordered="false" :body-style="{ padding: 0 }" :loading="boardLoading">
+  <a-card :bordered="false" :body-style="bodyStyle" :loading="boardLoading">
     <a-row :gutter="[8, 8]">
       <a-col :span="8" v-for="(taskListWithStatus, taskListIndex) in tasks" :key="taskListIndex">
-        <task-list
+        <task-column
           :tasks="taskListWithStatus.tasks"
           :status="taskListWithStatus.status"
           :set-task="setSelectedTask"
           @end="onDragEnd"
-          ghost-class="task-list"
-        ></task-list>
+          ghost-class="task-column"
+        ></task-column>
       </a-col>
     </a-row>
   </a-card>
 </template>
 <script>
-import TaskList from './TaskList'
+import TaskColumn from './TaskColumn'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import { mapGetters, mapActions } from 'vuex'
@@ -22,7 +22,7 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   components: {
     //调用组件
-    TaskList,
+    TaskColumn,
   },
   mixins: [teamMixin, projectMixin],
   data() {
@@ -31,6 +31,10 @@ export default {
       drag: false,
       taskListGroup: {
         name: 'taskList',
+      },
+      bodyStyle: {
+        padding: 0,
+        minHeight: '1000px',
       },
       form: this.$form.createForm(this),
       boardLoading: false,
@@ -52,7 +56,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username', 'projectId']),
+    ...mapGetters(['username', 'projectId', 'projectTasks']),
   },
   methods: {
     ...mapActions(['queryProjectTasks', 'updateTask']),
@@ -87,25 +91,34 @@ export default {
     },
   },
   mounted() {
-    this.boardLoading = true
-    this.queryProjectTasks({
-      username: this.username,
-      projectId: this.$route.query.projectId,
-    })
-      .then((res) => {
-        const { tasks: resTasks } = res.data
+    if (!this.projectTasks || this.projectTasks.length === 0) {
+      this.boardLoading = true
 
-        resTasks.forEach((task) => {
-          this.tasks.find((taskList) => taskList.status === task.status).tasks.push(task)
-        })
+      this.queryProjectTasks({
+        username: this.username,
+        projectId: this.$route.query.projectId,
       })
-      .catch((err) => {
-        this.$notification.error({
-          message: '查询项目任务失败',
-          description: err.message,
+        .then((res) => {
+          const { tasks: resTasks } = res.data
+
+          resTasks.forEach((task) => {
+            this.tasks.find((taskList) => taskList.status === task.status).tasks.push(task)
+          })
         })
+        .catch((err) => {
+          this.$notification.error({
+            message: '查询项目任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => (this.boardLoading = false))
+    } else {
+      this.projectTasks.forEach((task) => {
+        this.tasks.find((taskList) => taskList.status === task.status).tasks.push(task)
       })
-      .finally(() => (this.boardLoading = false))
+    }
+
+    this.$emit('load', 'taskBoard')
   },
 }
 </script>

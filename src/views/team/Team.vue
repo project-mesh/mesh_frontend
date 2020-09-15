@@ -58,7 +58,7 @@
       @ok="handleOk"
       :ok-button-props="{
         props: {
-          disabled: !selectedUsername,
+          disabled: !selectedUsers || selectedUsers.length === 0,
           loading: inviting,
         },
       }"
@@ -74,18 +74,23 @@
           <div v-if="loading" class="loading-container">
             <a-spin />
           </div>
-          <a-radio-group v-else-if="users.length" v-model="selectedUsername">
-            <a-radio
+          <a-select
+            mode="multiple"
+            v-else-if="users.length"
+            placeholder="添加你想邀请的成员"
+            v-model="selectedUsers"
+            style="width: 100%"
+          >
+            <a-select-option
               v-for="user in users"
               :key="user.username"
-              :style="radioStyle"
               :value="user.username"
               :disabled="isTeamMember(user)"
             >
               <a-avatar size="small" :src="user.avatar" />
               <span style="margin-left: 10px; vertical-align: baseline">{{ user.username }}</span>
-            </a-radio>
-          </a-radio-group>
+            </a-select-option>
+          </a-select>
           <div v-else style="color: red; text-align: center">无匹配用户</div>
         </div>
       </a-form>
@@ -120,13 +125,13 @@ export default {
       userListVisible: false,
       loading: false,
       keyword: '',
-      selectedUsername: '',
       radioStyle: {
         display: 'block',
         height: '30px',
         lineHeight: '30px',
       },
       inviting: false,
+      selectedUsers: [],
     }
   },
   computed: {
@@ -145,7 +150,7 @@ export default {
     ...mapActions(['queryUser', 'joinTeam']),
     addmember() {},
     dateChange(timeDate) {
-      var date = new Date(timeDate) //获取一个时间对象
+      const date = new Date(timeDate) //获取一个时间对象
       this.year = date.getFullYear()
       this.month = date.getMonth() + 1
       this.day = date.getDate()
@@ -177,24 +182,39 @@ export default {
     },
     handleOk() {
       this.inviting = true
-      this.joinTeam({
-        teamId: this.teamId,
-        username: this.selectedUsername,
-      })
-        .then(() => {
-          console.log('邀请新成员成功')
-        })
-        .catch((err) => {
-          this.$notification.error({
-            message: '邀请新成员失败',
-            description: err.message,
+
+      if (!this.selectedUsers || this.selectedUsers.length === 0) return this.hideModal()
+
+      const promises = []
+
+      this.selectedUsers.forEach((username) =>
+        promises.push(
+          this.joinTeam({
+            username,
+            teamId: this.teamId,
           })
-        })
-        .finally(() => {
-          this.inviting = false
-          this.selectedUsername = ''
-          this.hideModal()
-        })
+        )
+      )
+
+      if (promises.length) {
+        return Promise.all(promises)
+          .then(() => {
+            console.log('add team members success!, new members: ', this.selectedUsers)
+          })
+          .catch((err) => {
+            this.$notification.error({
+              message: '成功添加新团队成员',
+              description: err.message,
+            })
+          })
+          .finally(() => {
+            this.inviting = false
+            this.hideModal()
+          })
+      }
+
+      this.inviting = false
+      this.hideModal()
     },
     teamMemberTask(username) {
       return this.teamTasks.filter((task) => task.principal === username)

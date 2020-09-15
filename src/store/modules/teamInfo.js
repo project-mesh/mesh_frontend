@@ -5,7 +5,7 @@ import store from '@/store'
 
 const teamInfo = {
   state: {
-    teamId: -1,
+    teamId: '',
     createTime: 0,
     teamName: '',
     adminName: '',

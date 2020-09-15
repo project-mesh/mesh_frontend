@@ -72,7 +72,7 @@ export const asyncRouterMap = [
                 path: '/project/detail/task-list',
                 name: 'taskList',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
+                component: () => import('@/views/project/projectDetails/TaskList'),
                 meta: {
                   keepAlive: true,
                   title: '任务列表',
@@ -95,7 +95,7 @@ export const asyncRouterMap = [
                 path: '/project/detail/task-board',
                 name: 'taskBoard',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/project_view/ProjectView'),
+                component: () => import('@/views/project/projectDetails/taskBoard/TaskBoard'),
                 meta: {
                   title: '任务看板',
                   keepAlive: true,
