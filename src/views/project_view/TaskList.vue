@@ -21,7 +21,7 @@
             :key="taskIndex"
             :task="task"
             @update-task="updateTaskData"
-            @click.native="selectTask"
+            @click.native="selectTask(task)"
           ></task-info>
         </transition-group>
         <div slot="footer">
@@ -121,6 +121,7 @@ export default {
   },
   methods: {
     selectTask: function (task) {
+      console.log(task)
       this.$emit('select-task', task)
     },
     updateTaskData: function (task, key, value) {
@@ -136,18 +137,14 @@ export default {
       if (this.movingTask) {
         this.$message.info(
           this.movingTask.taskName +
-            ' is moved from ' +
-            this.movingTask.priority +
-            ' to ' +
-            this.targetPriority
+            ' 的优先级由 ' +
+            priorityMarks[this.movingTask.priority].label +
+            ' 变更为 ' +
+            priorityMarks[this.targetPriority].label
         )
         this.$emit('update-task', this.movingTask, 'priority', this.targetPriority)
         this.movingTask.priority = this.targetPriority
         this.$emit('update:tasks', this.tasks) // [INFO] 这步是为了和父组件的，重组后的tasks同步,和后端数据无关，
-        console.log(this.priority + ':')
-        for (var item of this.tasks) {
-          console.log(item.priority)
-        }
         this.movingTask = null
         this.targetPriority = null
       }

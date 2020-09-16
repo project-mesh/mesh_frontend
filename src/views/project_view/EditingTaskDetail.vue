@@ -69,6 +69,7 @@
 </template>
 
 <script>
+import { priorityMarks } from './common/priority'
 export default {
   props: {
     visible: {
@@ -80,20 +81,15 @@ export default {
   },
   data() {
     return {
+      priorityMarks: priorityMarks,
       form: this.$form.createForm(this),
-      labelCol: { lg: { span: 4 }, sm: { span: 2 } },
-      wrapperCol: { lg: { span: 16 }, sm: { span: 12 } },
+      labelCol: { lg: { span: 6 }, sm: { span: 4 } },
+      wrapperCol: { lg: { span: 18 }, sm: { span: 12 } },
       projectMembers: [
         { username: '王泽钜', avatar: 'xxxxxxx' },
         { username: '刘学迪', avatar: 'xxxxxxxx' },
         { username: '王新宇', avatar: 'xxxxxxxxxxx' },
       ],
-      priorityMarks: {
-        0: { label: '较低', color: 'blue' },
-        1: { label: '普通', color: 'green' },
-        2: { label: '较高', color: 'yellow' },
-        3: { label: '极高', color: 'red' },
-      },
     }
   },
   methods: {
@@ -107,7 +103,7 @@ export default {
       })
     },
     close: function () {
-      this.visible = false
+      this.$emit('change-drawer', '')
     },
   },
 }

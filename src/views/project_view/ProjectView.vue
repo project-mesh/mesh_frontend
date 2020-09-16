@@ -2,13 +2,18 @@
   <div>
     <task-detail
       :task="selectedTask"
-      :visible="detailDrawerVisible"
-      @edit="enterEditingMode"
+      :visible="drawerMode === 'detail'"
       @update-task="updateTaskData"
+      @delete-task="deleteTaskData"
+      @update-sub-task="updateSubTaskData"
+      @delete-sub-task="deleteSubTaskData"
+      @create-sub-task="createSubTaskData"
+      @change-drawer="changeDrawer"
     ></task-detail>
     <editing-task-detail
-      :visible="editingDrawerVisible"
+      :visible="drawerMode === 'editing'"
       @edit="enterEditingMode"
+      @change-drawer="changeDrawer"
     ></editing-task-detail>
     <span
       style="
@@ -66,10 +71,11 @@ export default {
 
   data() {
     return {
+      drawerMode: '', // 'detail'/'editing'/ ''
+      isEditingMode: false,
       onlyNotFinished: false,
       onlyViewMine: false,
       detailDrawerVisible: false,
-      editingDrawerVisible: false,
       drag: false,
       taskListGroup: {
         name: 'taskList',
@@ -102,12 +108,38 @@ export default {
   },
   methods: {
     ...mapActions(['queryProjectTasks', 'updateTask']),
-    // 筛选器
+    // CRUD task
     updateTaskData(task, key, value) {
       task[key] = value
-      // 用来交互
-      // refresh this.task
+      // todo 交互
     },
+    deleteTaskData(task) {
+      const taskArr = this.tasks[task.priority].tasks
+      const toDeleteIndex = taskArr.indexOf(taskArr.find((t) => t.taskId == task.taskId))
+      taskArr.splice(toDeleteIndex, 1)
+      // todo 交互
+    },
+
+    // CRUD sub task
+    createSubTaskData(task, formData) {
+      // todo todo todo
+      // todo 交互
+      task.subTasks.push(formData)
+    },
+    updateSubTaskData(task, subTask, key, value) {
+      subTask[key] = value
+      // todo 交互
+    },
+    deleteSubTaskData(task, subTask) {
+      const subTaskArr = task.subTasks
+      const toDeleteIndex = subTaskArr.indexOf(
+        subTaskArr.find((t) => t.taskName == subTask.taskName)
+      )
+      subTaskArr.splice(toDeleteIndex, 1)
+      // todo 交互
+    },
+
+    // 筛选器
     onOnlyNotFinishedChange(e) {
       this.onlyNotFinished = e.target.checked
     },
@@ -115,17 +147,7 @@ export default {
     onOnlyViewMineChange(e) {
       this.onlyViewMine = e.target.checked
     },
-    //
-    closeIndifferentTextarea(priority) {
-      // todo : 新建时关闭其他列表，需要兄弟间传值
-    },
-    // 抽屉相关
-    showTaskDetail(task) {
-      this.setSelectedTask(task)
-      if (this.selectedTask) {
-        this.detailDrawerVisible = true
-      }
-    },
+    // 拖动相关
     changeTaskPriority(task, oldPriority, newPriority) {
       const taskId = task.taskId
       task.priority = newPriority
@@ -133,46 +155,20 @@ export default {
       delete this.tasks[oldPriority].find((task) => task.taskId == taskId)
       console.log(this.tasks)
     },
+    // 抽屉相关
+    showTaskDetail(task) {
+      this.setSelectedTask(task)
+      if (this.selectedTask) {
+        console.log(task)
+        this.drawerMode = 'detail'
+      }
+    },
     setSelectedTask(task) {
       this.selectedTask = task
     },
-    enterEditingMode(isEditingMode) {
-      console.log(isEditingMode)
-      this.detailDrawerVisible = false
-      if (isEditingMode) {
-        this.editingDrawerVisible = true
-      } else {
-        this.editingDrawerVisible = false
-      }
-    },
-    onDragEnd($event) {
-      const toPriority = $event.to.dataset.priority
-      const fromPriority = $event.from.dataset.priority
-      // todo: 发送请求
-      /*
-      if (toPriority !== fromPriority && this.selectedTask) {
-        let isFinished = (toPriority === this.selectedTask.isFinished = isFinished)
-        this.selectedTask.priority = toPriority
-        // todo:
-        const requestData = {
-          username: this.username,
-          projectId: this.projectId,
-          taskId: this.selectedTask.taskId,
-          isFinished,
-        }
 
-        this.updateTask(requestData)
-          .then(() => {
-            console.log('updateTask success')
-          })
-          .catch((err) => {
-            this.$notification.error({
-              message: '更新任务信息失败',
-              description: err.message,
-            })
-          })
-      }
-      */
+    changeDrawer(mode) {
+      this.drawerMode = mode
     },
   },
   mounted() {

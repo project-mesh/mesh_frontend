@@ -1,7 +1,7 @@
 <template>
   <a-drawer :title="task.taskName" width="540" :closable="true" :visible="visible" @close="close">
     <a-card>
-      <a-descriptions class="drawer-content" size="large" :column="3">
+      <a-descriptions class="drawer-content" :column="3">
         <a-descriptions-item label="创建者">{{ task.founder }}</a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
           {{ task.createTime | dateFilter }}
@@ -11,13 +11,31 @@
         <a-descriptions-item label="截止日期" span="2" contenteditable="true">
           {{ task.deadline }}
         </a-descriptions-item>
-        <a-descriptions-item label="优先级" span="1">{{ task.priority }}</a-descriptions-item>
-        <a-descriptions-item label="描述" span="3">{{ task.description }}</a-descriptions-item>
+        <a-descriptions-item label="优先级" span="3">
+          {{ task.priority | formatPriority }}
+        </a-descriptions-item>
+        <a-descriptions-item label="描述" span="3">
+          {{ task.description }}
+        </a-descriptions-item>
         <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
       </a-descriptions>
-      <sub-task-list v-model="subTasks" />
+      <sub-task-list
+        :task-id="task.taskId"
+        :sub-tasks="task.subTasks"
+        @update-sub-task="updateSubTask"
+        @delete-sub-task="deleteSubTask"
+        @create-sub-task="createSubTask"
+      />
       <template slot="actions" class="ant-card-actions">
-        <a-icon key="delete" type="delete" @click="deleteTask(task)" />
+        <a-popconfirm
+          title="确认删除该任务？"
+          ok-text="确认"
+          cancel-text="取消"
+          @confirm="deleteTask"
+        >
+          <a-icon key="delete" type="delete" />
+        </a-popconfirm>
+
         <a-icon key="edit" type="edit" @click="editTask(task)" />
         <a-icon
           key="check-square"
@@ -30,6 +48,7 @@
 </template>
 <script>
 import SubTaskList from './SubTaskList'
+import { priorityMarks } from './common/priority'
 export default {
   components: {
     SubTaskList,
@@ -37,28 +56,7 @@ export default {
   data() {
     return {
       activeKey: [],
-      newSubTaskName: '',
-      task: this.rawTask,
-      subTasks: [
-        {
-          taskId: 'aklgnlkzzzld',
-          taskName: '子任务名',
-          isFinished: true,
-          createTime: '16546513231',
-          description: '子任务描述',
-          founder: '子任务创建者',
-          principal: '子任务负责人',
-        },
-        {
-          taskId: 'aklgnlkjsald',
-          taskName: '子任名2',
-          isFinished: false,
-          createTime: '1654653445',
-          description: '子任务描述2',
-          founder: '子任务创建者2',
-          principal: '子任务负责人2',
-        },
-      ],
+      priorityMarks: priorityMarks,
     }
   },
   props: {
@@ -69,7 +67,7 @@ export default {
       },
     },
 
-    rawTask: {
+    task: {
       type: Object,
       default: function () {
         return {
@@ -101,6 +99,15 @@ export default {
     changeTaskFinishingStatus: function () {
       this.$emit('update-task', this.task, 'isFinished', !this.task.isFinished)
     },
+    deleteTask: function () {
+      this.$emit('delete-task', this.task)
+      this.close()
+      this.$message.info('删除成功')
+    },
+    editTask: function (task) {
+      this.$message.warning('进入编辑模式')
+      this.$emit('change-drawer', 'editing')
+    },
 
     finishEditing: function () {
       if (this.newSubTaskName) {
@@ -108,6 +115,23 @@ export default {
         this.addTask()
       }
     },
+
+    createSubTask: function (formData) {
+      this.$message.info('新建' + formData)
+      formData['taskId'] = this.task.taskId
+      this.$emit('create-sub-task', this.task, formData)
+    },
+
+    updateSubTask: function (subTask, key, value) {
+      this.$message.info('修改' + key)
+      this.$emit('update-sub-task', this.task, subTask, key, value)
+    },
+
+    deleteSubTask: function (subTask) {
+      this.$message.info('删除')
+      this.$emit('delete-sub-task', this.task, subTask)
+    },
+
     exitEditing: function () {
       this.newTaskName = ''
     },
@@ -123,17 +147,12 @@ export default {
     },
 
     finishSubTask: function (task) {},
-    editTask: function (task) {
-      this.$message.warning('进入编辑模式')
-      this.$emit('edit', true)
-    },
-    deleteTask: function (task) {
-      this.$message.warning('确认删除？')
-      //todo: 通信
-    },
     close: function () {
-      this.visible = false
+      this.$emit('change-drawer', '')
     },
+  },
+  filters: {
+    formatPriority: (priority) => priorityMarks[priority].label,
   },
 }
 </script>

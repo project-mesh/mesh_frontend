@@ -8,7 +8,7 @@
       <div slot="extra">
         <a-icon
           class="panel-icon"
-          @click="deletSubTask($event, subTask, subTaskIndex)"
+          @click="removeSubTask($event, subTask, subTaskIndex)"
           key="sub-delete"
           type="delete"
         />
@@ -25,27 +25,15 @@
           :type="subTask.isFinished ? 'check-square' : 'border'"
         />
       </div>
-      <a-descriptions v-if="!isEditing" class="drawer-content" size="small" column="3">
-        <a-descriptions-item label="创建者">{{ subTask.founder }}</a-descriptions-item>
-        <a-descriptions-item label="创建时间" span="2">
+      <a-descriptions v-if="!isEditing" class="drawer-content" size="small" column="4">
+        <a-descriptions-item label="创建者" span="2">{{ subTask.founder }}</a-descriptions-item>
+        <a-descriptions-item label="负责人" span="2">{{ subTask.principal }}</a-descriptions-item>
+        <a-descriptions-item label="创建时间" span="4">
           {{ subTask.createTime | dateFilter }}
         </a-descriptions-item>
-
-        <a-descriptions-item label="负责人">{{ subTask.principal }}</a-descriptions-item>
-        <a-descriptions-item label="已完成" span="2">
-          {{ subTask.isFinished ? '是' : '否' }}
-        </a-descriptions-item>
-        <a-descriptions-item label="描述" span="3">{{ subTask.description }}</a-descriptions-item>
+        <a-descriptions-item label="描述" span="4">{{ subTask.description }}</a-descriptions-item>
       </a-descriptions>
       <a-form v-else :form="form">
-        <a-form-item label="名称" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-input
-            v-decorator="['taskName', { rules: [{ required: true, message: '请输入子任务名称' }] }]"
-            name="taskName"
-            placeholder="请输入子任务名称"
-          />
-        </a-form-item>
-
         <a-form-item
           label="负责人"
           :label-col="labelCol"
@@ -62,7 +50,12 @@
             </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="描述" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-item
+          label="描述"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
+          @click="this.isEditing = false"
+        >
           <a-textarea
             rows="1"
             placeholder="请输入该子任务的详细描述"
@@ -74,7 +67,6 @@
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 24 }" style="text-align: center">
           <a-button html-type="submit" type="primary">提交</a-button>
-          <a-button style="margin-left: 8px">保存</a-button>
         </a-form-item>
       </a-form>
     </a-collapse-panel>
@@ -82,34 +74,45 @@
       <a-input
         v-model="newSubTaskName"
         slot="header"
-        placeholder="按enter添加 按esc退出"
-        @keypress.enter="finishEditing"
-        @keypress.esc="exitEditing"
-        @blur="exitEditing"
+        placeholder="按enter添加 点击其他地方退出"
+        @keypress.enter="finishAdding"
+        @keypress.esc="exitAdding"
+        @blur="exitAdding"
       ></a-input>
     </a-collapse-panel>
   </a-collapse>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
-  model: {
-    prop: 'subTasks',
-    event: 'update-sub-task',
-  },
   data() {
     return {
-      labelCol: { lg: { span: 4 }, sm: { span: 2 } },
+      labelCol: { lg: { span: 6 }, sm: { span: 4 } },
       wrapperCol: { lg: { span: 16 }, sm: { span: 12 } },
 
       isEditing: false,
       activeKey: [],
       newSubTaskName: '',
+      defaultSubTask: {
+        taskId: 'aklgnlkzzzld',
+        taskName: '子任务名',
+        isFinished: true,
+        createTime: '16546513231',
+        description: '子任务描述',
+        founder: '子任务创建者',
+        principal: '子任务负责人',
+      },
     }
   },
   props: {
+    taskId: {
+      type: String,
+      required: true,
+    },
     subTasks: {
       type: Array,
+      required: true,
       default: function () {
         return [
           {
@@ -121,39 +124,61 @@ export default {
             founder: '子任务创建者',
             principal: '子任务负责人',
           },
-          {
-            taskId: 'aklgnlkjsald',
-            taskName: '子任务名2',
-            isFinished: false,
-            createTime: '1654653445',
-            description: '子任务描述2',
-            founder: '子任务创建者2',
-            principal: '子任务负责人2',
-          },
         ]
       },
     },
   },
+  computed: {
+    ...mapGetters(['username', 'projectId']),
+  },
   methods: {
-    deleteSubTask: function (event, subTask, subTaskIndex) {
-      event.stopPropagation()
-      this.$emit('update-sub-task', subTaskIndex)
-      this.$set(this.subTasks[subTaskIndex], 'isFinished', !subTask.isFinished)
+    createSubTask: function (formData) {
+      // 本地
+      this.subTasks.push(formData)
+
+      this.$emit('create-sub-task', formData)
     },
-    finishSubTask: function (event, subTask, subTaskIndex) {
-      event.stopPropagation()
-      this.$emit('update-sub-task', subTaskIndex)
-      this.$set(this.subTasks[subTaskIndex], 'isFinished', !subTask.isFinished)
+    updateSubTask: function (subTask, key, value) {
+      subTask[key] = value
     },
+    deleteSubTask: function (subTask) {
+      event.stopPropagation()
+      this.$emit('delete-sub-task', subTask)
+    },
+
+    removeSubTask: function (evt, subTask, subTaskIndex) {
+      event.stopPropagation()
+      // 本地
+      this.subTasks.splice(subTaskIndex, 1)
+      this.deleteSubTask(subTask)
+    },
+    finishSubTask: function (evt, subTask, subTaskIndex) {
+      event.stopPropagation()
+      // 本地
+      subTask.isFinished = !subTask.isFinished
+      this.$emit('update-sub-task', subTask, 'isFinished', !subTask.isFinished)
+    },
+
     editSubTask: function (subTask) {
-      this.isEditing = true
+      this.isEditing = !this.isEditing
       this.$message.info(subTask.subTaskName)
     },
-    finishEditing: function () {
+
+    finishAdding: function () {
+      this.$message.info('finishAdding')
       if (this.newSubTaskName) {
-        this.$message.info('新建项目：' + this.newSubTaskName)
-        this.addTask()
+        const formData = {
+          taskName: this.newSubTaskName,
+          taskId: this.taskId,
+          description: '',
+          principal: this.username,
+        }
+        this.createSubTask(formData)
       }
+    },
+    exitAdding: function () {
+      this.$message.info('exit')
+      this.newSubTaskName = ''
     },
   },
 }
