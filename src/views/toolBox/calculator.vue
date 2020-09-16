@@ -226,7 +226,7 @@ export default {
   justify-content: space-evenly;
 }
 .equal-sign {
-  background-color: hsl(120, 100%, 25%);
+  background-color: #03a9f4;
   width: 31.5%;
 }
 .toggle-button {
