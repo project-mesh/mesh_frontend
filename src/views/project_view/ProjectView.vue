@@ -31,15 +31,15 @@
           :key="taskListIndex"
         >
           <task-list
-            :tasks="taskListWithPriority.tasks"
+            :tasks.sync="taskListWithPriority.tasks"
             :priority="taskListWithPriority.priority"
             :priority-name="taskListWithPriority.priorityName"
             :set-task="setSelectedTask"
             :only-view-mine="onlyViewMine"
             :only-not-finished="onlyNotFinished"
             @update-task="updateTaskData"
-            @end="onDragEnd"
             @select-task="showTaskDetail"
+            @change-task-priority="changeTaskPriority"
             ghost-class="task-list"
           ></task-list>
         </a-col>
@@ -126,7 +126,13 @@ export default {
         this.detailDrawerVisible = true
       }
     },
-
+    changeTaskPriority(task, oldPriority, newPriority) {
+      const taskId = task.taskId
+      task.priority = newPriority
+      this.tasks[newPriority].push(task)
+      delete this.tasks[oldPriority].find((task) => task.taskId == taskId)
+      console.log(this.tasks)
+    },
     setSelectedTask(task) {
       this.selectedTask = task
     },

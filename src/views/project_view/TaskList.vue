@@ -5,11 +5,10 @@
       <draggable
         group="taskGroup"
         :list="tasks"
-        :move="moveTask"
         :animation="200"
         :empty-insert-threshold="200"
-        @start="onDragStart"
-        @end="onDragEnd"
+        :move="moveTask"
+        @end="endMovingTask"
       >
         <transition-group type="transition" :name="!drag ? 'flip-list' : null">
           <task-info
@@ -68,9 +67,11 @@ export default {
         name: 'task',
       },
       newTaskName: '',
+      drag: false,
       modalTitle: '新建',
       confirmLoading: false,
-      drag: false,
+      movingTask: null,
+      targetPriority: null,
       priorityMarks: priorityMarks,
     }
   },
@@ -119,9 +120,40 @@ export default {
     ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
+    selectTask: function (task) {
+      this.this.$emit('select-task', task)
+    },
     updateTaskData: function (task, key, value) {
       this.$emit('update-task', task, key, value)
     },
+    moveTask: function (evt) {
+      this.movingTask = evt.draggedContext.element
+      this.targetPriority = evt.relatedContext.component.$parent.$parent.priority
+      return true
+    },
+
+    endMovingTask: function () {
+      if (this.movingTask) {
+        this.$message.info(
+          this.movingTask.taskName +
+            ' is moved from ' +
+            this.movingTask.priority +
+            ' to ' +
+            this.targetPriority
+        )
+        this.$emit('update-task', this.movingTask, 'priority', this.targetPriority)
+        this.movingTask.priority = this.targetPriority
+        this.$emit('update:tasks', this.tasks) // [INFO] 这步是为了和父组件的，重组后的tasks同步,和后端数据无关，
+        console.log(this.priority + ':')
+        for (var item of this.tasks) {
+          console.log(item.priority)
+        }
+        this.movingTask = null
+        this.targetPriority = null
+      }
+    },
+
+    // 新建任务等等
     showTextarea: function () {
       this.textareaVisible = true
       this.$emit('edit-new-task-name', this.priority)
@@ -155,10 +187,6 @@ export default {
       this.newTaskName = ''
     },
 
-    selectTask: function (task) {
-      this.$emit('select-task', task)
-    },
-
     handleOk: function () {
       // todo: something
       this.visible = false
@@ -166,20 +194,6 @@ export default {
     handleCancel: function () {
       // todo: something
       this.visible = false
-    },
-    addTag: function () {
-      this.showModal()
-    },
-    onDragStart() {
-      console.log('dragStart')
-      this.drag = true
-    },
-    onDragEnd(evt) {
-      this.$emit('end', evt)
-    },
-    moveTask: function (evt, originalEvt) {
-      this.setTask(evt.draggedContext.element)
-      return true
     },
   },
 }
