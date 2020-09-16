@@ -42,5 +42,18 @@ const joinTeam = (data) => {
   return getTeams(data)
 }
 
+const updateTeam = (data) => {
+  const currTeam = teams.find((team) => team.teamId === data.teamId)
+
+  if (!currTeam) return utils.builder({}, 0, false, 'no such team')
+
+  Object.keys(data).forEach((key) => {
+    if (key in currTeam) currTeam[key] = data[key]
+  })
+
+  return getTeams(data)
+}
+
 Mock.mock(/\/team/, 'get', utils.functionFactory(getTeams))
 Mock.mock(/\/team\/join/, 'post', utils.functionFactory(joinTeam))
+Mock.mock(/\/team/, 'patch', utils.functionFactory(updateTeam))

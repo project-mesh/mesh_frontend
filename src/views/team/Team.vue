@@ -7,8 +7,9 @@
             :text="teamName"
             :editing="teamNameEditing"
             :validators="[[isNotEmpty, '团队名不能为空']]"
+            :disabled="username !== teamAdminName"
             @change="handleRename($event)"
-            @editStatusChange="handleEditStatusChange($event)"
+            @editStatusChange="handleEditStatusChange"
           >
             <span>{{ teamName }}</span>
           </editable-cell>
@@ -71,7 +72,7 @@
       width="500px"
       centered
       @cancel="hideModal"
-      @ok="handleOk"
+      @ok="handleInviteUsers"
       :ok-button-props="{
         props: {
           disabled: !selectedUsers || selectedUsers.length === 0,
@@ -120,9 +121,9 @@ import teamMixin from '@/utils/mixins/teamMixin'
 import pagination from '@/utils/mixins/paginationMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
 import EditableCell from './EditableCell'
+import validator from 'validator'
 
 export default {
-  name: 'StandardList',
   mixins: [teamMixin, paginationMixin],
   components: {
     EditableCell,
@@ -176,7 +177,7 @@ export default {
           key: 'username',
           scopedSlots: { customRender: 'username' },
           ellipsis: true,
-          sorter: (a, b) => a.username < b.username,
+          sorter: (a, b) => (a.username < b.username ? 1 : -1),
         },
         {
           title: '职位',
@@ -206,7 +207,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryUser', 'joinTeam']),
+    ...mapActions(['queryUser', 'joinTeam', 'updateTeam']),
     addmember() {},
     dateChange(timeDate) {
       const date = new Date(timeDate) //获取一个时间对象
@@ -241,7 +242,7 @@ export default {
       this.loading = false
       this.users = []
     },
-    handleOk() {
+    handleInviteUsers() {
       this.inviting = true
 
       if (!this.selectedUsers || this.selectedUsers.length === 0) return this.hideModal()
@@ -279,12 +280,32 @@ export default {
     },
     handleRename(value) {
       console.log(value)
+      this.updateTeam({
+        username: this.username,
+        teamId: this.teamId,
+        teamName: value,
+      })
+        .then((res) => {
+          console.log('rename team success')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: 'rename team failed',
+            description: err.msg,
+          })
+        })
+        .finally(() => {
+          this.teamNameEditing = false
+        })
     },
-    handleEditStatusChange(value) {
-      console.log(value)
+    handleEditStatusChange($event) {
+      this.teamNameEditing = $event
     },
     teamMemberTask(username) {
       return this.teamTasks.filter((task) => task.principal === username)
+    },
+    isNotEmpty(value) {
+      return !validator.isEmpty(value, { ignore_whitespace: true })
     },
     onChange(pagination, filters, sorter) {
       console.log('params', pagination, filters, sorter)

@@ -37,7 +37,7 @@ import projectMixin from '@/utils/mixins/projectMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
 
 export default {
-  name: 'StandardList',
+  name: 'ProjectMembers',
   mixins: [teamMixin, projectMixin, paginationMixin],
   data() {
     return {
