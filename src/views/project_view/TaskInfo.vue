@@ -7,7 +7,7 @@
         class="icon-checkbox"
         key="check-square"
         :type="task.isFinished ? 'check-square' : 'border'"
-        @click="changeTaskFinishingStatus"
+        @click.stop="changeTaskFinishingStatus"
       />
     </div>
     <a-descriptions-item label="创建时间" span="3">

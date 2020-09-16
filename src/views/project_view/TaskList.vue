@@ -121,7 +121,7 @@ export default {
   },
   methods: {
     selectTask: function (task) {
-      this.this.$emit('select-task', task)
+      this.$emit('select-task', task)
     },
     updateTaskData: function (task, key, value) {
       this.$emit('update-task', task, key, value)
