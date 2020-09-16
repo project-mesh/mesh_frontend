@@ -1,5 +1,20 @@
 <template>
-  <a-card style="margin-top: 24px" :bordered="false" :title="teamName">
+  <a-card style="margin-top: 24px" :bordered="false">
+    <template slot="title">
+      <div>
+        <slot name="title">
+          <editable-cell
+            :text="teamName"
+            :editing="teamNameEditing"
+            :validators="[[isNotEmpty, '团队名不能为空']]"
+            @change="handleRename($event)"
+            @editStatusChange="handleEditStatusChange($event)"
+          >
+            <span>{{ teamName }}</span>
+          </editable-cell>
+        </slot>
+      </div>
+    </template>
     <div class="admin-info">
       <div style="display: inline">管理员：{{ teamAdminName }}</div>
       <div style="display: inline; margin-left: 5%">
@@ -104,10 +119,14 @@ import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
 import pagination from '@/utils/mixins/paginationMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
+import EditableCell from './EditableCell'
 
 export default {
   name: 'StandardList',
   mixins: [teamMixin, paginationMixin],
+  components: {
+    EditableCell,
+  },
   data() {
     return {
       status: 'all',
@@ -115,6 +134,7 @@ export default {
       month: null,
       day: null,
       modalVisible: false,
+      teamNameEditing: false,
       labelCol: {
         xs: { span: 24 },
         sm: { span: 7 },
@@ -256,6 +276,12 @@ export default {
 
       this.inviting = false
       this.hideModal()
+    },
+    handleRename(value) {
+      console.log(value)
+    },
+    handleEditStatusChange(value) {
+      console.log(value)
     },
     teamMemberTask(username) {
       return this.teamTasks.filter((task) => task.principal === username)
