@@ -1,25 +1,15 @@
 <template>
-  <iframe class="vue-friendly-iframe" src="http://www.baidu.com">
-    IE：你们都看我干吗，我现在也是支持的
-  </iframe>
+  <iframe class="vue-friendly-iframe" id="iframe" src="https://www.processon.com/"></iframe>
 </template>
 
-<script>
-export default {
-  name: 'KibanaMonitor',
-  data() {
-    return {
-      serverOptions: {
-        src: 'https://www.baidu.com/',
-      },
-    }
-  },
-}
-</script>
+<script></script>
 
 <style>
 .vue-friendly-iframe {
-  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  height: 1000px;
   width: 100%;
 }
 </style>
