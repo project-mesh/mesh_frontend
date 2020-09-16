@@ -20,9 +20,9 @@
               (!task.isFinished || !onlyNotFinished)
             "
             :key="taskIndex"
-            @update-task="updateTaskData"
-            @click="clickTaskInfo(task)"
             :task="task"
+            @update-task="updateTaskData"
+            @click.native="selectTask"
           ></task-info>
         </transition-group>
         <div slot="footer">
@@ -155,10 +155,8 @@ export default {
       this.newTaskName = ''
     },
 
-    clickTaskInfo: function (task) {
-      console.log(task)
-      console.log(task.taskId + ' is clicked')
-      this.$emit('showTaskDetail', task)
+    selectTask: function (task) {
+      this.$emit('select-task', task)
     },
 
     handleOk: function () {

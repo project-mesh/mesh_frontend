@@ -39,7 +39,7 @@
             :only-not-finished="onlyNotFinished"
             @update-task="updateTaskData"
             @end="onDragEnd"
-            @showTaskDetail="showTaskDetail"
+            @select-task="showTaskDetail"
             ghost-class="task-list"
           ></task-list>
         </a-col>
