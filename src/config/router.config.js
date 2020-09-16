@@ -216,6 +216,39 @@ export const asyncRouterMap = [
         ],
       },
 
+      //工具
+      //
+      {
+        path: '/toolbox',
+        name: 'toolBox',
+        component: RouteView,
+        redirect: '/toolbox/tool1',
+        meta: {
+          title: '工具箱',
+          icon: 'inbox',
+          keepAlive: true,
+          permission: ['user'],
+        },
+        children: [
+          // 个人中心
+          {
+            path: '/toolbox/tool1',
+            name: 'calculate',
+            component: () => import('@/views/toolBox/CalculateCard'),
+            meta: { title: '计算器', keepAlive: true, permission: ['user'], icon: 'calculator' },
+          },
+          // 设置
+          {
+            path: '/toolbox/tool2',
+            name: 'settings',
+            component: () => import('@/views/account/settings/Index'),
+            meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
+            // redirect: '/account/settings/base',
+            hideChildrenInMenu: true,
+          },
+        ],
+      },
+
       // account
       {
         path: '/account',
@@ -235,14 +268,14 @@ export const asyncRouterMap = [
             name: 'center',
             beforeEnter: guard,
             component: () => import('@/views/account/center'),
-            meta: { title: '个人中心', keepAlive: true, permission: ['user'] },
+            meta: { title: '个人中心', keepAlive: true, permission: ['user'], icon: 'info-circle' },
           },
           // 设置
           {
             path: '/account/settings',
             name: 'settings',
             component: () => import('@/views/account/settings/Index'),
-            meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
+            meta: { title: '个人设置', hideHeader: true, permission: ['user'], icon: 'setting' },
             redirect: '/account/settings/base',
             hideChildrenInMenu: true,
             children: [

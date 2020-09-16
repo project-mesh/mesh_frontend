@@ -7,7 +7,6 @@
       </a-badge>
     </router-link>
     <daily-fortune :class="prefixCls" />
-    <toolbox :class="prefixCls" />
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
     <!-- <select-lang :class="prefixCls" /> -->
   </div>
@@ -18,7 +17,6 @@
 import AvatarDropdown from './AvatarDropdown'
 import TeamSelector from './TeamSelector'
 import DailyFortune from './DailyFortune'
-import Toolbox from './Toolbox'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -28,7 +26,6 @@ export default {
     // SelectLang,
     TeamSelector,
     DailyFortune,
-    Toolbox,
   },
   props: {
     prefixCls: {
