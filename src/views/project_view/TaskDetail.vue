@@ -2,11 +2,9 @@
   <a-drawer :title="task.taskName" width="540" :closable="true" :visible="visible" @close="close">
     <a-card>
       <a-descriptions class="drawer-content" size="large" column="3">
-        <a-descriptions-item label="创建者">
-          {{ task.founder }}
-        </a-descriptions-item>
+        <a-descriptions-item label="创建者">{{ task.founder }}</a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
-          {{ formatTimeStamp(task.createTime) }}
+          {{ task.createTime | dateFilter }}
         </a-descriptions-item>
 
         <a-descriptions-item label="负责人">{{ task.principal }}</a-descriptions-item>
@@ -37,12 +35,10 @@
   </a-drawer>
 </template>
 <script>
-import moment from 'moment'
 import SubTaskList from './SubTaskList'
 export default {
   components: {
     SubTaskList,
-    moment,
   },
   data() {
     return {
@@ -128,9 +124,6 @@ export default {
       this.newSubTaskName = ''
     },
 
-    formatTimeStamp: function (timeStamp) {
-      return moment(timeStamp).format('YYYY-MM-DD')
-    },
     finishSubTask: function (task) {},
     finishTask: function (task, status) {
       this.updateTask(task, 'isFinished', status)

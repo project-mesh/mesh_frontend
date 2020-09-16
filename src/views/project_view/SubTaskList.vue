@@ -26,11 +26,9 @@
         />
       </div>
       <a-descriptions v-if="!isEditing" class="drawer-content" size="small" column="3">
-        <a-descriptions-item label="创建者">
-          {{ subTask.founder }}
-        </a-descriptions-item>
+        <a-descriptions-item label="创建者">{{ subTask.founder }}</a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
-          {{ formatTimeStamp(subTask.createTime) }}
+          {{ subTask.createTime | dateFilter }}
         </a-descriptions-item>
 
         <a-descriptions-item label="负责人">{{ subTask.principal }}</a-descriptions-item>
@@ -94,10 +92,6 @@
 </template>
 
 <script>
-import moment from 'moment'
-import Vue from 'vue'
-import dateFilter from './common/dataFilter'
-dateFilter(Vue)
 export default {
   model: {
     prop: 'subTasks',
@@ -141,9 +135,6 @@ export default {
     },
   },
   methods: {
-    formatTimeStamp: function (timeStamp) {
-      return moment(timeStamp).format('YYYY-MM-DD')
-    },
     deleteSubTask: function (event, subTask, subTaskIndex) {
       event.stopPropagation()
       this.$emit('update-sub-task', subTaskIndex)

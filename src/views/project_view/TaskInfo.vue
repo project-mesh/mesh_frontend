@@ -1,8 +1,9 @@
 <!-- 展示任务基本信息的小框-->
 <template>
   <a-descriptions size="small" :title="task.taskName" column="3">
+    <div slot="title">{{ task.taskName }}</div>
     <a-descriptions-item label="创建时间" span="3">
-      {{ task.createTime | formatTimeStamp }}
+      {{ task.createTime | dateFilter }}
     </a-descriptions-item>
     <a-descriptions-item label="截止日期" span="3">{{ task.deadline }}</a-descriptions-item>
     <a-descriptions-item label="创建者" span="1">{{ task.founder }}</a-descriptions-item>
@@ -10,7 +11,6 @@
   </a-descriptions>
 </template>
 <script>
-import moment from 'moment'
 export default {
   props: {
     task: {
@@ -32,9 +32,5 @@ export default {
       },
     },
   },
-  filters: {
-    formatTimeStamp: (timeStamp) => moment(new Number(timeStamp)).format('YYYY-MM-DD'),
-  },
-  method: {},
 }
 </script>
