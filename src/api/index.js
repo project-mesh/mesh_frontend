@@ -97,10 +97,6 @@ const apiMap = {
     url: '/project/invite',
     method: 'post',
   },
-  joinProject: {
-    url: '/project/join',
-    method: 'post',
-  },
   createTask: {
     url: '/task',
     method: 'post',
@@ -155,10 +151,6 @@ const apiMap = {
   },
   inviteNewTeamMember: {
     url: '/team/invite',
-    method: 'post',
-  },
-  joinTeam: {
-    url: '/team/join',
     method: 'post',
   },
   login: {

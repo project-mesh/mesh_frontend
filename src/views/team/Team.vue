@@ -186,7 +186,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryUser', 'joinTeam']),
+    ...mapActions(['queryUser', 'inviteMember']),
     addmember() {},
     dateChange(timeDate) {
       const date = new Date(timeDate) //获取一个时间对象
@@ -228,9 +228,10 @@ export default {
 
       this.selectedUsers.forEach((username) =>
         promises.push(
-          this.joinTeam({
-            username,
+          this.inviteMember({
+            inviteName: username,
             teamId: this.teamId,
+            username: this.username,
           })
         )
       )
