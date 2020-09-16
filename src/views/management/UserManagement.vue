@@ -20,21 +20,19 @@
         </a-avatar>
       </template>
       <template
-        v-for="col in [
-          'nickname',
-          'gender',
-          'birthday',
-          'address',
-          'status',
-          'description',
-          'password',
-        ]"
+        v-for="col in ['nickname', 'gender', 'birthday', 'address', 'status', 'password']"
         :slot="col"
         slot-scope="text, record"
       >
         <div :key="col">
           <a-input
-            v-if="record.editable && col !== 'password'"
+            v-if="
+              record.editable &&
+              col !== 'password' &&
+              col !== 'status' &&
+              col !== 'gender' &&
+              col !== 'address'
+            "
             style="margin: -5px 0"
             :value="text"
             @change="(e) => handleChange(e.target.value, record.username, col)"
@@ -45,11 +43,75 @@
             value=""
             @change="(e) => handlePasswordChange(e.target.value)"
           />
-          <template v-else-if="col !== 'password'">
+          <a-select
+            v-else-if="record.editable && col === 'status'"
+            :default-value="String(record.status)"
+            @change="handleChange(Number($event), record.username, col)"
+          >
+            <a-select-option value="1">
+              <icon-font type="icon-yao" />
+              生病难受中
+            </a-select-option>
+            <a-select-option value="2">
+              <icon-font type="icon-xiujia" />
+              休假充电中
+            </a-select-option>
+            <a-select-option value="3">
+              <icon-font type="icon-zengjiicon" />
+              努力工作中
+            </a-select-option>
+            <a-select-option value="4">
+              <icon-font type="icon-icon-00FC" />
+              在家办公中
+            </a-select-option>
+            <a-select-option value="5">
+              <icon-font type="icon-yu-" />
+              持续摸鱼中
+            </a-select-option>
+            <a-select-option value="6">
+              <icon-font type="icon-feiji" />
+              出差奔波中
+            </a-select-option>
+            <a-select-option value="7">
+              <icon-font type="icon-game" />
+              愉快游戏中
+            </a-select-option>
+          </a-select>
+          <a-select
+            v-else-if="record.editable && col === 'gender'"
+            :default-value="String(record.gender)"
+            @change="handleChange(Number($event), record.username, col)"
+          >
+            <a-select-option value="1">男</a-select-option>
+            <a-select-option value="2">女</a-select-option>
+            <a-select-option value="0">未知</a-select-option>
+          </a-select>
+          <a-cascader
+            v-else-if="record.editable && col === 'address'"
+            :options="city"
+            @change="onChange"
+          />
+          <template v-else-if="col !== 'password' && col !== 'status' && col !== 'gender'">
             {{ text }}
+          </template>
+          <template v-else-if="col === 'status'">
+            <icon-font :type="getStatusType(record.status)" />
+            {{ getStatusText(record.status) }}
+          </template>
+          <template v-else-if="col === 'gender'">
+            {{ getGenderText(record.gender) }}
           </template>
           <template v-else>********</template>
         </div>
+      </template>
+      <template slot="expandedRowRender" slot-scope="record" style="margin: 0">
+        <a-input
+          v-if="record.editable"
+          style="margin: -5px 0"
+          :value="record.description"
+          @change="(e) => handleChange(e.target.value, record.username, 'description')"
+        />
+        <template v-else>个人签名：{{ record.description }}</template>
       </template>
       <template slot="operation" slot-scope="text, record">
         <div class="editable-row-operations">
@@ -113,29 +175,22 @@ const columns = [
   {
     title: '生日',
     dataIndex: 'birthday',
-    width: '10%',
+    width: '12%',
     scopedSlots: { customRender: 'birthday' },
     align: 'center',
   },
   {
     title: '位置',
     dataIndex: 'address',
-    width: '10%',
+    width: '15%',
     scopedSlots: { customRender: 'address' },
     align: 'center',
   },
   {
     title: '状态',
     dataIndex: 'status',
-    width: '10%',
+    width: '12%',
     scopedSlots: { customRender: 'status' },
-    align: 'center',
-  },
-  {
-    title: '个人签名',
-    dataIndex: 'description',
-    width: '15%',
-    scopedSlots: { customRender: 'description' },
     align: 'center',
   },
   {
@@ -146,54 +201,21 @@ const columns = [
   },
 ]
 
-const genderConvert = (gender) => {
-  const genderMap = {
-    1: '男',
-    男: 1,
-    0: '女',
-    女: 0,
-    '-1': '',
-  }
-
-  if (gender in genderMap) return genderMap[gender]
-
-  return -1
-}
-
-const statusConvert = (status) => {
-  const statusMap = {
-    0: '',
-    1: '摸鱼',
-    2: '会议',
-    3: '生病',
-    4: '休假',
-    5: '出差',
-    6: '在家',
-    7: '运动',
-    8: '游戏',
-    '': 0,
-    摸鱼: 1,
-    会议: 2,
-    生病: 3,
-    休假: 4,
-    出差: 5,
-    在家: 6,
-    运动: 7,
-    游戏: 8,
-  }
-
-  if (status in statusMap) return statusMap[status]
-
-  return 0
-}
-
 import { mapActions, mapGetters } from 'vuex'
 import _ from 'lodash'
+import { Icon } from 'ant-design-vue'
+import allCity from '../account/settings/cities.js'
+const IconFont = Icon.createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/font_2053325_5hl9fgurem.js',
+})
 
 export default {
-  components: {},
+  components: {
+    IconFont,
+  },
   data() {
     return {
+      city: [],
       data: [],
       cacheData: [],
       cachePassword: '',
@@ -207,19 +229,81 @@ export default {
   mounted() {},
   methods: {
     ...mapActions(['queryUserInfo', 'updateUserPasswordAdmin', 'updateUserInfo']),
+    onChange(value) {
+      this.$notification.error({
+        description: '修改地理位置的功能还没做好。',
+      })
+      console.log(value)
+    },
+    getStatusType(status) {
+      switch (status) {
+        case 1:
+          return 'icon-yao'
+        case 2:
+          return 'icon-xiujia'
+        case 3:
+          return 'icon-zengjiicon'
+        case 4:
+          return 'icon-icon-00FC'
+        case 5:
+          return 'icon-yu-'
+        case 6:
+          return 'icon-feiji'
+        case 7:
+          return 'icon-game'
+        default:
+          return 'icon-error'
+      }
+    },
+    getStatusText(status) {
+      switch (status) {
+        case 1:
+          return '生病难受中'
+        case 2:
+          return '休假充电中'
+        case 3:
+          return '努力工作中'
+        case 4:
+          return '在家办公中'
+        case 5:
+          return '持续摸鱼中'
+        case 6:
+          return '出差奔波中'
+        case 7:
+          return '愉快游戏中'
+        default:
+          return 'Wrong Status'
+      }
+    },
+    getGenderText(gender) {
+      switch (gender) {
+        case 1:
+          return '男'
+        case 2:
+          return '女'
+        case 0:
+          return '未知'
+        default:
+          return 'Wrong Gender'
+      }
+    },
     onKeywordSearch(value) {
       this.queryUserInfo({ keyword: value, username: this.username })
         .then((res) => {
-          this.data.length = 0
+          //不要把下面这句代码改成this.data.length = 0，会导致列表不被正确清空
+          this.data.splice(0, this.data.length)
+          this.editingKey = ''
+          this.cacheData = []
+          this.cachePassword = ''
           res.data.users.forEach((queryUser) => {
             this.data.push({
               username: queryUser.username,
               avatar: queryUser.avatar,
               nickname: queryUser.nickname,
-              gender: genderConvert(queryUser.gender),
+              gender: queryUser.gender,
               birthday: queryUser.birthday,
               address: queryUser.address,
-              status: statusConvert(queryUser.status),
+              status: queryUser.status,
               description: queryUser.description,
             })
           })
@@ -262,20 +346,43 @@ export default {
         this.data = newData
       }
     },
+    checkValidBirthday(birthdayString) {
+      let oriStr = birthdayString
+      let dateStr = oriStr.split('-')
+      let yearNum = parseInt(dateStr[0])
+      let monthNum = parseInt(dateStr[1])
+      let dayNum = parseInt(dateStr[2])
+      let checkDate = new Date(yearNum, monthNum - 1, dayNum)
+      if (
+        yearNum === checkDate.getFullYear() &&
+        monthNum === checkDate.getMonth() + 1 &&
+        dayNum === checkDate.getDate()
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     save(username) {
       const newData = [...this.data]
       const newCacheData = [...this.cacheData]
       const target = newData.find((item) => username === item.username)
       const targetCache = newCacheData.find((item) => username === item.username)
+      if (!this.checkValidBirthday(target.birthday)) {
+        this.$notification.error({
+          description: '请输入yyyy-mm-dd格式的生日，且日期真实存在。',
+        })
+        return undefined
+      }
       if (target.editable) {
         if (target && targetCache) {
           this.updateUserInfo({
             username,
             nickname: target.nickname,
-            gender: genderConvert(target.gender),
+            gender: target.gender,
             birthday: target.birthday,
             address: target.address,
-            status: statusConvert(target.status),
+            status: target.status,
             description: target.description,
           })
             .then((res) => {
@@ -329,6 +436,9 @@ export default {
         this.data = newData
       }
     },
+  },
+  async created() {
+    this.city = Object.freeze(allCity.city)
   },
 }
 </script>

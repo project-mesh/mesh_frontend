@@ -18,6 +18,7 @@
         <editable-cell
           :text="text"
           :editing="item.knowledgeNameEditing"
+          :disabled="!isTeamAdminOrUploader(item)"
           :validators="[[isNotEmpty, '知识库标题不能为空']]"
           @change="handleOk(item, 'knowledgeName', $event)"
           @editStatusChange="handleEditStatusChange(item, 'knowledgeName', $event)"
@@ -30,6 +31,7 @@
           :text="text"
           :editing="item.hyperlinkEditing"
           :validators="[[isURL, 'url地址无效！']]"
+          :disabled="!isTeamAdminOrUploader(item)"
           @change="handleOk(item, 'hyperlink', $event)"
           @editStatusChange="handleEditStatusChange(item, 'hyperlink', $event)"
         >

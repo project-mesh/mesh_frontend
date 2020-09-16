@@ -24,7 +24,6 @@ const projectTasks = {
         sendRequest('queryProjectTasks', requestData)
           .then((res) => {
             const { data } = res
-
             if (data.isSuccess) {
               commit('SET_PROJECTTASKS', data.tasks)
               resolve(res)
@@ -47,8 +46,10 @@ const projectTasks = {
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
               newRequestData.teamId = rootGetters.teamId
-              store.dispatch('queryTasks', newRequestData)
+              return store.dispatch('queryTasks', newRequestData)
             }
+
+            reject(new Error(res.data.msg))
           })
           .then(() => resolve())
           .catch((err) => {
@@ -76,7 +77,7 @@ const projectTasks = {
           })
       })
     },
-    updateTask: ({ commit, rootGetters }, requestData) => {
+    updateTask: ({ commit, rootGetters, state }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('updateTask', requestData)
           .then((res) => {
@@ -85,10 +86,14 @@ const projectTasks = {
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
               newRequestData.teamId = rootGetters.teamId
-              store.dispatch('queryTasks', newRequestData)
+              return store.dispatch('queryTasks', newRequestData)
             }
+            reject(new Error(res.data.msg))
           })
-          .then(() => resolve())
+          .then(() => {
+            console.log(state.tasks)
+            resolve()
+          })
           .catch((err) => {
             console.log('err from updateProjectTasks is:', err)
             reject(err)

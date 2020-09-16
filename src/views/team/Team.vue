@@ -1,8 +1,10 @@
 <template>
   <a-card style="margin-top: 24px" :bordered="false" :title="teamName">
     <div class="admin-info">
-      <div>管理员：{{ teamAdminName }}</div>
-      <div>创建时间：{{ year }}年{{ month }}月{{ day }}日</div>
+      <div style="display: inline">管理员：{{ teamAdminName }}</div>
+      <div style="display: inline; margin-left: 5%">
+        创建时间：{{ year }}年{{ month }}月{{ day }}日
+      </div>
     </div>
     <div class="operate">
       <a-button
@@ -15,40 +17,39 @@
         邀请成员
       </a-button>
     </div>
-    <a-list size="large">
-      <a-list-item
-        :key="index"
-        v-for="(item, index) in teamMembers"
-        :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
-      >
-        <div class="avator-card">
-          <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
-          <a-popover title="成员任务">
-            <a-list
-              v-if="teamMemberTask(item.username).length"
-              size="small"
-              slot="content"
-              :data-source="teamMemberTask(item.username)"
-            >
-              <a-list-item slot="renderItem" slot-scope="task">
-                <router-link
-                  :to="{ name: 'statistics', query: { teamId, projectId: task.projectId } }"
-                >
-                  {{ task.taskName }}
-                </router-link>
-              </a-list-item>
-            </a-list>
-            <span v-else slot="content">该成员暂无任务</span>
-            <a style="margin-left: 10px">{{ item.username }}</a>
-          </a-popover>
-        </div>
-        <div class="list-content">
-          <div class="list-content-item">
-            <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
-          </div>
-        </div>
-      </a-list-item>
-    </a-list>
+
+    <a-table
+      :columns="columns"
+      row-key="username"
+      :data-source="teamMembers"
+      :pagination="pagination(teamMembers)"
+      @change="onChange"
+    >
+      <template slot="username" slot-scope="text, item">
+        <a-avatar shape="circle" :src="item.avatar" />
+        <a-popover title="成员任务">
+          <a-list
+            v-if="teamMemberTask(item.username).length"
+            size="small"
+            slot="content"
+            :data-source="teamMemberTask(item.username)"
+          >
+            <a-list-item slot="renderItem" slot-scope="task">
+              <router-link
+                :to="{ name: 'statistics', query: { teamId, projectId: task.projectId } }"
+              >
+                {{ task.taskName }}
+              </router-link>
+            </a-list-item>
+          </a-list>
+          <span v-else slot="content">该成员暂无任务</span>
+          <a style="margin-left: 10px">{{ item.username }}</a>
+        </a-popover>
+      </template>
+      <template slot="job" slot-scope="text, item">
+        <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
+      </template>
+    </a-table>
     <a-modal
       v-model="modalVisible"
       title="邀请新成员"
@@ -101,12 +102,14 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
+import pagination from '@/utils/mixins/paginationMixin'
+import paginationMixin from '@/utils/mixins/paginationMixin'
+
 export default {
   name: 'StandardList',
-  mixins: [teamMixin],
+  mixins: [teamMixin, paginationMixin],
   data() {
     return {
-      // data,
       status: 'all',
       year: null,
       month: null,
@@ -145,6 +148,42 @@ export default {
       'teamId',
       'teamTasks',
     ]),
+    columns() {
+      const columns = [
+        {
+          title: '成员',
+          dataIndex: 'username',
+          key: 'username',
+          scopedSlots: { customRender: 'username' },
+          ellipsis: true,
+          sorter: (a, b) => a.username < b.username,
+        },
+        {
+          title: '职位',
+          key: 'job',
+          scopedSlots: { customRender: 'job' },
+          ellipsis: true,
+          filters: [
+            {
+              text: '管理员',
+              value: '管理员',
+            },
+            {
+              text: '组员',
+              value: '组员',
+            },
+          ],
+          onFilter: (value, record) => {
+            if (value == '管理员') {
+              return record.username === this.teamAdminName
+            } else {
+              return record.username !== this.teamAdminName
+            }
+          },
+        },
+      ]
+      return columns
+    },
   },
   methods: {
     ...mapActions(['queryUser', 'joinTeam']),
@@ -219,6 +258,9 @@ export default {
     teamMemberTask(username) {
       return this.teamTasks.filter((task) => task.principal === username)
     },
+    onChange(pagination, filters, sorter) {
+      console.log('params', pagination, filters, sorter)
+    },
   },
   mounted() {
     if (!this.teams || this.teams.length === 0) {
@@ -239,13 +281,6 @@ export default {
 }
 .admin-info {
   padding-bottom: 10px;
-}
-.avator-card {
-  padding-left: 20px;
-}
-.ant-card {
-  width: 90%;
-  margin-left: 5%;
 }
 .list-content-item {
   color: rgba(0, 0, 0, 0.45);
