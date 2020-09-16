@@ -10,11 +10,11 @@
           <a-icon type="user" />
           个人中心
         </a-menu-item>
-        <a-menu-item v-if="menu" key="settings" @click="handleToSettings">
+        <a-menu-item v-if="menu && role === 'user'" key="settings" @click="handleToSettings">
           <a-icon type="setting" />
           个人设置
         </a-menu-item>
-        <a-menu-divider v-if="menu" />
+        <a-menu-divider v-if="menu && role === 'user'" />
         <a-menu-item key="logout" @click="handleLogout">
           <a-icon type="logout" />
           退出登录

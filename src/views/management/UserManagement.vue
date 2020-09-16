@@ -15,9 +15,7 @@
       bordered
     >
       <template slot="avatar" slot-scope="avatar">
-        <a-avatar :key="avatar">
-          {{ avatar }}
-        </a-avatar>
+        <a-avatar :key="avatar" :src="avatar" />
       </template>
       <template
         v-for="col in ['nickname', 'gender', 'birthday', 'address', 'status', 'password']"
