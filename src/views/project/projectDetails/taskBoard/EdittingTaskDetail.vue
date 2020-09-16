@@ -69,7 +69,7 @@
           />
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 24 }" style="text-align: center">
-          <a-button @click="handleSubmit" :loading="updating" type="primary">
+          <a-button @click="handleSubmit" :loading="loading" type="primary">
             {{ isCreating ? '新建' : '保存' }}
           </a-button>
         </a-form-item>
@@ -80,7 +80,7 @@
 
 <script>
 import moment from 'moment'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -94,6 +94,10 @@ export default {
         return false
       },
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -106,7 +110,6 @@ export default {
         2: { label: '较高', color: 'yellow' },
         3: { label: '极高', color: 'red' },
       },
-      updating: false,
     }
   },
   computed: {
@@ -135,17 +138,17 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['updateTask', 'createTask']),
     // handler
     handleSubmit(e) {
-      this.updating = true
-
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log(values.deadline.format('YYYY-MM-DD'))
 
-          const taskData = {
+          const requestData = {
+            username: this.username,
+            projectId: this.projectId,
+            taskId: this.task.taskId,
             priority: values.priority,
             deadline: values.deadline.format('YYYY-MM-DD'),
             taskName: values.taskName,
@@ -154,60 +157,16 @@ export default {
           }
 
           if (this.isCreating) {
-            this.tryCreateTask(taskData)
+            console.log('create')
+            this.$emit('taskCreate', requestData)
           } else {
-            this.tryUpdateTask(taskData)
+            console.log('update')
+            this.$emit('taskUpdate', requestData)
           }
         }
       })
     },
-    tryCreateTask(taskData) {
-      this.createTask({
-        username: this.username,
-        projectId: this.projectId,
-        taskId: this.task.taskId,
-        ...taskData,
-      })
-        .then((res) => {
-          console.log('创建任务成功')
-          this.$emit('taskCreate', taskData)
-        })
-        .catch((err) => {
-          console.log(err)
-          this.$notification.error({
-            message: err.message,
-            // description: err.message,
-          })
-        })
-        .finally(() => {
-          this.updating = false
-          this.close()
-        })
-    },
-    tryUpdateTask(taskData) {
-      this.updateTask({
-        username: this.username,
-        projectId: this.projectId,
-        taskId: this.task.taskId,
-        ...taskData,
-      })
-        .then((res) => {
-          console.log('更新任务信息成功')
-          this.$emit('taskUpdate', taskData)
-        })
-        .catch((err) => {
-          this.$notification.error({
-            message: '更新任务信息失败',
-            description: err.message,
-          })
-        })
-        .finally(() => {
-          this.updating = false
-          this.close()
-        })
-    },
     close: function () {
-      // this.visible = false
       this.$emit('close')
     },
   },

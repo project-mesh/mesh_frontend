@@ -5,16 +5,17 @@
       :task="selectedTask"
       @edit="enterEdittingMode"
       @close="setDetailDrawerVisible(false)"
-      @taskUpdate="updateTaskLocal"
-      @taskDelete="deleteTask"
+      @taskUpdate="tryUpdateTask"
+      @taskDelete="tryDeleteTask"
     ></task-detail>
     <editting-task-detail
       :visible="edittingDrawerVisible"
       :task="selectedTask"
+      :loading="loading"
       @edit="enterEdittingMode"
       @close="setEditingDrawerVisible(false)"
-      @taskUpdate="updateTaskLocal"
-      @taskCreate="reloadTasks"
+      @taskUpdate="tryUpdateTask"
+      @taskCreate="tryCreateTask"
     ></editting-task-detail>
     <span
       style="
@@ -43,7 +44,7 @@
             :set-task="setSelectedTask"
             :only-view-mine="onlyViewMine"
             :only-not-finished="onlyNotFinished"
-            :try-create-task="tryCreateTask"
+            :try-create-task="openCreateDrawer"
             @end="onDragEnd"
             @showTaskDetail="showTaskDetail"
             ghost-class="task-column"
@@ -87,6 +88,7 @@ export default {
       form: this.$form.createForm(this),
       boardLoading: false,
       selectedTask: {},
+      loading: false,
       tasks: [
         {
           priority: 0,
@@ -115,7 +117,7 @@ export default {
     ...mapGetters(['username', 'projectId', 'projectTasks']),
   },
   methods: {
-    ...mapActions(['queryProjectTasks', 'updateTask']),
+    ...mapActions(['queryProjectTasks', 'updateTask', 'createTask']),
     // 筛选器
     onOnlyNotFinishedChange(e) {
       this.onlyNotFinished = e.target.checked
@@ -175,8 +177,33 @@ export default {
     setEditingDrawerVisible(value) {
       this.edittingDrawerVisible = value
     },
-    updateTaskLocal($event) {
-      if ('priority' in $event) {
+    closeDrawer() {
+      this.setDetailDrawerVisible(false)
+      this.setEditingDrawerVisible(false)
+    },
+    tryUpdateTask($event) {
+      this.loading = true
+
+      console.log('$event', $event)
+
+      this.updateTask($event)
+        .then((res) => {
+          console.log('更新任务信息成功')
+          this.updateTaskLocal($event)
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '更新任务信息成功失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
+    updateTaskLocal(taskInfo) {
+      if ('priority' in taskInfo) {
         const oldPriority = this.selectedTask.priority
 
         const index = this.tasks[oldPriority].tasks.findIndex(
@@ -185,15 +212,31 @@ export default {
 
         if (index !== -1) {
           this.tasks[oldPriority].tasks.splice(index, 1)
-          this.tasks[$event.priority].tasks.unshift(this.selectedTask)
+          this.tasks[taskInfo.priority].tasks.unshift(this.selectedTask)
         }
       }
 
-      Object.keys($event).forEach((key) => {
-        if (key in this.selectedTask) this.selectedTask[key] = $event[key]
+      Object.keys(taskInfo).forEach((key) => {
+        if (key in this.selectedTask) this.selectedTask[key] = taskInfo[key]
       })
     },
-    deleteTask() {
+    tryDeleteTask($event) {
+      this.deleteTask($event)
+        .then(() => {
+          console.log('删除任务成功')
+          this.deleteTaskLocal()
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '删除任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+        })
+    },
+    deleteTaskLocal() {
       const oldPriority = this.selectedTask.priority
 
       const index = this.tasks[oldPriority].tasks.findIndex(
@@ -205,7 +248,6 @@ export default {
       }
     },
     reloadTasks() {
-      console.log('fuck')
       this.tasks.forEach((taskList) => {
         taskList.tasks = []
       })
@@ -217,7 +259,30 @@ export default {
         this.tasks.find((taskList) => taskList.priority === task.priority).tasks.push(task)
       })
     },
-    tryCreateTask() {
+    tryCreateTask($event) {
+      this.loading = true
+
+      this.createTask($event)
+        .then((res) => {
+          console.log('创建任务成功')
+          this.createTaskLocal(res.data.task)
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$notification.error({
+            message: err.message,
+            // description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
+    createTaskLocal(newTask) {
+      this.tasks[newTask.priority].tasks.unshift(newTask)
+    },
+    openCreateDrawer() {
       this.resetSelectedTask()
       this.setEditingDrawerVisible(true)
     },
@@ -243,7 +308,6 @@ export default {
       !this.projectTasks.length ||
       (query && query.projectId && query.projectId !== this.projectId)
     ) {
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!')
       this.boardLoading = true
 
       this.queryProjectTasks({
@@ -251,11 +315,7 @@ export default {
         projectId: this.$route.query.projectId,
       })
         .then((res) => {
-          const { tasks: resTasks } = res.data
-
-          resTasks.forEach((task) => {
-            this.tasks.find((taskList) => taskList.priority === task.priority).tasks.push(task)
-          })
+          this.reloadTasks()
         })
         .catch((err) => {
           this.$notification.error({
@@ -265,16 +325,15 @@ export default {
         })
         .finally(() => (this.boardLoading = false))
     } else {
-      console.log(this.projectTasks)
-
-      this.projectTasks.forEach((task) => {
-        this.tasks.find((taskList) => taskList.priority === task.priority).tasks.push(task)
-      })
+      this.reloadTasks()
     }
 
     console.log('taskBoard: ', this.tasks)
 
     this.$emit('load', 'taskBoard')
+  },
+  created() {
+    console.log('created')
   },
 }
 </script>

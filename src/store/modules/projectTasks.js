@@ -1,5 +1,6 @@
 import sendRequest from '../../api'
 import store from '@/store'
+import cloneDeep from 'lodash.clonedeep'
 
 const projectTasks = {
   state: {
@@ -7,8 +8,11 @@ const projectTasks = {
   },
 
   mutations: {
-    SET_PROJECTTASKS: (state, tasks) => {
+    SET_PROJECT_TASKS: (state, tasks) => {
       state.tasks = tasks
+    },
+    ADD_PROJECT_TASK: (state, newTask) => {
+      state.tasks.unshift(newTask)
     },
   },
 
@@ -25,7 +29,7 @@ const projectTasks = {
           .then((res) => {
             const { data } = res
             if (data.isSuccess) {
-              commit('SET_PROJECTTASKS', data.tasks)
+              commit('SET_PROJECT_TASKS', data.tasks)
               resolve(res)
             } else {
               reject(new Error(data.msg))
@@ -41,17 +45,15 @@ const projectTasks = {
       return new Promise((resolve, reject) => {
         sendRequest('createTask', requestData)
           .then((res) => {
-            if (res.data.isSuccess) {
-              let newRequestData = {}
-              newRequestData.username = requestData.username
-              newRequestData.projectId = requestData.projectId
-              newRequestData.teamId = rootGetters.teamId
-              return store.dispatch('queryTasks', newRequestData)
+            const { data } = res
+            if (data.isSuccess) {
+              commit('ADD_PROJECT_TASK', data.task)
+              commit('ADD_TEAM_TASK', cloneDeep(data.task), { root: true })
+              resolve(res)
             }
 
-            reject(new Error(res.data.msg))
+            reject(new Error(data.msg))
           })
-          .then(() => resolve())
           .catch((err) => {
             console.log('err from createProjectTasks is:', err)
             reject(err)
