@@ -20,6 +20,13 @@
       <div style="display: inline; margin-left: 5%">
         创建时间：{{ year }}年{{ month }}月{{ day }}日
       </div>
+      <a-popconfirm :title="quitMsg">
+        <a-icon slot="icon" type="warning" style="color: red" />
+        <a-button type="danger" class="quitBtn">
+          <a-icon :type="quitIcon" />
+          {{ quitName }}
+        </a-button>
+      </a-popconfirm>
     </div>
     <div class="operate">
       <a-button
@@ -64,6 +71,18 @@
       <template slot="job" slot-scope="text, item">
         <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
       </template>
+      <span slot="action" slot-scope="text, item, index">
+        <a-popconfirm title="是否要移除此成员？" @confirm="deleteKB(item, index)">
+          <a-tooltip title="移除成员">
+            <a-icon
+              type="user-delete"
+              class="removeIcon"
+              style="font-size: 23px"
+              :disabled="!isAdminButNotHimself(item)"
+            />
+          </a-tooltip>
+        </a-popconfirm>
+      </span>
     </a-table>
     <a-modal
       v-model="modalVisible"
@@ -130,6 +149,9 @@ export default {
       day: null,
       modalVisible: false,
       teamNameEditing: false,
+      quitName: '解散团队',
+      quitIcon: 'close-square',
+      quitMsg: '确定要解散团队吗？',
       labelCol: {
         xs: { span: 24 },
         sm: { span: 7 },
@@ -196,6 +218,14 @@ export default {
             }
           },
         },
+        {
+          title: '操作',
+          key: 'action',
+          scopedSlots: { customRender: 'action' },
+          ellipsis: true,
+          align: 'right',
+          width: 60,
+        },
       ]
       return columns
     },
@@ -203,6 +233,9 @@ export default {
   methods: {
     ...mapActions(['queryUser', 'joinTeam']),
     addmember() {},
+    isAdminButNotHimself(chosedUser) {
+      return this.username === this.teamAdminName && chosedUser.username !== this.teamAdminName
+    },
     dateChange(timeDate) {
       var date = new Date(timeDate) //获取一个时间对象
       this.year = date.getFullYear()
@@ -269,6 +302,9 @@ export default {
     onChange(pagination, filters, sorter) {
       console.log('params', pagination, filters, sorter)
     },
+    deleteKB(teammate) {
+      console.log(teammate)
+    },
   },
   mounted() {
     if (!this.teams || this.teams.length === 0) {
@@ -277,11 +313,23 @@ export default {
   },
   created() {
     this.dateChange(this.teamCreateTime)
+    if (this.username !== this.teamAdminName) {
+      this.quitName = '退出团队'
+      this.quitIcon = 'user-delete'
+      this.quitMsg = '确定要退出团队吗？'
+    }
   },
 }
 </script>
 
 <style lang="less" scoped>
+.quitBtn {
+  float: right;
+  margin-bottom: 0.3%;
+}
+.removeIcon:hover {
+  color: red;
+}
 .ant-avatar-lg {
   width: 48px;
   height: 48px;
