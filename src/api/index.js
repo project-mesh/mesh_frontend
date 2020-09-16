@@ -174,19 +174,19 @@ const apiMap = {
     method: 'post',
   },
   queryUserInfo: {
-    url: '/stastistics/search-user',
+    url: '/statistics/search-user',
     method: 'get',
   },
   queryGeneralStatistics: {
-    url: '/stastistics/general',
+    url: '/statistics/general',
     method: 'get',
   },
   queryTotalUser: {
-    url: '/stastistics/totaluser',
+    url: '/statistics/totaluser',
     method: 'get',
   },
   queryUserStatistics: {
-    url: '/stastistics/user',
+    url: '/statistics/user',
     methodL: 'get',
   },
   updateUserPasswordAdmin: {

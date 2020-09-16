@@ -76,7 +76,10 @@
             </a-select>
           </a-form-item>
           <a-form-item label="生日">
-            <a-date-picker @change="onChange" :default-value="moment(birthday, dateFormat)" />
+            <a-date-picker
+              @change="onChange"
+              :default-value="birthday ? moment(birthday, dateFormat) : null"
+            />
             <a-tooltip :title="xingzuoTag">
               <icon-font :type="xingzuoIcon" class="xingzuo" @click="dealBirthday" />
             </a-tooltip>
@@ -98,7 +101,15 @@
             />
           </a-form-item>
           <a-form-item label="个性签名">
-            <a-textarea v-decorator="['description']" placeholder="介绍一下自己"></a-textarea>
+            <a-textarea
+              v-decorator="[
+                'description',
+                {
+                  initialValue: this.description,
+                },
+              ]"
+              placeholder="介绍一下自己"
+            ></a-textarea>
           </a-form-item>
           <a-form-item>
             <a-button type="primary" @click="saveSettings">保存</a-button>
@@ -126,6 +137,7 @@ import AvatarModal from './AvatarModal'
 import CodeForm from './CodeForm'
 import allCity from './cities.js'
 import moment from 'moment'
+import store from '../../../store'
 const IconFont = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_2053325_5hl9fgurem.js',
 })
@@ -136,7 +148,15 @@ export default {
     IconFont,
   },
   computed: {
-    ...mapGetters(['username', 'status', 'nickname', 'birthday']),
+    ...mapGetters(['username', 'status', 'nickname', 'birthday', 'address', 'description']),
+    cities: function () {
+      let tmp = this.address.split(' ')
+      if (tmp) {
+        return tmp
+      } else {
+        return ' '
+      }
+    },
   },
   watch: {
     birthdayStr: function (newValue) {
@@ -263,7 +283,7 @@ export default {
       shengxiaoIcon: 'icon-tuxiao',
       xingzuoTag: '星座：巨蟹座',
       xingzuoIcon: 'icon-juxiezuo',
-      dateFormat: 'YYYY/MM/DD',
+      dateFormat: 'YYYY-MM-DD',
       preview: {},
       form: this.$form.createForm(this),
       option: {
@@ -290,6 +310,7 @@ export default {
       this.option.img = url
     },
     saveSettings() {
+      // console.log('test console, cities is:', this.cities)
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
@@ -302,9 +323,10 @@ export default {
             address: values.city,
             description: values.description,
             birthday: this.birthdayStr,
+            gender: this.gender,
           })
             .then((res) => {
-              if (res.isSuccess) {
+              if (res.data.isSuccess) {
                 this.$notification.success({
                   message: '修改个人信息成功！',
                 })
@@ -374,6 +396,8 @@ export default {
     this.city = Object.freeze(allCity.city)
     console.log('test console, status is:', this.status)
     console.log('test console, birthday is:', this.birthday)
+    this.gender = store.getters.gender
+    console.log('yesyes', this.gender)
   },
 }
 </script>

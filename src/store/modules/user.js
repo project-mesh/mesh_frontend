@@ -86,16 +86,11 @@ const user = {
             if (!res.data.isSuccess) {
               reject(res.data.msg)
             } else {
-              const token = res.data.token
-              console.log('jojo!!!!', res.data.preference)
-              console.log('token: ', token)
-              storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
               if (res.data.role === 'admin') {
                 commit('SET_USERNAME', res.data.username)
                 commit('SET_NICKNAME', res.data.nickname)
-                commit('SET_TOKEN', token)
+                commit('SET_ROLE', res.data.role)
               } else {
-                commit('SET_TOKEN', token)
                 commit('SET_USERNAME', res.data.username)
                 commit('SET_ROLE', res.data.role)
                 commit('SET_AVATAR', res.data.avatar)

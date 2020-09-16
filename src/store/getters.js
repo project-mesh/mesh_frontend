@@ -49,6 +49,8 @@ const getters = {
   nickname: (state) => state.user.nickname,
   birthday: (state) => state.user.birthday,
   address: (state) => state.user.address,
+  gender: (state) => state.user.gender,
+  description: (state) => state.user.description,
 }
 
 export default getters
