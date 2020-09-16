@@ -1,7 +1,7 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
   <div>
-    <a-card class="task-list" style="display: inline-block" :title="priorityName">
+    <a-card class="task-list" style="display: inline-block" :title="priorityMarks[priority].label">
       <draggable
         group="taskGroup"
         :list="tasks"
@@ -11,12 +11,8 @@
         @start="onDragStart"
         @end="onDragEnd"
       >
-        <transition-group
-          :data-status="status"
-          type="transition"
-          :name="!drag ? 'flip-list' : null"
-        >
-          <div
+        <transition-group type="transition" :name="!drag ? 'flip-list' : null">
+          <task-info
             class="task-info"
             v-for="(task, taskIndex) in tasks"
             v-show="
@@ -24,10 +20,10 @@
               (!task.isFinished || !onlyNotFinished)
             "
             :key="taskIndex"
+            @update-task="updateTaskData"
             @click="clickTaskInfo(task)"
-          >
-            <task-info :task="task"></task-info>
-          </div>
+            :task="task"
+          ></task-info>
         </transition-group>
         <div slot="footer">
           <a-textarea
@@ -57,7 +53,7 @@ import moment from 'moment'
 import TaskInfo from './TaskInfo'
 import TaskDetail from './TaskDetail'
 import { mapGetters, vuex } from 'vuex'
-
+import { priorityMarks } from './common/priority'
 export default {
   components: {
     //调用组件
@@ -75,6 +71,7 @@ export default {
       modalTitle: '新建',
       confirmLoading: false,
       drag: false,
+      priorityMarks: priorityMarks,
     }
   },
   props: {
@@ -87,10 +84,7 @@ export default {
     //     }
     //   },
     // },
-    priorityName: {
-      type: String,
-      required: true,
-    },
+    //},
     priority: {
       type: Number,
       required: true,
@@ -125,6 +119,9 @@ export default {
     ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
+    updateTaskData: function (task, key, value) {
+      this.$emit('update-task', task, key, value)
+    },
     showTextarea: function () {
       this.textareaVisible = true
       this.$emit('edit-new-task-name', this.priority)

@@ -4,6 +4,7 @@
       :task="selectedTask"
       :visible="detailDrawerVisible"
       @edit="enterEditingMode"
+      @update-task="updateTaskData"
     ></task-detail>
     <editing-task-detail
       :visible="editingDrawerVisible"
@@ -36,9 +37,9 @@
             :set-task="setSelectedTask"
             :only-view-mine="onlyViewMine"
             :only-not-finished="onlyNotFinished"
+            @update-task="updateTaskData"
             @end="onDragEnd"
             @showTaskDetail="showTaskDetail"
-            @edit-new-task-name="closeIndifferentTextarea"
             ghost-class="task-list"
           ></task-list>
         </a-col>
@@ -79,22 +80,18 @@ export default {
       tasks: [
         {
           priority: 0,
-          priorityName: '较低',
           tasks: [],
         },
         {
           priority: 1,
-          priorityName: '普通',
           tasks: [],
         },
         {
           priority: 2,
-          priorityName: '较高',
           tasks: [],
         },
         {
           priority: 3,
-          priorityName: '极高',
           tasks: [],
         },
       ],
@@ -106,6 +103,11 @@ export default {
   methods: {
     ...mapActions(['queryProjectTasks', 'updateTask']),
     // 筛选器
+    updateTaskData(task, key, value) {
+      task[key] = value
+      // 用来交互
+      // refresh this.task
+    },
     onOnlyNotFinishedChange(e) {
       this.onlyNotFinished = e.target.checked
     },

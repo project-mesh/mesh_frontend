@@ -1,7 +1,7 @@
 <template>
   <a-drawer :title="task.taskName" width="540" :closable="true" :visible="visible" @close="close">
     <a-card>
-      <a-descriptions class="drawer-content" size="large" column="3">
+      <a-descriptions class="drawer-content" size="large" :column="3">
         <a-descriptions-item label="创建者">{{ task.founder }}</a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
           {{ task.createTime | dateFilter }}
@@ -12,12 +12,6 @@
           {{ task.deadline }}
         </a-descriptions-item>
         <a-descriptions-item label="优先级" span="1">{{ task.priority }}</a-descriptions-item>
-        <a-descriptions-item label="状态" span="1">{{ task.status }}</a-descriptions-item>
-
-        <a-descriptions-item label="已完成" span="1">
-          {{ task.isFinished ? '是' : '否' }}
-        </a-descriptions-item>
-
         <a-descriptions-item label="描述" span="3">{{ task.description }}</a-descriptions-item>
         <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
       </a-descriptions>
@@ -28,7 +22,7 @@
         <a-icon
           key="check-square"
           :type="task.isFinished ? 'check-square' : 'border'"
-          @click="finishTask(task, !task.isFinished)"
+          @click="changeTaskFinishingStatus"
         />
       </template>
     </a-card>
@@ -104,6 +98,10 @@ export default {
     },
   },
   methods: {
+    changeTaskFinishingStatus: function () {
+      this.$emit('update-task', this.task, 'isFinished', !this.task.isFinished)
+    },
+
     finishEditing: function () {
       if (this.newSubTaskName) {
         this.$message.info('新建项目：' + this.newSubTaskName)
@@ -125,13 +123,6 @@ export default {
     },
 
     finishSubTask: function (task) {},
-    finishTask: function (task, status) {
-      this.updateTask(task, 'isFinished', status)
-    },
-    updateTask: function (task, key, value) {
-      task[key] = value
-      //todo: 通信
-    },
     editTask: function (task) {
       this.$message.warning('进入编辑模式')
       this.$emit('edit', true)

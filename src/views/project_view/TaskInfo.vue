@@ -1,7 +1,15 @@
 <!-- 展示任务基本信息的小框-->
 <template>
-  <a-descriptions size="small" :title="task.taskName" column="3">
-    <div slot="title">{{ task.taskName }}</div>
+  <a-descriptions size="small" :column="3">
+    <div slot="title">
+      {{ task.taskName }}
+      <a-icon
+        class="icon-checkbox"
+        key="check-square"
+        :type="task.isFinished ? 'check-square' : 'border'"
+        @click="changeTaskFinishingStatus"
+      />
+    </div>
     <a-descriptions-item label="创建时间" span="3">
       {{ task.createTime | dateFilter }}
     </a-descriptions-item>
@@ -12,6 +20,11 @@
 </template>
 <script>
 export default {
+  methods: {
+    changeTaskFinishingStatus: function () {
+      this.$emit('update-task', this.task, 'isFinished', !this.task.isFinished)
+    },
+  },
   props: {
     task: {
       type: Object,
@@ -34,3 +47,9 @@ export default {
   },
 }
 </script>
+<style scoped>
+.icon-checkbox {
+  float: right;
+}
+</style>
+>
