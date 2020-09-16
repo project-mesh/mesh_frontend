@@ -241,7 +241,8 @@ export const asyncRouterMap = [
           {
             path: '/toolbox/tool2',
             name: 'settings',
-            component: () => import('@/views/account/settings/Index'),
+            // redirect: '/toolbox/tool2',
+            component: () => import('@//views/toolBox/Latex'),
             meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
             // redirect: '/account/settings/base',
             hideChildrenInMenu: true,
