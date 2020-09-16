@@ -298,7 +298,7 @@ export default {
           this.updateUserInfo({
             username: this.username,
             nickname: values.nickname,
-            status: values.status,
+            status: Number(values.status),
             address: values.city,
             description: values.description,
             birthday: this.birthdayStr,
