@@ -55,7 +55,7 @@
       <a-breadcrumb separator=">">
         <a-breadcrumb-item>
           <router-link
-            :to="{ name: 'statistics', query: { teamId, projectId: selectedTask.projectId } }"
+            :to="{ name: 'taskList', query: { teamId, projectId: selectedTask.projectId } }"
           >
             {{ selectedTask.projectName }}
           </router-link>
@@ -301,5 +301,8 @@ export default {
 }
 .ant-fullcalendar-header .ant-radio-group {
   display: none;
+}
+#calendar {
+  /* background-color: #f7f7f7; */
 }
 </style>

@@ -175,6 +175,8 @@ const projectInfo = {
             if (data.isSuccess) {
               const { project } = data
 
+              console.log('response in joinProject: ', project)
+
               if (requestData.projectId === state.projectId) {
                 commit('SET_PROJECT_MEMBERS', project.members)
               }

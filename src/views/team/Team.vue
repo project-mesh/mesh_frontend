@@ -51,9 +51,7 @@
             :data-source="teamMemberTask(item.username)"
           >
             <a-list-item slot="renderItem" slot-scope="task">
-              <router-link
-                :to="{ name: 'statistics', query: { teamId, projectId: task.projectId } }"
-              >
+              <router-link :to="{ name: 'taskList', query: { teamId, projectId: task.projectId } }">
                 {{ task.taskName }}
               </router-link>
             </a-list-item>
@@ -118,7 +116,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
-import pagination from '@/utils/mixins/paginationMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
 import EditableCell from './EditableCell'
 import validator from 'validator'

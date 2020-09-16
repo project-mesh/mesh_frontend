@@ -41,13 +41,15 @@ const projectTasks = {
           })
       })
     },
-    createTask: ({ commit, rootGetters }, requestData) => {
+    createTask: ({ commit, state, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('createTask', requestData)
           .then((res) => {
             const { data } = res
             if (data.isSuccess) {
+              console.log('Response in createTask: ', res)
               commit('ADD_PROJECT_TASK', data.task)
+              console.log(state.tasks)
               commit('ADD_TEAM_TASK', cloneDeep(data.task), { root: true })
               resolve(res)
             }

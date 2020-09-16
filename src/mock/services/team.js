@@ -34,6 +34,8 @@ const joinTeam = (data) => {
 
   if (!currUser) return utils.builder({}, 0, false, 'no such user')
 
+  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+
   teamMembers.push({
     teamId: data.teamId,
     username: data.username,

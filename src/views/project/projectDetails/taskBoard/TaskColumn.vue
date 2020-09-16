@@ -30,7 +30,14 @@
           </div>
         </transition-group>
         <div slot="footer">
-          <a-button block type="primary" @click="tryCreateTask()">+ 任务</a-button>
+          <a-button
+            block
+            :disabled="username !== projectAdminName"
+            type="primary"
+            @click="tryCreateTask()"
+          >
+            + 任务
+          </a-button>
         </div>
       </draggable>
     </a-card>
@@ -60,15 +67,6 @@ export default {
     }
   },
   props: {
-    // taskListWithStatus: {
-    //   type: Object,
-    //   default: function () {
-    //     return {
-    //       status: '新建',
-    //       tasks: [],
-    //     }
-    //   },
-    // },
     priorityName: {
       type: String,
       required: true,

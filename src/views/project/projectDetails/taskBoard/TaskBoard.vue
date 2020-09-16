@@ -60,6 +60,7 @@ import TaskDetail from './TaskDetail'
 import EdittingTaskDetail from './EdittingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
+import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -69,14 +70,14 @@ export default {
     TaskDetail,
     EdittingTaskDetail,
   },
-  mixins: [teamMixin, projectMixin],
+  mixins: [teamMixin, projectMixin, taskDrawerMixin],
 
   data() {
     return {
       onlyNotFinished: false,
       onlyViewMine: false,
-      detailDrawerVisible: false,
-      edittingDrawerVisible: false,
+      // detailDrawerVisible: false,
+      // edittingDrawerVisible: false,
       drag: false,
       taskListGroup: {
         name: 'taskList',
@@ -87,7 +88,7 @@ export default {
       },
       form: this.$form.createForm(this),
       boardLoading: false,
-      selectedTask: {},
+      // selectedTask: {},
       loading: false,
       tasks: [
         {
@@ -114,7 +115,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username', 'projectId', 'projectTasks']),
+    ...mapGetters(['username', 'projectId', 'projectTasks', 'projectAdminName']),
   },
   methods: {
     ...mapActions(['queryProjectTasks', 'updateTask', 'createTask']),
@@ -127,22 +128,22 @@ export default {
       this.onlyViewMine = e.target.checked
     },
     // 抽屉相关
-    showTaskDetail(task) {
-      this.setSelectedTask(task)
-      if (this.selectedTask) {
-        this.detailDrawerVisible = true
-      }
-    },
+    // showTaskDetail(task) {
+    //   this.setSelectedTask(task)
+    //   if (this.selectedTask) {
+    //     this.detailDrawerVisible = true
+    //   }
+    // },
 
-    setSelectedTask(task) {
-      this.selectedTask = task
-    },
-    enterEdittingMode(isEdittingMode) {
-      if (isEdittingMode) {
-        this.setDetailDrawerVisible(false)
-        this.setEditingDrawerVisible(true)
-      }
-    },
+    // setSelectedTask(task) {
+    //   this.selectedTask = task
+    // },
+    // enterEdittingMode(isEdittingMode) {
+    //   if (isEdittingMode) {
+    //     this.setDetailDrawerVisible(false)
+    //     this.setEditingDrawerVisible(true)
+    //   }
+    // },
     onDragEnd($event) {
       const toPriority = +$event.to.dataset.priority
       const fromPriority = +$event.from.dataset.priority
@@ -162,6 +163,7 @@ export default {
         this.updateTask(requestData)
           .then(() => {
             console.log('updateTaskPriority success')
+            this.updateTaskLocal({ priority: toPriority })
           })
           .catch((err) => {
             this.$notification.error({
@@ -171,16 +173,16 @@ export default {
           })
       }
     },
-    setDetailDrawerVisible(value) {
-      this.detailDrawerVisible = value
-    },
-    setEditingDrawerVisible(value) {
-      this.edittingDrawerVisible = value
-    },
-    closeDrawer() {
-      this.setDetailDrawerVisible(false)
-      this.setEditingDrawerVisible(false)
-    },
+    // setDetailDrawerVisible(value) {
+    //   this.detailDrawerVisible = value
+    // },
+    // setEditingDrawerVisible(value) {
+    //   this.edittingDrawerVisible = value
+    // },
+    // closeDrawer() {
+    //   this.setDetailDrawerVisible(false)
+    //   this.setEditingDrawerVisible(false)
+    // },
     tryUpdateTask($event) {
       this.loading = true
 
@@ -203,6 +205,8 @@ export default {
         })
     },
     updateTaskLocal(taskInfo) {
+      console.log('taskInfo: ', taskInfo)
+
       if ('priority' in taskInfo) {
         const oldPriority = this.selectedTask.priority
 
@@ -282,10 +286,10 @@ export default {
     createTaskLocal(newTask) {
       this.tasks[newTask.priority].tasks.unshift(newTask)
     },
-    openCreateDrawer() {
-      this.resetSelectedTask()
-      this.setEditingDrawerVisible(true)
-    },
+    // openCreateDrawer() {
+    //   this.resetSelectedTask()
+    //   this.setEditingDrawerVisible(true)
+    // },
     resetSelectedTask() {
       this.selectedTask = {
         taskName: '',
@@ -302,6 +306,8 @@ export default {
     this.resetSelectedTask()
 
     const { query } = this.$route
+
+    console.log('In taskBoard mounted, this.projectTasks: ', this.projectTasks)
 
     if (
       !this.projectTasks ||
@@ -333,7 +339,7 @@ export default {
     this.$emit('load', 'taskBoard')
   },
   created() {
-    console.log('created')
+    this.reloadTasks()
   },
 }
 </script>
