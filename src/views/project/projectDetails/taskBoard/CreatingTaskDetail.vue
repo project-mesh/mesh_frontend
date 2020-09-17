@@ -1,14 +1,26 @@
 <template>
-  <a-drawer width="540" :closable="false" :visible="visible" @close="close">
+  <a-drawer
+    width="540"
+    :closable="true"
+    :visible="visible"
+    @close="close"
+    :destroy-on-close="true"
+    :after-visible-change="reset"
+  >
     <div slot="title">
-      <a-input placeholder="请输入任务标题" v-if="editing.taskName" v-model="task.taskName" />
+      <a-input
+        placeholder="请输入任务名"
+        v-if="editing.taskName"
+        v-model="task.taskName"
+        v-decorator="['taskName', { rules: [{ required: true, message: '请输入任务名!' }] }]"
+      />
       <span v-else>{{ task.taskName }}</span>
     </div>
 
     <a-card>
       <a-descriptions class="drawer-content" :column="4">
         <a-descriptions-item label="创建者" span="2">
-          <avatar-featured-user style="margin-left: 12px" :username="task.founder" />
+          <avatar-featured-user style="margin-left: 12px" :username="username" />
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
           {{ moment().format('YYYY-MM-DD') }}
@@ -35,13 +47,7 @@
           </div>
         </a-descriptions-item>
         <a-descriptions-item label="优先级" span="2">
-          <a-select
-            style="width: 120px"
-            :dropdown-match-select-width="false"
-            v-if="editable.priority"
-            v-model="task.priority"
-            :default-value="1"
-          >
+          <a-select style="width: 120px" v-if="editable.priority" v-model="task.priority">
             <a-select-option
               v-for="(priorityMark, priorityIndex) in priorityMarks"
               :key="priorityIndex"
@@ -57,9 +63,9 @@
           <div>
             <a-date-picker
               v-if="editing.deadline"
-              size="small"
               v-model="task.deadline"
               placeholder="请选择任务截止日期"
+              sytle="width: 250px"
               :allow-clear="false"
               :default-date="moment().format()"
               :disabled-date="(date) => date < moment().startOf('day')"
@@ -68,8 +74,14 @@
           </div>
         </a-descriptions-item>
         <a-descriptions-item label="描述" span="4">
-          <a-textarea v-model="task.description" width="100%"></a-textarea>
-          {{ task.description }}
+          <a-textarea
+            v-if="editing.description"
+            :auto-size="{ minRows: 3 }"
+            placeholder="请输入任务描述"
+            v-model="task.description"
+            style="width: 440px; margin-top: 10px"
+          ></a-textarea>
+          <div v-else>{{ task.description }}</div>
         </a-descriptions-item>
         <a-descriptions-item v-if="false" label="子任务" span="3"></a-descriptions-item>
       </a-descriptions>
@@ -82,7 +94,7 @@
         @create-sub-task="createSubTask"
       />
       <template v-if="mode === 'create'" slot="actions" class="ant-card-actions">
-        <a-icon key="edit" type="plus" @click="createTask" />
+        <a-icon key="add" type="plus" @click="createTask" />
       </template>
       <template v-else slot="actions" class="ant-card-actions">
         <a-popconfirm
@@ -115,12 +127,12 @@ export default {
   data() {
     return {
       mode: 'create',
-      priorityMarks: {
-        0: { label: '较低', color: 'blue' },
-        1: { label: '普通', color: 'green' },
-        2: { label: '较高', color: 'orange' },
-        3: { label: '极高', color: 'red' },
-      },
+      priorityMarks: [
+        { label: '较低', color: 'blue' },
+        { label: '普通', color: 'green' },
+        { label: '较高', color: 'orange' },
+        { label: '极高', color: 'red' },
+      ],
       editing: {
         taskName: true,
         priority: true,
@@ -135,17 +147,16 @@ export default {
       defaultValue: {
         principal: 'username',
       },
-      task: {
-        taskName: '',
-        founder: 'username',
-        deadline: '',
-        priority: this.priority,
-        principal: '',
-        description: '',
-      },
+      task: new Object(),
     }
   },
   props: {
+    propTask: {
+      type: Object,
+      default: function () {
+        return null
+      },
+    },
     visible: {
       type: Boolean,
       default: function () {
@@ -173,29 +184,25 @@ export default {
   },
   methods: {
     moment,
+    reset: function (visible) {
+      this.task = new Object()
+      if (visible == true) {
+        this.task.priority = new Number(this.priority).valueOf()
+        this.task.createTime = moment() // 仅用于显示
+        this.task.founder = this.username
+      }
+    },
     createTask: function () {
       console.log(this.task)
       this.emit('create-task', this.task)
     },
 
-    addSubTask: function () {
-      let formData = {
-        username: '', // todo: 当前用户名
-        taskName: this.newTaskName,
-        description: '',
-        principal: '', //todo: 当前用户名
-      }
-      // todo: 交互
-      this.newSubTaskName = ''
-    },
-
     close: function () {
-      this.task.priority = this.priority
       this.$emit('change-drawer', '')
     },
   },
   computed: {
-    ...mapGetters(['projectMembers']),
+    ...mapGetters(['projectMembers', 'username']),
   },
 }
 </script>

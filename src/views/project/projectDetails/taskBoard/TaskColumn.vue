@@ -16,7 +16,6 @@
       >
         <transition-group type="transition" :name="!drag ? 'flip-list' : null">
           <task-info
-            :can-edit="canEdit"
             class="task-info"
             v-for="(task, taskIndex) in tasks"
             v-show="
@@ -29,7 +28,7 @@
             @click.native="selectTask(task)"
           ></task-info>
         </transition-group>
-        <div slot="footer" v-if="projectAdminName === username">
+        <div slot="footer">
           <a-button block type="primary" @click="addTask">
             <a-icon type="plus" />
             任务

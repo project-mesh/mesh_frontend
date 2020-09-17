@@ -1,6 +1,6 @@
 <!-- 展示任务基本信息的小框-->
 <template>
-  <a-descriptions size="small" :column="4" @click="console.log(task)">
+  <a-descriptions size="small" :column="4">
     <div slot="title">
       {{ task.taskName }}
       <a-icon
