@@ -57,7 +57,7 @@
         </a-collapse-panel>
       </a-collapse>
       <template slot="actions" class="ant-card-actions">
-        <a-popconfirm title="是否要删除此行？" @confirm="tryDeleteTask">
+        <a-popconfirm title="是否要删除此行？" @confirm="handleDelete">
           <a :disabled="username !== projectAdminName">
             <a-icon key="delete" type="delete" />
           </a>
@@ -70,9 +70,9 @@
             v-if="task.isFinished"
             key="check-square"
             type="check-square"
-            @click="updateFinishStatus(false)"
+            @click="handleUpdate(false)"
           />
-          <a-icon v-else key="check" type="check" @click="updateFinishStatus(true)" />
+          <a-icon v-else key="check" type="check" @click="handleUpdate(true)" />
         </a>
       </template>
     </a-card>
@@ -131,26 +131,15 @@ export default {
     formatTimeStamp: function (timeStamp) {
       return moment(timeStamp).format('YYYY-MM-DD')
     },
-    updateFinishStatus(status) {
-      this.updateTask({
+    handleUpdate(status) {
+      const requestData = {
         username: this.username,
         projectId: this.projectId,
         taskId: this.task.taskId,
         isFinished: status,
-      })
-        .then((res) => {
-          console.log('更新任务信息成功')
-          this.$emit('taskUpdate', { isFinished: status })
-        })
-        .catch((err) => {
-          this.$notification.error({
-            message: '更新任务信息成功失败',
-            description: err.message,
-          })
-        })
-        .finally(() => {
-          this.close()
-        })
+      }
+
+      this.$emit('taskUpdate', requestData)
     },
     // updateTask: function (task, key, value) {
     //   task[key] = value
@@ -160,25 +149,32 @@ export default {
       this.$message.warning('进入编辑模式')
       this.$emit('edit', true)
     },
-    tryDeleteTask: function () {
-      this.deleteTask({
+    handleDelete: function () {
+      const requestData = {
         username: this.username,
         projectId: this.projectId,
         taskId: this.task.taskId,
-      })
-        .then(() => {
-          console.log('删除任务成功')
-          this.$emit('taskDelete')
-        })
-        .catch((err) => {
-          this.$notification.error({
-            message: '删除任务失败',
-            description: err.message,
-          })
-        })
-        .finally(() => {
-          this.close()
-        })
+      }
+      // this.deleteTask({
+      //   username: this.username,
+      //   projectId: this.projectId,
+      //   taskId: this.task.taskId,
+      // })
+      //   .then(() => {
+      //     console.log('删除任务成功')
+      //     this.$emit('taskDelete')
+      //   })
+      //   .catch((err) => {
+      //     this.$notification.error({
+      //       message: '删除任务失败',
+      //       description: err.message,
+      //     })
+      //   })
+      //   .finally(() => {
+      //     this.close()
+      //   })
+
+      this.$emit('taskDelete', requestData)
     },
     close: function () {
       // this.visible = false

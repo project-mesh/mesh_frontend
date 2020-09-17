@@ -297,7 +297,7 @@ export default {
       'joinProject',
     ]),
     tryJumpToProjectDetail(projectId) {
-      this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
+      this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
     },
     showListView() {
       console.log('显示列表')

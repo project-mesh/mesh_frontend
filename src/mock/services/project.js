@@ -73,6 +73,20 @@ const updateProject = (data) => {
   return utils.builder({}, 0, false, 'No Such Project`')
 }
 
+const joinProject = (data) => {
+  const currUser = users.find((user) => user.username === data.username)
+
+  if (!currUser) return utils.builder({}, 0, false, 'no such user')
+
+  projectMembers.push({
+    projectId: data.projectId,
+    username: data.username,
+  })
+
+  return getProjects(data)
+}
+
+Mock.mock(/\/project\/join/, 'post', utils.functionFactory(joinProject))
 Mock.mock(/\/project/, 'get', utils.functionFactory(getProjects))
 Mock.mock(/\/project/, 'post', utils.functionFactory(createProject))
 Mock.mock(/\/project/, 'delete', utils.functionFactory(deleteProject))
