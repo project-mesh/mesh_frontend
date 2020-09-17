@@ -25,12 +25,21 @@
           :type="subTask.isFinished ? 'check-square' : 'border'"
         />
       </div>
-      <a-descriptions v-if="!isEditing" class="drawer-content" size="small" column="4">
+      <a-descriptions v-if="!isEditing" class="drawer-content" size="small" :column="4">
         <a-descriptions-item label="创建者" span="2">
           <avatar-featured-user :username="subTask.founder" />
         </a-descriptions-item>
         <a-descriptions-item label="负责人" span="2">
-          <avatar-featured-user :username="subTask.principal" />
+          <a-select v-model="subTask.principal" :default-value="subTask.principal">
+            <a-select-option
+              v-for="member in projectMembers"
+              :key="member.username"
+              :value="member.username"
+            >
+              <avatar-featured-user :username="member.username" />
+            </a-select-option>
+          </a-select>
+          <!--  <avatar-featured-user :username="subTask.principal" -->
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="4">
           {{ subTask.createTime | dateFilter }}
@@ -39,43 +48,6 @@
           {{ subTask.description }}
         </a-descriptions-item>
       </a-descriptions>
-      <a-form v-else :form="form">
-        <a-form-item
-          label="负责人"
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-          :required="true"
-        >
-          <a-select @change="handleChange">
-            <a-select-option
-              v-for="member in projectMembers"
-              :key="member.username"
-              :value="member.username"
-            >
-              {{ member.username }}
-            </a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item
-          label="描述"
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-          @click="this.isEditing = false"
-        >
-          <a-textarea
-            rows="1"
-            contenteditable="true"
-            placeholder="请输入该子任务的详细描述"
-            v-decorator="[
-              'description',
-              { rules: [{ required: false, message: '请输入该子任务的详细描述' }] },
-            ]"
-          />
-        </a-form-item>
-        <a-form-item :wrapper-col="{ span: 24 }" style="text-align: center">
-          <a-button html-type="submit" type="primary">提交</a-button>
-        </a-form-item>
-      </a-form>
     </a-collapse-panel>
     <a-collapse-panel disabled :show-arrow="false">
       <a-input
@@ -154,6 +126,9 @@ export default {
       this.$emit('delete-sub-task', subTask)
     },
 
+    changePrincipal: function (evt, subTask) {
+      console.log(evt)
+    },
     removeSubTask: function (evt, subTask, subTaskIndex) {
       event.stopPropagation()
       this.$emit('delete-sub-task', subTask)

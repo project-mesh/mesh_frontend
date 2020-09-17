@@ -211,6 +211,7 @@ export default {
     updateTaskData(task, formData) {
       for (let key in formData) {
         task[key] = formData[key]
+        this.$message.info(key + ' is set to ' + formData[key])
       }
       // todo 交互
     },

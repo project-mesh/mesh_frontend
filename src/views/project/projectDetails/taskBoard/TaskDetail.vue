@@ -3,20 +3,65 @@
     <a-card>
       <a-descriptions class="drawer-content" :column="4">
         <a-descriptions-item label="创建者" span="2">
-          <avatar-featured-user :username="task.founder" />
+          <span style="margin-left: 20px">
+            <avatar-featured-user :username="task.founder" />
+          </span>
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
           {{ task.createTime | dateFilter }}
         </a-descriptions-item>
 
         <a-descriptions-item label="负责人" span="2">
-          <avatar-featured-user :username="task.principal" />
+          <a-select
+            width="100%"
+            placeholder="请选择项目负责人"
+            v-model="task.principal"
+            :default-value="task.principal"
+            @change="changePrincipal"
+          >
+            <a-select-option
+              v-for="member in projectMembers"
+              :key="member.username"
+              :value="member.username"
+            >
+              <avatar-featured-user :username="member.username" />
+            </a-select-option>
+          </a-select>
         </a-descriptions-item>
-        <a-descriptions-item label="截止日期" span="2" contenteditable="true">
+        <a-descriptions-item label="优先级" span="2">
+          {{ task.priority | formatPriority }}
+          <!-- 在这里改优先级容易乱掉
+          <a-select
+
+            width="100%"
+            placeholder="请选择项目优先级"
+            v-model="task.priority"
+            :default-value="task.priority"
+            @change="changePriority"
+          >
+            <a-select-option
+              v-for="(priorityMark, priorityIndex) in priorityMarks"
+              :key="priorityIndex"
+              :value="priorityIndex"
+            >
+              {{ priorityMark.label }}
+            </a-select-option>
+          </a-select>
+          -->
+        </a-descriptions-item>
+        <a-descriptions-item label="截止日期" span="4">
           {{ task.deadline }}
         </a-descriptions-item>
-        <a-descriptions-item label="优先级" span="4">
-          {{ task.priority | formatPriority }}
+
+        <a-descriptions-item label="截止日期" span="4">
+          <a-date-picker
+            size="small"
+            placeholder="请选择任务截止日期"
+            @change="changeDeadline"
+            :allow-clear="false"
+            :value="task.deadline"
+            :disabled-date="(date) => date < moment().startOf('day')"
+          ></a-date-picker>
         </a-descriptions-item>
         <a-descriptions-item label="描述" span="4">
           {{ task.description }}
@@ -55,6 +100,7 @@ import SubTaskList from './SubTaskList'
 import { priorityMarks } from './common/priority'
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
+import moment from 'moment'
 export default {
   components: {
     SubTaskList,
@@ -103,8 +149,18 @@ export default {
     },
   },
   methods: {
+    moment,
+    changeDeadline: function (dates, deadline) {
+      this.$emit('update-task', this.task, { deadline: deadline })
+    },
+    changePriority: function (priority) {
+      this.$emit('update-task', this.task, { priority: priority })
+    },
+    changePrincipal: function (principal) {
+      this.$emit('update-task', this.task, { principal: principal })
+    },
     changeTaskFinishingStatus: function () {
-      this.$emit('update-task', this.task, 'isFinished', !this.task.isFinished)
+      this.$emit('update-task', this.task, { isFinished: !this.task.isFinished })
     },
     deleteTask: function () {
       this.$emit('delete-task', this.task)
