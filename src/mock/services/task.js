@@ -85,6 +85,8 @@ const createTask = (data) => {
     if (key in newTask) newTask[key] = data[key]
   })
 
+  setTaskStatus(newTask)
+
   tasks.push(newTask)
 
   return utils.builder({ task: { ...newTask, subTasks: [] } })
