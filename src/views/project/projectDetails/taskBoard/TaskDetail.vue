@@ -6,14 +6,16 @@
           {{ task.founder }}
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" :span="2">
-          {{ formatTimeStamp(task.createTime) }}
+          {{ task.createTime | dateFilter }}
         </a-descriptions-item>
 
-        <a-descriptions-item label="负责人">{{ task.principal }}</a-descriptions-item>
+        <a-descriptions-item label="负责人" :span="1">{{ task.principal }}</a-descriptions-item>
         <a-descriptions-item label="截止日期" :span="2" :contenteditable="true">
           {{ task.deadline }}
         </a-descriptions-item>
-        <a-descriptions-item label="优先级" :span="1">{{ task.priority }}</a-descriptions-item>
+        <a-descriptions-item label="优先级" :span="1">
+          {{ task.priority | formatPriority }}
+        </a-descriptions-item>
         <a-descriptions-item label="状态" :span="1">{{ task.status }}</a-descriptions-item>
 
         <a-descriptions-item label="已完成" :span="1">
@@ -23,40 +25,12 @@
         <a-descriptions-item label="描述" :span="3">{{ task.description }}</a-descriptions-item>
         <a-descriptions-item label="子任务" :span="3"></a-descriptions-item>
       </a-descriptions>
-      <a-collapse v-model="activeKey">
-        <a-collapse-panel
-          v-for="(subTask, subTaskIndex) in task.subTasks"
-          :key="subTaskIndex"
-          :header="subTask.taskName"
-        >
-          <a-descriptions class="drawer-content" size="small" column="3">
-            <a-descriptions-item label="创建者" :span="1">
-              {{ task.founder }}
-            </a-descriptions-item>
-            <a-descriptions-item label="创建时间" :span="2">
-              {{ formatTimeStamp(subTask.createTime) }}
-            </a-descriptions-item>
-
-            <a-descriptions-item label="负责人" :span="1">{{ task.principal }}</a-descriptions-item>
-
-            <a-descriptions-item label="已完成" :span="2">
-              {{ task.isFinished ? '是' : '否' }}
-            </a-descriptions-item>
-            <a-descriptions-item label="描述" :span="3">{{ task.description }}</a-descriptions-item>
-          </a-descriptions>
-        </a-collapse-panel>
-        <a-collapse-panel disabled :show-arrow="false">
-          <a-input
-            v-model="newSubTaskName"
-            slot="header"
-            placeholder="按enter添加 按esc退出"
-            @keyup.enter="finishEditting"
-            @keyup.esc="exitEditting"
-            @blur="exitEditting"
-          ></a-input>
-        </a-collapse-panel>
-      </a-collapse>
-      <sub-task-list v-model="subTasks" />
+      <sub-task-list
+        :parent-task="task"
+        @update-sub-task="updateSubTask"
+        @delete-sub-task="deleteSubTask"
+        @create-sub-task="createSubTask"
+      />
       <template slot="actions" class="ant-card-actions">
         <a-popconfirm title="是否要删除此行？" @confirm="handleDelete">
           <a :disabled="username !== projectAdminName">
@@ -80,41 +54,24 @@
   </a-drawer>
 </template>
 <script>
-import moment from 'moment'
-import { mapGetters, mapActions } from 'vuex'
 import SubTaskList from './SubTaskList'
+import { priorityMarks } from './common/priority'
+import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
+import { mapGetters } from 'vuex'
+import moment from 'moment'
+import eventBus from '../eventBus'
 
 export default {
   components: {
     SubTaskList,
+    AvatarFeaturedUser,
   },
   data() {
     return {
       activeKey: [],
-      newSubTaskName: '',
-      subTasks: [
-        {
-          taskId: 'aklgnlkzzzld',
-          taskName: '子任务名',
-          isFinished: true,
-          createTime: '16546513231',
-          description: '子任务描述',
-          founder: '子任务创建者',
-          principal: '子任务负责人',
-        },
-        {
-          taskId: 'aklgnlkjsald',
-          taskName: '子任名2',
-          isFinished: false,
-          createTime: '1654653445',
-          description: '子任务描述2',
-          founder: '子任务创建者2',
-          principal: '子任务负责人2',
-        },
-      ],
+      priorityMarks: priorityMarks,
     }
   },
-
   props: {
     visible: {
       type: Boolean,
@@ -129,17 +86,48 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['username', 'teamId', 'projectId', 'projectAdminName']),
+    ...mapGetters(['projectMembers', 'username', 'teamId', 'projectId', 'projectAdminName']),
   },
   methods: {
-    ...mapActions(['updateTask', 'deleteTask']),
-    finishEditting: function () {
+    moment,
+    changeDeadline: function (dates, deadline) {
+      this.$emit('update-task', this.task, { deadline: deadline })
+    },
+    changePriority: function (priority) {
+      this.$emit('update-task', this.task, { priority: priority })
+    },
+    changePrincipal: function (principal) {
+      this.$emit('update-task', this.task, { principal: principal })
+    },
+    changeTaskFinishingStatus: function () {
+      this.$emit('update-task', this.task, { isFinished: !this.task.isFinished })
+    },
+    deleteTask: function () {
+      this.$emit('delete-task', this.task)
+      this.close()
+      this.$message.info('删除成功')
+    },
+    finishEditing: function () {
       if (this.newSubTaskName) {
         this.$message.info('新建项目：' + this.newSubTaskName)
         this.addTask()
       }
     },
-    exitEditting: function () {
+
+    createSubTask: function (formData) {
+      formData['taskId'] = this.task.taskId
+      this.$emit('create-sub-task', this.task, formData)
+    },
+
+    updateSubTask: function (subTask, formData) {
+      this.$emit('update-sub-task', this.task, subTask, formData)
+    },
+
+    deleteSubTask: function (subTask) {
+      this.$emit('delete-sub-task', this.task, subTask)
+    },
+
+    exitEditing: function () {
       this.newTaskName = ''
     },
     addSubTask: function () {
@@ -152,9 +140,14 @@ export default {
       // todo: 交互
       this.newSubTaskName = ''
     },
-    moment,
-    formatTimeStamp: function (timeStamp) {
-      return moment(timeStamp).format('YYYY-MM-DD')
+
+    close: function () {
+      this.$emit('close')
+    },
+
+    editTask: function (task) {
+      this.$message.warning('进入编辑模式')
+      this.$emit('edit', true)
     },
     handleUpdate(status) {
       const requestData = {
@@ -163,16 +156,10 @@ export default {
         taskId: this.task.taskId,
         isFinished: status,
       }
-
-      this.$emit('taskUpdate', requestData)
-    },
-    // updateTask: function (task, key, value) {
-    //   task[key] = value
-    //   //todo: 通信
-    // },
-    editTask: function (task) {
-      this.$message.warning('进入编辑模式')
-      this.$emit('edit', true)
+      this.$emit('task-update', {
+        task: this.task,
+        requestData,
+      })
     },
     handleDelete: function () {
       const requestData = {
@@ -180,31 +167,26 @@ export default {
         projectId: this.projectId,
         taskId: this.task.taskId,
       }
-      // this.deleteTask({
-      //   username: this.username,
-      //   projectId: this.projectId,
-      //   taskId: this.task.taskId,
-      // })
-      //   .then(() => {
-      //     console.log('删除任务成功')
-      //     this.$emit('taskDelete')
-      //   })
-      //   .catch((err) => {
-      //     this.$notification.error({
-      //       message: '删除任务失败',
-      //       description: err.message,
-      //     })
-      //   })
-      //   .finally(() => {
-      //     this.close()
-      //   })
-
-      this.$emit('taskDelete', requestData)
+      this.$emit('task-delete', {
+        task: this.task,
+        requestData,
+      })
     },
-    close: function () {
-      // this.visible = false
-      this.$emit('close')
+  },
+  filters: {
+    formatPriority: (priority) => {
+      return (priority in priorityMarks && priorityMarks[priority].label) || ''
     },
+    getUserInfo: function (username) {
+      const user = this.projectMembers.find((member) => member.username === username)
+      // return this.teamMembers.find((member) => member.username === username).avatar
+      return user ? user : { username: username, avatar: '' }
+    },
+  },
+  mounted() {
+    eventBus.$on('sub-task-create', ($event) => {
+      console.log('hello')
+    })
   },
 }
 </script>

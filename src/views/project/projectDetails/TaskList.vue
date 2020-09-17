@@ -3,21 +3,30 @@
     <task-detail
       :visible="detailDrawerVisible"
       :task="selectedTask"
-      @edit="enterEdittingMode"
+      @edit="enterEditingMode"
       @close="setDetailDrawerVisible(false)"
-      @taskUpdate="tryUpdateTask"
-      @taskDelete="tryDeleteTask"
+      @task-update="tryUpdateTask"
+      @task-celete="tryDeleteTask"
+      @task-delete="tryDeleteTask"
     ></task-detail>
     <editing-task-detail
-      :visible="edittingDrawerVisible"
+      :visible="editingDrawerVisible"
       :task="selectedTask"
       :loading="loading"
-      @edit="enterEdittingMode"
+      @edit="enterEditingMode(true)"
       @close="setEditingDrawerVisible(false)"
-      @taskUpdate="tryUpdateTask"
-      @taskCreate="tryCreateTask"
+      @task-update="tryUpdateTask"
+      @task-create="tryCreateTask"
     ></editing-task-detail>
-
+    <editing-sub-task-detail
+      :visible="subEditingDrawerVisiable"
+      :task="selectedSubTask"
+      :parent-task="selectedTask"
+      :loading="loading"
+      @edit="enterSubEditingMode(true)"
+      @close="setSubEditingDrawerVisible(false)"
+      @sub-task-update="tryUpdateSubTask"
+    ></editing-sub-task-detail>
     <div class="task-group" v-for="status in allStatus" :key="status">
       <div class="topbutton">
         <a-button
@@ -65,14 +74,18 @@ import TaskDetail from './taskBoard/TaskDetail'
 import EditingTaskDetail from './taskBoard/EditingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
+import EditingSubTaskDetail from './taskBoard/EditingSubTaskDetail'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
+import { priorityMarks } from './taskBoard/common/priority'
+import eventBus from './eventBus'
 
 export default {
   components: {
     TaskDetail,
     EditingTaskDetail,
+    EditingSubTaskDetail,
   },
   mixins: [teamMixin, projectMixin, taskDrawerMixin],
   data() {
@@ -83,13 +96,21 @@ export default {
       moment,
       selectedTask: {},
       loading: false,
+      priorityMarks,
     }
   },
   computed: {
     ...mapGetters(['projectTasks', 'username', 'teamId', 'projectId', 'projectAdminName']),
   },
   methods: {
-    ...mapActions(['updateTask', 'createTask', 'deleteTask']),
+    ...mapActions([
+      'updateTask',
+      'createTask',
+      'deleteTask',
+      'createSubTask',
+      'updateSubTask',
+      'deleteSubTask',
+    ]),
     showDrawer() {
       this.visible = true
     },
@@ -120,7 +141,7 @@ export default {
     tryUpdateTask($event) {
       this.loading = true
 
-      this.updateTask($event)
+      this.updateTask($event.requestData)
         .then((res) => {
           console.log('更新任务信息成功')
         })
@@ -135,10 +156,46 @@ export default {
           this.loading = false
         })
     },
+    tryUpdateSubTask($event) {
+      this.loading = true
+
+      console.log('$event: ', $event)
+
+      this.updateSubTask($event.requestData)
+        .then((res) => {
+          console.log('更新任务信息成功')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '更新任务信息失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
+    tryCreateSubTask($event) {
+      this.createSubTask($event.requestData)
+        .then((res) => {
+          console.log(('创建子任务成功, res', res))
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '创建子任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
     tryCreateTask($event) {
       this.loading = true
 
-      this.createTask($event)
+      this.createTask($event.requestData)
         .then((res) => {
           console.log('创建任务成功')
         })
@@ -153,8 +210,23 @@ export default {
           this.loading = false
         })
     },
+    tryDeleteSubTask($event) {
+      this.deleteSubTask($event.requestData)
+        .then(() => {
+          console.log('删除子任务成功')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '删除子任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+        })
+    },
     tryDeleteTask($event) {
-      this.deleteTask($event)
+      this.deleteTask($event.requestData)
         .then(() => {
           console.log('删除任务成功')
         })
@@ -201,6 +273,19 @@ export default {
   },
   created() {
     // this.reloadTasks()
+
+    eventBus.$on('task-update', this.tryUpdateTask)
+
+    eventBus.$on('sub-task-delete', this.tryDeleteSubTask)
+
+    eventBus.$on('sub-task-finish', this.tryUpdateSubTask)
+
+    eventBus.$on('sub-task-create', this.tryCreateSubTask)
+
+    eventBus.$on('open-sub-drawer', ($event) => {
+      this.selectedSubTask = $event
+      this.enterSubEditingMode(true)
+    })
   },
 }
 </script>
