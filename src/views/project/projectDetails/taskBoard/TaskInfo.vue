@@ -24,14 +24,13 @@
 </template>
 <script>
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     AvatarFeaturedUser,
   },
-  methods: {
-    changeTaskFinishingStatus: function () {
-      this.$emit('update-task', this.task, { isFinished: !this.task.isFinished })
-    },
+  computed: {
+    ...mapGetters(['username', 'projectAdminName']),
   },
   props: {
     task: {
@@ -51,6 +50,12 @@ export default {
           status: '',
         }
       },
+    },
+  },
+  methods: {
+    changeTaskFinishingStatus: function () {
+      if ([this.task.principal, this.projectAdminName].includes(this.username))
+        this.$emit('update-task', this.task, { isFinished: !this.task.isFinished })
     },
   },
 }
