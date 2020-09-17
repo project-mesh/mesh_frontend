@@ -109,7 +109,6 @@ const user = {
       })
     },
     Logout({ commit }) {
-      commit('SET_TOKEN', '')
       commit('SET_ROLE', '')
       commit('SET_ROUTERS', [], { root: true })
       storage.remove(ACCESS_TOKEN)

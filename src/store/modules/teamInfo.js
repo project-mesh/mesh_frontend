@@ -71,9 +71,6 @@ const teamInfo = {
       if (knowledgeIndex !== -1) return state.knowledgeBase.splice(knowledgeIndex, 1, updatedKB)
       throw new Error('In teamInfo>UPDATE_TEAMKB: Invalid knowledgeId')
     },
-    ADD_NEW_MEMBER: (state, new_member) => {
-      state.members.push(new_member)
-    },
   },
   actions: {
     queryTeam({ commit }, requestData) {
@@ -94,9 +91,11 @@ const teamInfo = {
       return new Promise((resolve, reject) => {
         sendRequest('inviteNewTeamMember', requestData)
           .then((res) => {
-            console.log('res from inviteMember action is:', res)
-            commit('ADD_NEW_MEMBER', requestData.inviteName)
-            resolve(res)
+            if (res.data.isSuccess) {
+              resolve(res)
+            } else {
+              reject('添加成员失败')
+            }
           })
           .catch((err) => {
             console.log('err from inviteMember action is:', err)

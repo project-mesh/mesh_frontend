@@ -6,7 +6,6 @@
           <editable-cell
             :text="teamName"
             :editing="teamNameEditing"
-            :validators="[[isNotEmpty, '团队名不能为空']]"
             @change="handleRename($event)"
             @editStatusChange="handleEditStatusChange($event)"
           >
@@ -291,7 +290,7 @@ export default {
 
       if (promises.length) {
         return Promise.all(promises)
-          .then(() => {
+          .then((res) => {
             console.log('add team members success!, new members: ', this.selectedUsers)
             this.$notification.success({
               message: '成功添加新成员',
@@ -299,11 +298,24 @@ export default {
           })
           .catch((err) => {
             this.$notification.error({
-              message: '成功添加新团队成员',
-              description: err.message,
+              message: '添加新团队成员失败',
             })
           })
           .finally(() => {
+            this.queryTeam({
+              username: this.username,
+              teamId: this.teamId,
+            })
+              .then((res) => {
+                this.$notification.success({
+                  message: '成功更新团队',
+                })
+              })
+              .catch((err) => {
+                this.$notification.error({
+                  message: '更新团队失败',
+                })
+              })
             this.inviting = false
             this.hideModal()
           })
