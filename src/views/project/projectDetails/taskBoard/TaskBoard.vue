@@ -8,7 +8,7 @@
       @taskUpdate="tryUpdateTask"
       @taskDelete="tryDeleteTask"
     ></task-detail>
-    <editting-task-detail
+    <editing-task-detail
       :visible="edittingDrawerVisible"
       :task="selectedTask"
       :loading="loading"
@@ -16,7 +16,7 @@
       @close="setEditingDrawerVisible(false)"
       @taskUpdate="tryUpdateTask"
       @taskCreate="tryCreateTask"
-    ></editting-task-detail>
+    ></editing-task-detail>
     <span
       style="
          {
@@ -57,7 +57,7 @@
 <script>
 import TaskColumn from './TaskColumn'
 import TaskDetail from './TaskDetail'
-import EdittingTaskDetail from './EdittingTaskDetail'
+import EditingTaskDetail from './EditingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
@@ -68,7 +68,7 @@ export default {
     //调用组件
     TaskColumn,
     TaskDetail,
-    EdittingTaskDetail,
+    EditingTaskDetail,
   },
   mixins: [teamMixin, projectMixin, taskDrawerMixin],
 

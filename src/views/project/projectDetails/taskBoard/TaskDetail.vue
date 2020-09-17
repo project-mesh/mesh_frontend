@@ -56,6 +56,7 @@
           ></a-input>
         </a-collapse-panel>
       </a-collapse>
+      <sub-task-list v-model="subTasks" />
       <template slot="actions" class="ant-card-actions">
         <a-popconfirm title="是否要删除此行？" @confirm="handleDelete">
           <a :disabled="username !== projectAdminName">
@@ -81,12 +82,36 @@
 <script>
 import moment from 'moment'
 import { mapGetters, mapActions } from 'vuex'
+import SubTaskList from './SubTaskList'
 
 export default {
+  components: {
+    SubTaskList,
+  },
   data() {
     return {
       activeKey: [],
       newSubTaskName: '',
+      subTasks: [
+        {
+          taskId: 'aklgnlkzzzld',
+          taskName: '子任务名',
+          isFinished: true,
+          createTime: '16546513231',
+          description: '子任务描述',
+          founder: '子任务创建者',
+          principal: '子任务负责人',
+        },
+        {
+          taskId: 'aklgnlkjsald',
+          taskName: '子任名2',
+          isFinished: false,
+          createTime: '1654653445',
+          description: '子任务描述2',
+          founder: '子任务创建者2',
+          principal: '子任务负责人2',
+        },
+      ],
     }
   },
 
