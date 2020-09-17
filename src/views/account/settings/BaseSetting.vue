@@ -90,10 +90,10 @@
           <a-form-item label="地址">
             <a-cascader
               placeholder="地址"
+              :default-value="defaultCitiesList ? defaultCitiesList : null"
               v-decorator="[
                 'city',
                 {
-                  initialValue: ['zhejiang', 'hangzhou', 'xihu'],
                   rules: [{ type: 'array', required: true, message: '请输入你的地址' }],
                 },
               ]"
@@ -276,6 +276,7 @@ export default {
     return {
       // cropper
       city: [],
+      defaultCitiesList: [' ', ' ', ' '],
       birthdayStr: '',
       statusStr: '1', //在数据库中存的是数字，这里需要一步数字转换字符串
       gender: 1,
@@ -396,8 +397,12 @@ export default {
     this.city = Object.freeze(allCity.city)
     this.gender = store.getters.gender
     this.birthday = store.getters.birthday
+    if (store.getters.address && store.getters.address.split(' ').length === 3) {
+      this.defaultCitiesList = store.getters.address.split(' ')
+    }
     console.log('test console, status is:', this.status)
     console.log('test console, birthday is:', this.birthday)
+    console.log('test console, defaultCitiesList', this.defaultCitiesList)
     console.log('yesyes', this.gender)
   },
 }
