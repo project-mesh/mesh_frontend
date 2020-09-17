@@ -45,10 +45,6 @@ const user = {
       state.nickname = nickname
     },
     SET_BIRTHDAY: (state, birthday) => {
-      if (birthday[4] !== '1') {
-        console.log('error format', birthday)
-        birthday = '2020-01-01'
-      }
       state.birthday = birthday
       if (birthday) {
         const birthdate = new Date(birthday)

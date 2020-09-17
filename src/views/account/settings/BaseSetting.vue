@@ -148,7 +148,7 @@ export default {
     IconFont,
   },
   computed: {
-    ...mapGetters(['username', 'status', 'nickname', 'birthday', 'address', 'description']),
+    ...mapGetters(['username', 'status', 'nickname', 'address', 'description']),
     cities: function () {
       let tmp = this.address.split(' ')
       if (tmp) {
@@ -276,7 +276,7 @@ export default {
     return {
       // cropper
       city: [],
-      birthdayStr: this.birthday,
+      birthdayStr: '',
       statusStr: '1', //在数据库中存的是数字，这里需要一步数字转换字符串
       gender: 1,
       shengxiaoTag: '生肖：兔',
@@ -394,9 +394,10 @@ export default {
   },
   async created() {
     this.city = Object.freeze(allCity.city)
+    this.gender = store.getters.gender
+    this.birthday = store.getters.birthday
     console.log('test console, status is:', this.status)
     console.log('test console, birthday is:', this.birthday)
-    this.gender = store.getters.gender
     console.log('yesyes', this.gender)
   },
 }

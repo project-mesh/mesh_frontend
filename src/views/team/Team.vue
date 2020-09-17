@@ -293,6 +293,9 @@ export default {
         return Promise.all(promises)
           .then(() => {
             console.log('add team members success!, new members: ', this.selectedUsers)
+            this.$notification.success({
+              message: '成功添加新成员',
+            })
           })
           .catch((err) => {
             this.$notification.error({
