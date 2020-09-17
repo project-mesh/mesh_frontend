@@ -254,6 +254,12 @@ export const asyncRouterMap = [
             component: () => import('@/views/toolBox/DrawIO'),
             meta: { title: '流程图', keepAlive: true, permission: ['user'], icon: 'apartment' },
           },
+          {
+            path: '/toolbox/tool5',
+            name: 'latex',
+            component: () => import('@/views/toolBox/Latex'),
+            meta: { title: 'LaTeX', keepAlive: true, permission: ['user'], icon: 'edit' },
+          },
         ],
       },
 
