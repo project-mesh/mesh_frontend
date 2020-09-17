@@ -3,20 +3,20 @@
     <task-detail
       :visible="detailDrawerVisible"
       :task="selectedTask"
-      @edit="enterEdittingMode"
+      @edit="enterEditingMode"
       @close="setDetailDrawerVisible(false)"
       @taskUpdate="tryUpdateTask"
       @taskDelete="tryDeleteTask"
     ></task-detail>
-    <editting-task-detail
-      :visible="edittingDrawerVisible"
+    <editing-task-detail
+      :visible="editingDrawerVisible"
       :task="selectedTask"
       :loading="loading"
-      @edit="enterEdittingMode"
+      @edit="enterEditingMode"
       @close="setEditingDrawerVisible(false)"
       @taskUpdate="tryUpdateTask"
       @taskCreate="tryCreateTask"
-    ></editting-task-detail>
+    ></editing-task-detail>
 
     <div class="task-group" v-for="status in allStatus" :key="status">
       <div class="topbutton">
@@ -62,7 +62,7 @@
 
 <script>
 import TaskDetail from './taskBoard/TaskDetail'
-import EdittingTaskDetail from './taskBoard/EdittingTaskDetail'
+import EditingTaskDetail from './taskBoard/EditingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
@@ -72,7 +72,7 @@ import moment from 'moment'
 export default {
   components: {
     TaskDetail,
-    EdittingTaskDetail,
+    EditingTaskDetail,
   },
   mixins: [teamMixin, projectMixin, taskDrawerMixin],
   data() {

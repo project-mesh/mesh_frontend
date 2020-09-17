@@ -2,7 +2,7 @@ export default {
   data() {
     return {
       detailDrawerVisible: false,
-      edittingDrawerVisible: false,
+      editingDrawerVisible: false,
       selectedTask: {},
     }
   },
@@ -17,8 +17,8 @@ export default {
     setSelectedTask(task) {
       this.selectedTask = task
     },
-    enterEdittingMode(isEdittingMode) {
-      if (isEdittingMode) {
+    enterEditingMode(isEditingMode) {
+      if (isEditingMode) {
         this.setDetailDrawerVisible(false)
         this.setEditingDrawerVisible(true)
       }
@@ -27,7 +27,7 @@ export default {
       this.detailDrawerVisible = value
     },
     setEditingDrawerVisible(value) {
-      this.edittingDrawerVisible = value
+      this.editingDrawerVisible = value
     },
     closeDrawer() {
       this.setDetailDrawerVisible(false)
