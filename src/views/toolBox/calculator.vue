@@ -219,6 +219,11 @@ export default {
   background-color: hsl(0, 0%, 10%);
   cursor: pointer;
   outline: none;
+  -webkit-transition: background-color 0.4s;
+  transition: background-color 0.4s;
+}
+.button:hover {
+  background-color: #4d4d4d;
 }
 .mode {
   display: flex;
@@ -228,6 +233,9 @@ export default {
 .equal-sign {
   background-color: #03a9f4;
   width: 31.5%;
+}
+.equal-sign:hover {
+  background-color: #6bb6ff;
 }
 .toggle-button {
   border: none;

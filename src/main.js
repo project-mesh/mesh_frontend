@@ -9,9 +9,7 @@ import router from './router'
 import store from './store'
 import themePluginConfig from '../config/themePluginConfig'
 import VCharts from 'v-charts'
-import VueFriendlyIframe from 'vue-friendly-iframe'
-
-Vue.use(VueFriendlyIframe)
+import VueFriendlyIframe from './views/toolBox/IframeIndex'
 
 import Blob from './excel/Blob'
 import Export2Excel from './excel/Export2Excel.js'
@@ -28,10 +26,11 @@ import './global.less'
 Vue.config.productionTip = false
 
 Vue.use(VCharts)
-
+Vue.use(VueFriendlyIframe)
 // mount axios to `Vue.$http` and `this.$http`
 Vue.component('pro-layout', ProLayout)
 Vue.component('page-header-wrapper', PageHeaderWrapper)
+Vue.component('vue-friendly-iframe', VueFriendlyIframe)
 
 window.umi_plugin_ant_themeVar = themePluginConfig.theme
 

@@ -240,12 +240,18 @@ export const asyncRouterMap = [
           // 设置
           {
             path: '/toolbox/tool2',
-            name: 'settings',
+            name: 'latex',
             // redirect: '/toolbox/tool2',
             component: () => import('@//views/toolBox/Latex'),
             meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
             // redirect: '/account/settings/base',
             hideChildrenInMenu: true,
+          },
+          {
+            path: '/toolbox/tool3',
+            name: 'markdown',
+            component: () => import('@/views/toolBox/MarkDown'),
+            meta: { title: 'MarkDown', keepAlive: true, permission: ['user'], icon: 'medium' },
           },
         ],
       },
