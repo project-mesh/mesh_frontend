@@ -99,7 +99,6 @@ const user = {
                 commit('SET_DESCRIPTION', res.data.description)
                 commit('SET_STATUS', res.data.status)
               }
-              // commit('SET_TEAMID', res.data.preference.preferenceTeam)
               resolve(res)
             }
           })

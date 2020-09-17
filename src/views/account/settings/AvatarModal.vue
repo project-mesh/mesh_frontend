@@ -54,6 +54,7 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { putObject, blobToDataURI, dataURItoBlob } from '../../../utils/oss'
 export default {
   data() {
     return {
@@ -119,16 +120,17 @@ export default {
       // 输出
       this.$refs.cropper.getCropData((data) => {
         console.log('getCropData', data)
-        this.updateUserInfo({
-          username: this.username,
-          nickname: this.nickname,
-          avatar: data,
-        }).catch((error) => {
-          this.$notification.error({
-            message: '更新头像失败',
-            description: `${error.name}: ${error.message}`,
-          })
-        })
+        putObject(dataURItoBlob(data))
+        // this.updateUserInfo({
+        //   username: this.username,
+        //   nickname: this.nickname,
+        //   avatar: data,
+        // }).catch((error) => {
+        //   this.$notification.error({
+        //     message: '更新头像失败',
+        //     description: `${error.name}: ${error.message}`,
+        //   })
+        // })
       })
     },
     okHandel() {
