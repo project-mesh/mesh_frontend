@@ -1,7 +1,7 @@
 <template>
   <a-collapse v-model="activeKey" @change="xx" accordion>
     <a-collapse-panel
-      v-for="(subTask, subTaskIndex) in subTasks"
+      v-for="(subTask, subTaskIndex) in parentTask.subTasks"
       :key="subTaskIndex.toString()"
       :header="subTask.taskName"
       @close="onClose"
@@ -57,7 +57,7 @@
           </a-select>
           <span v-else><avatar-featured-user :username="subTask.principal" /></span>
         </a-descriptions-item>
-        <a-descriptions-item label="创建时间" span="4">
+        <a-descriptions-item label="创建时间" :span="4">
           {{ subTask.createTime | dateFilter }}
         </a-descriptions-item>
         <a-descriptions-item label="描述" span="4">
@@ -77,7 +77,7 @@
         v-model="newSubTaskName"
         slot="header"
         placeholder="按enter添加 点击其他地方退出"
-        @keypress.enter="finishAdding"
+        @keypress.enter="handleSubTaskCreate"
         @keypress.esc="exitAdding"
         @blur="exitAdding"
       ></a-input>
@@ -89,6 +89,8 @@
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
 import { subTasks } from '../../../../mock/services/data'
+import eventBus from '../eventBus'
+
 export default {
   components: {
     AvatarFeaturedUser,
@@ -116,26 +118,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    taskId: {
-      type: String,
+    parentTask: {
+      type: Object,
       required: true,
-    },
-    subTasks: {
-      type: Array,
-      required: true,
-      default: function () {
-        return [
-          {
-            taskId: 'aklgnlkzzzld',
-            taskName: '子任务名',
-            isFinished: true,
-            createTime: '16546513231',
-            description: '子任务描述',
-            founder: '子任务创建者',
-            principal: '子任务负责人',
-          },
-        ]
-      },
     },
   },
   computed: {
@@ -153,7 +138,10 @@ export default {
     deleteSubTask: function (subTask) {
       this.$emit('delete-sub-task', subTask)
     },
-
+    handleEdit(subTask) {
+      console.log('fuckkkkkkkkkkkkkkkkk')
+      eventBus.$emit('open-sub-drawer', subTask)
+    },
     changePrincipal: function (evt, subTask) {
       console.log(evt)
     },
@@ -184,17 +172,51 @@ export default {
       }
       this.isEditing = !this.isEditing
     },
+    handleRemove: function (subTask) {
+      const requestData = {
+        username: this.username,
+        projectId: this.projectId,
+        taskId: this.parentTask.taskId,
+        subTaskName: subTask.taskName,
+      }
+      console.log('delete')
+      eventBus.$emit('sub-task-delete', { subTask, requestData })
+    },
+    handleFinishSubTask: function (subTask) {
+      const requestData = {
+        username: this.username,
+        projectId: this.projectId,
+        taskId: this.parentTask.taskId,
+        subTaskName: subTask.taskName,
+        isFinished: !subTask.isFinished,
+      }
 
-    finishAdding: function () {
+      console.log('finish')
+      eventBus.$emit('sub-task-finish', { subTask, requestData })
+    },
+    handleSubTaskCreate: function () {
       if (this.newSubTaskName) {
-        const formData = {
-          taskName: this.newSubTaskName,
-          taskId: this.taskId,
-          isFinished: false,
-          description: '',
-          principal: this.username,
+        if (
+          this.parentTask.subTasks &&
+          this.parentTask.subTasks.find((subTask) => subTask.taskName === this.newSubTaskName)
+        ) {
+          return this.$notification.error({
+            message: '已有同名子任务！',
+          })
         }
-        this.createSubTask(formData)
+
+        console.log('fuckkkkkkkkkkkkkk')
+        const requestData = {
+          username: this.username,
+          subTaskName: this.newSubTaskName,
+          projectId: this.projectId,
+          taskId: this.parentTask.taskId,
+          principal: this.username,
+          founder: this.username,
+        }
+
+        console.log('create')
+        eventBus.$emit('sub-task-create', { task: this.parentTask, requestData })
       }
     },
     exitAdding: function () {

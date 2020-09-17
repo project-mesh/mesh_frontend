@@ -10,7 +10,7 @@
         <a-descriptions-item label="创建者" span="2">
           <avatar-featured-user :username="task.founder" />
         </a-descriptions-item>
-        <a-descriptions-item label="创建时间" span="2">
+        <a-descriptions-item label="创建时间" :span="2">
           {{ task.createTime | dateFilter }}
         </a-descriptions-item>
         <a-descriptions-item label="负责人" span="2">
@@ -46,6 +46,7 @@
           </a-select>
           <span v-else>{{ priorityMarks[task.priority].label }}</span>
         </a-descriptions-item>
+        <a-descriptions-item label="状态" :span="1">{{ task.status }}</a-descriptions-item>
 
         <a-descriptions-item label="截止日期" span="4">
           <div>
@@ -89,17 +90,22 @@
           title="确认删除该任务？"
           ok-text="确认"
           cancel-text="取消"
-          @confirm="deleteTask"
+          @confirm="handleDelete"
         >
           <a-icon key="delete" type="delete" />
         </a-popconfirm>
-
-        <a-icon key="edit" type="edit" @click="editTask(task)" />
-        <a-icon
-          key="check-square"
-          :type="task.isFinished ? 'check-square' : 'border'"
-          @click="changeTaskFinishingStatus"
-        />
+        <a :disabled="username !== projectAdminName">
+          <a-icon key="edit" type="edit" @click="editTask(task)" />
+        </a>
+        <a :disbled="username !== projectAdminName && username !== task.principal">
+          <a-icon
+            v-if="task.isFinished"
+            key="check-square"
+            type="check-square"
+            @click="handleUpdate(false)"
+          />
+          <a-icon v-else key="check" type="check" @click="handleUpdate(true)" />
+        </a>
       </template>
     </a-card>
   </a-drawer>
@@ -110,6 +116,8 @@ import { priorityMarks } from './common/priority'
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
+import eventBus from '../eventBus'
+
 export default {
   components: {
     SubTaskList,
@@ -142,34 +150,11 @@ export default {
 
     task: {
       type: Object,
-      default: function () {
-        return {
-          taskId: 'id',
-          taskName: '任务名',
-          isFinished: false,
-          priority: 0,
-          createTime: '0',
-          deadline: '1970-01-01',
-          description: '描述内容',
-          founder: '创建者',
-          principal: '负责人',
-          subTasks: [
-            {
-              taskId: 'aklgnlkjsald',
-              taskName: '子任务名',
-              isFinished: false,
-              createTime: '16546513231',
-              description: '子任务描述',
-              founder: '子任务创建者',
-              principal: '子任务负责人',
-            },
-          ],
-        }
-      },
+      required: true,
     },
   },
   computed: {
-    ...mapGetters(['username', 'projectId', 'projectMembers', 'projectAdminName']),
+    ...mapGetters(['username', 'projectId', 'projectMembers', 'projectAdminName', 'teamId']),
     canEdit: function () {
       return this.username == this.task.principal || this.username == this.projectAdminName
     },
@@ -233,11 +218,47 @@ export default {
     },
 
     close: function () {
-      this.$emit('change-drawer', '')
+      this.$emit('close')
+    },
+
+    handleUpdate(status) {
+      const requestData = {
+        username: this.username,
+        projectId: this.projectId,
+        taskId: this.task.taskId,
+        isFinished: status,
+      }
+      this.$emit('task-update', {
+        task: this.task,
+        requestData,
+      })
+    },
+    handleDelete: function () {
+      const requestData = {
+        username: this.username,
+        projectId: this.projectId,
+        taskId: this.task.taskId,
+      }
+      this.$emit('task-delete', {
+        task: this.task,
+        requestData,
+      })
     },
   },
   filters: {
-    formatPriority: (priority) => (priorityMarks[priority] ? priorityMarks[priority].label : '空'),
+    formatPriority: (priority) => {
+      return (priority in priorityMarks && priorityMarks[priority].label) || ''
+    },
+    getUserInfo: function (username) {
+      const user = this.projectMembers.find((member) => member.username === username)
+      // return this.teamMembers.find((member) => member.username === username).avatar
+      return user ? user : { username: username, avatar: '' }
+    },
+  },
+  mounted() {
+    eventBus.$on('sub-task-create', ($event) => {
+      console.log('hello')
+    })
   },
 }
 </script>

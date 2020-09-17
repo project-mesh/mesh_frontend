@@ -14,6 +14,7 @@ const projectTasks = {
     ADD_PROJECT_TASK: (state, newTask) => {
       state.tasks.unshift(newTask)
     },
+    ADD_SUBTASK: (state, { parentTaskId, newSubTask }) => {},
   },
 
   actions: {
@@ -67,14 +68,15 @@ const projectTasks = {
         sendRequest('createSubTask', requestData)
           .then((res) => {
             if (res.data.isSuccess) {
-              let newRequestData = {}
-              newRequestData.username = requestData.username
-              newRequestData.projectId = requestData.projectId
-              newRequestData.teamId = rootGetters.teamId
-              store.dispatch('queryTasks', newRequestData)
+              commit('ADD_SUBTASK', {
+                parentTaskId: requestData.taskId,
+                newSubTask: res.data.subtask,
+              })
+              return resolve(res)
             }
+
+            reject(new Error(res.data.msg))
           })
-          .then(() => resolve())
           .catch((err) => {
             console.log('err from createSubProjectTasks is:', err)
             reject(err)
@@ -113,8 +115,9 @@ const projectTasks = {
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
               newRequestData.teamId = rootGetters.teamId
-              store.dispatch('queryTasks', newRequestData)
+              return store.dispatch('queryTasks', newRequestData)
             }
+            reject(new Error(res.data.msg))
           })
           .then(() => resolve())
           .catch((err) => {

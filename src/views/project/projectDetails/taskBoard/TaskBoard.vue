@@ -20,15 +20,10 @@
       :visible="drawerMode === 'edit'"
       :editable="editable.edit"
       :task="selectedTask"
-      @create-task="createTaskData"
-      @update-task="updateTaskData"
-      @delete-task="deleteTaskData"
-      @update-sub-task="updateSubTaskData"
-      @delete-sub-task="deleteSubTaskData"
-      @create-sub-task="createSubTaskData"
-      @change-drawer="changeDrawer"
-      @taskUpdate="tryUpdateTask"
-      @taskDelete="tryDeleteTask"
+      @edit="enterEditingMode"
+      @close="setDetailDrawerVisible(false)"
+      @task-update="tryUpdateTask"
+      @task-delete="tryDeleteTask"
     ></task-detail>
     <task-detail
       :visible="drawerMode === 'display'"
@@ -44,6 +39,24 @@
       @taskUpdate="tryUpdateTask"
       @taskDelete="tryDeleteTask"
     ></task-detail>
+    <editing-task-detail
+      :visible="editingDrawerVisible"
+      :task="selectedTask"
+      :loading="loading"
+      @edit="enterEditingMode(true)"
+      @close="setEditingDrawerVisible(false)"
+      @task-update="tryUpdateTask"
+      @task-create="tryCreateTask"
+    ></editing-task-detail>
+    <editing-sub-task-detail
+      :visible="subEditingDrawerVisiable"
+      :task="selectedSubTask"
+      :parent-task="selectedTask"
+      :loading="loading"
+      @edit="enterSubEditingMode(true)"
+      @close="setSubEditingDrawerVisible(false)"
+      @sub-task-update="tryUpdateSubTask"
+    ></editing-sub-task-detail>
     <span
       style="
          {
@@ -71,9 +84,9 @@
             :only-not-finished="onlyNotFinished"
             :try-create-task="openCreatingDrawer"
             @add-task="openCreatingDrawer"
+            :set-task="setSelectedTask"
             @end="onDragEnd"
-            @select-task="showTaskDetail"
-            @update-task="updateTaskData"
+            @show-task-detail="showTaskDetail"
             ghost-class="task-column"
           ></task-column>
         </a-col>
@@ -85,11 +98,15 @@
 import TaskColumn from './TaskColumn'
 import TaskDetail from './TaskDetail'
 import EditingTaskDetail from './EditingTaskDetail'
+import EditingSubTaskDetail from './EditingSubTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
 import CreatingTaskDetail from './CreatingTaskDetail'
+import { priorityMarks } from './common/priority'
+import eventBus from '../eventBus'
+
 export default {
   components: {
     //调用组件
@@ -97,13 +114,13 @@ export default {
     TaskDetail,
     EditingTaskDetail,
     CreatingTaskDetail,
+    EditingSubTaskDetail,
   },
   mixins: [teamMixin, projectMixin, taskDrawerMixin],
 
   data() {
     return {
-      drawerMode: '', // 'detail'/'editing'/ ''
-      isEditingMode: false,
+      priorityMarks,
       onlyNotFinished: false,
       onlyViewMine: false,
       detailDrawerVisible: false,
@@ -181,8 +198,22 @@ export default {
     ...mapGetters(['username', 'projectId', 'projectTasks', 'projectAdminName']),
   },
   methods: {
-    ...mapActions(['queryProjectTasks', 'updateTask', 'createTask']),
+    ...mapActions([
+      'updateSubTask',
+      'deleteSubTask',
+      'queryProjectTasks',
+      'updateTask',
+      'createTask',
+      'deleteTask',
+      'createSubTask',
+    ]),
     // 筛选器
+    setTaskStatus(taskToBeUpdate) {
+      if (taskToBeUpdate.isFinished) taskToBeUpdate.status = '已完成'
+      else if (new Date(taskToBeUpdate.deadline + ' 24:00:00').getTime() < Date.now())
+        taskToBeUpdate.status = '已逾期'
+      else taskToBeUpdate.status = '开发中'
+    },
     onOnlyNotFinishedChange(e) {
       this.onlyNotFinished = e.target.checked
     },
@@ -218,6 +249,14 @@ export default {
       console.log('dragEnd ', fromPriority, toPriority)
 
       if (toPriority !== fromPriority && this.selectedTask) {
+        this.$message.info(
+          this.selectedTask.taskName +
+            ' 的优先级由 ' +
+            priorityMarks[fromPriority].label +
+            ' 变更为 ' +
+            priorityMarks[toPriority].label
+        )
+
         // todo:
         const requestData = {
           username: this.username,
@@ -231,7 +270,7 @@ export default {
         this.updateTask(requestData)
           .then(() => {
             console.log('updateTaskPriority success')
-            this.updateTaskLocal({ priority: toPriority })
+            this.updateTaskLocal({ task: this.selectedTask, requestData: { priority: toPriority } })
           })
           .catch((err) => {
             this.$notification.error({
@@ -241,69 +280,19 @@ export default {
           })
       }
     },
-    // setDetailDrawerVisible(value) {
-    //   this.detailDrawerVisible = value
-    // },
-    // setEditingDrawerVisible(value) {
-    //   this.editingDrawerVisible = value
-    // },
-    // closeDrawer() {
-    //   this.setDetailDrawerVisible(false)
-    //   this.setEditingDrawerVisible(false)
-    // },
-
-    // CUD task
-    createTaskData(formData) {
-      this.tasks[formData.priority].push(formData)
-      // todo 交互
-    },
-    updateTaskData(task, formData) {
-      for (let key in formData) {
-        task[key] = formData[key]
-        this.$message.info(key + ' is set to ' + formData[key])
-      }
-      // todo 交互
-    },
-    deleteTaskData(task) {
-      const taskArr = this.tasks[task.priority].tasks
-      const toDeleteIndex = taskArr.indexOf(taskArr.find((t) => t.taskId == task.taskId))
-      taskArr.splice(toDeleteIndex, 1)
-    },
-
-    // CUD sub task
-    createSubTaskData(task, formData) {
-      // todo todo todo
-      // todo 交互
-      task.subTasks.push(formData)
-    },
-    updateSubTaskData(task, subTask, formData) {
-      for (var key in formData) {
-        subTask[key] = formData[key]
-      }
-      // todo 交互
-    },
-    deleteSubTaskData(task, subTask) {
-      const subTaskArr = task.subTasks
-      const toDeleteIndex = subTaskArr.indexOf(
-        subTaskArr.find((t) => t.taskName == subTask.taskName)
-      )
-      subTaskArr.splice(toDeleteIndex, 1)
-      // todo 交互
-    },
-
-    tryUpdateTask($event) {
+    tryUpdateSubTask($event) {
       this.loading = true
 
-      console.log('$event', $event)
+      console.log('$event: ', $event)
 
-      this.updateTask($event)
+      this.updateSubTask($event.requestData)
         .then((res) => {
           console.log('更新任务信息成功')
-          this.updateTaskLocal($event)
+          this.updateSubTaskLocal($event)
         })
         .catch((err) => {
           this.$notification.error({
-            message: '更新任务信息成功失败',
+            message: '更新子任务信息成功失败',
             description: err.message,
           })
         })
@@ -312,31 +301,83 @@ export default {
           this.loading = false
         })
     },
-    updateTaskLocal(taskInfo) {
-      console.log('taskInfo: ', taskInfo)
+    tryUpdateTask($event) {
+      this.loading = true
 
-      if ('priority' in taskInfo) {
-        const oldPriority = this.selectedTask.priority
+      console.log('$event: ', $event)
+
+      this.updateTask($event.requestData)
+        .then((res) => {
+          console.log('更新任务信息成功')
+          this.updateTaskLocal($event)
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '更新任务信息失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
+    updateSubTaskLocal({ subTask: subTaskToBeUpdate, requestData: subTaskInfo }) {
+      Object.keys(subTaskInfo).forEach((key) => {
+        if (key in subTaskToBeUpdate) subTaskToBeUpdate[key] = subTaskInfo[key]
+      })
+
+      this.setTaskStatus(subTaskToBeUpdate)
+    },
+    updateTaskLocal({ task: taskToBeUpdate, requestData: taskInfo }) {
+      if (taskToBeUpdate.subTasks && 'priority' in taskInfo) {
+        console.log('fuckkkkkkkkkkkkkkkkkkkkk')
+        const oldPriority = taskToBeUpdate.priority
 
         const index = this.tasks[oldPriority].tasks.findIndex(
-          (task) => task.taskId === this.selectedTask.taskId
+          (task) => task.taskId === taskToBeUpdate.taskId
         )
 
         if (index !== -1) {
           this.tasks[oldPriority].tasks.splice(index, 1)
-          this.tasks[taskInfo.priority].tasks.unshift(this.selectedTask)
+          this.tasks[taskInfo.priority].tasks.unshift(taskToBeUpdate)
         }
       }
 
+      if ('deadline' in taskInfo && taskToBeUpdate.subTasks) {
+        taskToBeUpdate.subTasks.forEach((subTask) => {
+          subTask.deadline = taskInfo.deadline
+          this.setTaskStatus(subTask)
+        })
+      }
+
       Object.keys(taskInfo).forEach((key) => {
-        if (key in this.selectedTask) this.selectedTask[key] = taskInfo[key]
+        if (key in taskToBeUpdate) taskToBeUpdate[key] = taskInfo[key]
       })
+
+      this.setTaskStatus(taskToBeUpdate)
+    },
+    tryDeleteSubTask($event) {
+      this.deleteSubTask($event.requestData)
+        .then(() => {
+          console.log('删除子任务成功')
+          this.deleteSubTaskLocal($event.subTask)
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '删除子任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+        })
     },
     tryDeleteTask($event) {
-      this.deleteTask($event)
+      this.deleteTask($event.requestData)
         .then(() => {
           console.log('删除任务成功')
-          this.deleteTaskLocal()
+          this.deleteTaskLocal($event.task)
         })
         .catch((err) => {
           this.$notification.error({
@@ -348,11 +389,19 @@ export default {
           this.closeDrawer()
         })
     },
-    deleteTaskLocal() {
-      const oldPriority = this.selectedTask.priority
+    deleteSubTaskLocal(subTask) {
+      if (this.selectedTask.subTasks) {
+        const stIndex = this.selectedTask.subTasks.findIndex((st) => st.taskId === subTask.taskId)
+
+        if (stIndex !== -1 && this.selectedTask.subTasks)
+          this.selectedTask.subTasks.splice(stIndex, 1)
+      }
+    },
+    deleteTaskLocal(taskToBeDelete) {
+      const oldPriority = taskToBeDelete.priority
 
       const index = this.tasks[oldPriority].tasks.findIndex(
-        (task) => task.taskId === this.selectedTask.taskId
+        (task) => task.taskId === taskToBeDelete.taskId
       )
 
       if (index !== -1) {
@@ -371,13 +420,32 @@ export default {
         this.tasks.find((taskList) => taskList.priority === task.priority).tasks.push(task)
       })
     },
+    tryCreateSubTask($event) {
+      console.log('!!!!!!!!!!!!!!!!!!!!!!!!')
+
+      this.createSubTask($event.requestData)
+        .then((res) => {
+          console.log(('创建子任务成功, res', res))
+          this.createSubTaskLocal({ subTask: res.data.subtask })
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '创建子任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
     tryCreateTask($event) {
       this.loading = true
 
-      this.createTask($event)
+      this.createTask($event.requestData)
         .then((res) => {
           console.log('创建任务成功')
-          this.createTaskLocal(res.data.task)
+          this.createTaskLocal({ task: res.data.task })
         })
         .catch((err) => {
           console.log(err)
@@ -391,13 +459,13 @@ export default {
           this.loading = false
         })
     },
-    createTaskLocal(newTask) {
+    createSubTaskLocal({ subTask: newSubTask }) {
+      console.log('newSubTask: ', newSubTask)
+      this.selectedTask.subTasks.push(newSubTask)
+    },
+    createTaskLocal({ task: newTask }) {
       this.tasks[newTask.priority].tasks.unshift(newTask)
     },
-    // openCreateDrawer() {
-    //   this.resetSelectedTask()
-    //   this.setEditingDrawerVisible(true)
-    // },
     resetSelectedTask() {
       this.selectedTask = {
         taskName: '',
@@ -448,6 +516,20 @@ export default {
   },
   created() {
     this.reloadTasks()
+
+    eventBus.$on('task-update', this.tryUpdateTask)
+
+    eventBus.$on('sub-task-delete', this.tryDeleteSubTask)
+
+    eventBus.$on('sub-task-finish', this.tryUpdateSubTask)
+
+    eventBus.$on('sub-task-create', this.tryCreateSubTask)
+
+    eventBus.$on('open-sub-drawer', ($event) => {
+      console.log('!!!!!!!!!!!!!!!!!!')
+      this.selectedSubTask = $event
+      this.enterSubEditingMode(true)
+    })
   },
 }
 </script>

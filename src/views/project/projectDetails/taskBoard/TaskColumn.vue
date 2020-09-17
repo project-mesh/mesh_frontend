@@ -12,9 +12,13 @@
         :animation="200"
         :empty-insert-threshold="200"
         :move="moveTask"
-        @end="endMovingTask"
+        @end="onDragEnd"
       >
-        <transition-group type="transition" :name="!drag ? 'flip-list' : null">
+        <transition-group
+          :data-priority="priority"
+          type="transition"
+          :name="!drag ? 'flip-list' : null"
+        >
           <task-info
             class="task-info"
             v-for="(task, taskIndex) in tasks"
@@ -98,7 +102,8 @@ export default {
   },
   methods: {
     selectTask: function (task) {
-      this.$emit('select-task', task)
+      console.log('hello')
+      this.$emit('show-task-detail', task)
     },
     updateTaskData: function (task, formData) {
       this.$emit('update-task', task, formData)
@@ -130,6 +135,15 @@ export default {
         this.movingTask = null
         this.targetPriority = null
       }
+      return true
+    },
+    // 新建任务等等
+    showTextarea: function () {
+      this.textareaVisible = true
+      this.$emit('edit-new-task-name', this.priority)
+      console.log(this.$refs.textarea)
+      console.log(this.$refs.textarea.focus)
+      this.$refs.textarea.focus()
     },
 
     finishEditing: function () {
@@ -146,7 +160,9 @@ export default {
     addTask: function () {
       this.$emit('add-task', this.priority)
     },
-
+    onDragEnd(evt) {
+      this.$emit('end', evt)
+    },
     handleOk: function () {
       // todo: something
       this.visible = false
