@@ -76,7 +76,6 @@ import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
-import { connect } from 'echarts/lib/echarts'
 
 export default {
   components: {

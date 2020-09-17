@@ -1,20 +1,24 @@
 <template>
   <a-drawer :title="task.taskName" width="540" :closable="true" :visible="visible" @close="close">
     <a-card>
-      <a-descriptions class="drawer-content" :column="3">
-        <a-descriptions-item label="创建者">{{ task.founder }}</a-descriptions-item>
+      <a-descriptions class="drawer-content" :column="4">
+        <a-descriptions-item label="创建者" span="2">
+          <avatar-featured-user :username="task.founder" />
+        </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
           {{ task.createTime | dateFilter }}
         </a-descriptions-item>
 
-        <a-descriptions-item label="负责人">{{ task.principal }}</a-descriptions-item>
+        <a-descriptions-item label="负责人" span="2">
+          <avatar-featured-user :username="task.principal" />
+        </a-descriptions-item>
         <a-descriptions-item label="截止日期" span="2" contenteditable="true">
           {{ task.deadline }}
         </a-descriptions-item>
-        <a-descriptions-item label="优先级" span="3">
+        <a-descriptions-item label="优先级" span="4">
           {{ task.priority | formatPriority }}
         </a-descriptions-item>
-        <a-descriptions-item label="描述" span="3">
+        <a-descriptions-item label="描述" span="4">
           {{ task.description }}
         </a-descriptions-item>
         <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
@@ -49,9 +53,12 @@
 <script>
 import SubTaskList from './SubTaskList'
 import { priorityMarks } from './common/priority'
+import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     SubTaskList,
+    AvatarFeaturedUser,
   },
   data() {
     return {
@@ -143,13 +150,20 @@ export default {
       this.newSubTaskName = ''
     },
 
-    finishSubTask: function (task) {},
     close: function () {
       this.$emit('change-drawer', '')
     },
   },
+  computed: {
+    ...mapGetters(['projectMembers']),
+  },
   filters: {
     formatPriority: (priority) => priorityMarks[priority].label,
+    getUserInfo: function (username) {
+      const user = this.projectMembers.find((member) => member.username === username)
+      // return this.teamMembers.find((member) => member.username === username).avatar
+      return user ? user : { username: username, avatar: '' }
+    },
   },
 }
 </script>

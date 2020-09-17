@@ -1,7 +1,11 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
   <div>
-    <a-card class="task-list" style="display: inline-block" :title="priorityMarks[priority].label">
+    <a-card
+      class="task-column"
+      style="display: inline-block"
+      :title="priorityMarks[priority].label"
+    >
       <draggable
         group="taskGroup"
         :list="tasks"

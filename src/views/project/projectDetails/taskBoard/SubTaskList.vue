@@ -26,12 +26,18 @@
         />
       </div>
       <a-descriptions v-if="!isEditing" class="drawer-content" size="small" column="4">
-        <a-descriptions-item label="创建者" span="2">{{ subTask.founder }}</a-descriptions-item>
-        <a-descriptions-item label="负责人" span="2">{{ subTask.principal }}</a-descriptions-item>
+        <a-descriptions-item label="创建者" span="2">
+          <avatar-featured-user :username="subTask.founder" />
+        </a-descriptions-item>
+        <a-descriptions-item label="负责人" span="2">
+          <avatar-featured-user :username="subTask.principal" />
+        </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="4">
           {{ subTask.createTime | dateFilter }}
         </a-descriptions-item>
-        <a-descriptions-item label="描述" span="4">{{ subTask.description }}</a-descriptions-item>
+        <a-descriptions-item label="描述" span="4">
+          {{ subTask.description }}
+        </a-descriptions-item>
       </a-descriptions>
       <a-form v-else :form="form">
         <a-form-item
@@ -40,7 +46,7 @@
           :wrapper-col="wrapperCol"
           :required="true"
         >
-          <a-select @focus="focus" ref="select" @change="handleChange">
+          <a-select @change="handleChange">
             <a-select-option
               v-for="member in projectMembers"
               :key="member.username"
@@ -58,6 +64,7 @@
         >
           <a-textarea
             rows="1"
+            contenteditable="true"
             placeholder="请输入该子任务的详细描述"
             v-decorator="[
               'description',
@@ -84,8 +91,12 @@
 </template>
 
 <script>
+import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
 export default {
+  components: {
+    AvatarFeaturedUser,
+  },
   data() {
     return {
       labelCol: { lg: { span: 6 }, sm: { span: 4 } },
@@ -129,7 +140,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['username', 'projectId']),
+    ...mapGetters(['username', 'projectId', 'projectMembers']),
   },
   methods: {
     createSubTask: function (formData) {
@@ -154,15 +165,14 @@ export default {
 
     editSubTask: function (subTask) {
       this.isEditing = !this.isEditing
-      this.$message.info(subTask.subTaskName)
     },
 
     finishAdding: function () {
-      this.$message.info('finishAdding')
       if (this.newSubTaskName) {
         const formData = {
           taskName: this.newSubTaskName,
           taskId: this.taskId,
+          isFinished: false,
           description: '',
           principal: this.username,
         }
@@ -170,7 +180,6 @@ export default {
       }
     },
     exitAdding: function () {
-      this.$message.info('exit')
       this.newSubTaskName = ''
     },
   },
