@@ -6,7 +6,7 @@
     </div>
     <div v-else class="editable-cell-text-wrapper">
       <slot></slot>
-      <a-icon type="edit" class="editable-cell-icon" @click="edit" />
+      <a :disabled="disabled" @click="edit"><a-icon type="edit" class="editable-cell-icon" /></a>
     </div>
   </div>
 </template>
@@ -25,6 +25,10 @@ export default {
     validators: {
       type: Array,
       default: () => [],
+    },
+    disabled: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -61,16 +65,13 @@ export default {
 .editable-cell {
   position: relative;
 }
-
 .editable-cell-input-wrapper,
 .editable-cell-text-wrapper {
   padding-right: 24px;
 }
-
 .editable-cell-text-wrapper {
   padding: 5px 24px 5px 5px;
 }
-
 .editable-cell-icon,
 .editable-cell-icon-check {
   position: absolute;
@@ -78,25 +79,20 @@ export default {
   width: 20px;
   cursor: pointer;
 }
-
 .editable-cell-icon {
   line-height: 18px;
   display: none;
 }
-
 .editable-cell-icon-check {
   line-height: 28px;
 }
-
 .editable-cell:hover .editable-cell-icon {
   display: inline-block;
 }
-
 .editable-cell-icon:hover,
 .editable-cell-icon-check:hover {
   color: #108ee9;
 }
-
 .editable-add-btn {
   margin-bottom: 8px;
 }
