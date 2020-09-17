@@ -29,7 +29,7 @@
           ></task-info>
         </transition-group>
         <div slot="footer">
-          <a-button block type="primary" @click="addTask">
+          <a-button block type="primary" @click="addTask" v-if="username === projectAdminName">
             <a-icon type="plus" />
             任务
           </a-button>
@@ -94,7 +94,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['username', 'projectId']),
+    ...mapGetters(['username', 'projectId', 'projectAdminName']),
   },
   methods: {
     selectTask: function (task) {
@@ -104,9 +104,15 @@ export default {
       this.$emit('update-task', task, formData)
     },
     moveTask: function (evt) {
-      this.movingTask = evt.draggedContext.element
-      this.targetPriority = evt.relatedContext.component.$parent.$parent.priority
-      return true
+      // 设置优先级也被禁止
+
+      const m = evt.draggedContext.element
+      if (m.principal === this.username || this.username == this.projectAdminName) {
+        this.movingTask = m
+        this.targetPriority = evt.relatedContext.component.$parent.$parent.priority
+        return true
+      }
+      return false
     },
 
     endMovingTask: function () {

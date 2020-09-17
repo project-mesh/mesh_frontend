@@ -35,16 +35,7 @@
           </div>
         </a-descriptions-item>
         <a-descriptions-item label="优先级" span="2">
-          {{ task.priority | formatPriority }}
-          <!-- 在这里改优先级容易乱掉
-          <a-select
-
-            width="100%"
-            placeholder="请选择项目优先级"
-            v-model="task.priority"
-            :default-value="task.priority"
-            @change="changePriority"
-          >
+          <a-select style="width: 120px" v-if="editable.priority" v-model="task.priority">
             <a-select-option
               v-for="(priorityMark, priorityIndex) in priorityMarks"
               :key="priorityIndex"
@@ -53,8 +44,9 @@
               {{ priorityMark.label }}
             </a-select-option>
           </a-select>
-          -->
+          <span v-else>{{ priorityMarks[task.priority].label }}</span>
         </a-descriptions-item>
+
         <a-descriptions-item label="截止日期" span="4">
           <div>
             <a-date-picker
@@ -70,8 +62,16 @@
           </div>
         </a-descriptions-item>
         <a-descriptions-item label="描述" span="4">
-          {{ task.description }}
+          <a-textarea
+            v-if="editing.description"
+            :auto-size="{ minRows: 3 }"
+            placeholder="请输入任务描述"
+            v-model="task.description"
+            style="width: 440px; margin-top: 10px"
+          ></a-textarea>
+          <div v-else>{{ task.description }}</div>
         </a-descriptions-item>
+
         <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
       </a-descriptions>
       <sub-task-list

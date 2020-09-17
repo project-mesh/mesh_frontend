@@ -119,8 +119,9 @@ export default {
           principal: false,
           deadline: false,
           priority: false,
-          isFinished: false,
-          description: true,
+          isFinished: true,
+          description: false,
+          subTasks: true,
         },
         create: {
           taskName: true,
@@ -129,6 +130,7 @@ export default {
           priority: true,
           isFinished: false,
           description: true,
+          subTasks: null,
         },
         edit: {
           taskName: true,
@@ -137,6 +139,7 @@ export default {
           priority: true,
           isFinished: false,
           description: true,
+          subTasks: null,
         },
       },
 
