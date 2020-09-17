@@ -8,9 +8,7 @@
     <a-card>
       <a-descriptions class="drawer-content" :column="4">
         <a-descriptions-item label="创建者" span="2">
-          <span style="margin-left: 20px">
-            <avatar-featured-user :username="task.founder" />
-          </span>
+          <avatar-featured-user :username="task.founder" />
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
           {{ task.createTime | dateFilter }}
@@ -77,13 +75,15 @@
         <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
       </a-descriptions>
       <sub-task-list
+        :can-edit="canEdit"
         :task-id="task.taskId"
         :sub-tasks="task.subTasks"
         @update-sub-task="updateSubTask"
         @delete-sub-task="deleteSubTask"
         @create-sub-task="createSubTask"
+        @task-principal="task.principal"
       />
-      <template slot="actions" class="ant-card-actions">
+      <template slot="actions" class="ant-card-actions" v-if="canEdit">
         <a-popconfirm
           title="确认删除该任务？"
           ok-text="确认"
@@ -167,6 +167,12 @@ export default {
       },
     },
   },
+  computed: {
+    ...mapGetters(['username', 'projectId', 'projectMembers', 'projectAdminName']),
+    canEdit: function () {
+      return this.username == this.task.principal || this.username == this.projectAdminName
+    },
+  },
   methods: {
     moment,
     changeDeadline: function (dates, deadline) {
@@ -228,9 +234,6 @@ export default {
     close: function () {
       this.$emit('change-drawer', '')
     },
-  },
-  computed: {
-    ...mapGetters(['projectMembers']),
   },
   filters: {
     formatPriority: (priority) => (priorityMarks[priority] ? priorityMarks[priority].label : '空'),

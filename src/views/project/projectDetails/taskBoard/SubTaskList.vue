@@ -1,36 +1,50 @@
 <template>
-  <a-collapse accordion>
+  <a-collapse v-model="activeKey" @change="console.log(key)">
     <a-collapse-panel
       v-for="(subTask, subTaskIndex) in subTasks"
       :key="subTaskIndex"
       :header="subTask.taskName"
+      @close="onClose"
     >
       <div slot="extra">
-        <a-icon
-          class="panel-icon"
-          @click="removeSubTask($event, subTask, subTaskIndex)"
-          key="sub-delete"
-          type="delete"
-        />
-        <a-icon
-          type="edit"
-          class="panel-icon"
-          key="sub-edit"
-          @click="editSubTask(subTask)"
-        ></a-icon>
-        <a-icon
-          class="panel-icon"
-          @click="finishSubTask($event, subTask, subTaskIndex)"
-          key="sub-check-square"
-          :type="subTask.isFinished ? 'check-square' : 'border'"
-        />
+        <div v-if="!isEditing">
+          <a-icon
+            v-if="canEdit"
+            class="panel-icon"
+            @click="removeSubTask($event, subTask, subTaskIndex)"
+            key="sub-delete"
+            type="delete"
+          />
+          <a-icon
+            v-if="canEdit"
+            :type="isEditing && activeKey.includes(subTaskIndex) ? 'save' : 'edit'"
+            class="panel-icon"
+            key="sub-edit"
+            @click="editSubTask($event, subTask, subTaskIndex)"
+          ></a-icon>
+          <a-icon
+            class="panel-icon"
+            @click="finishSubTask($event, subTask, subTaskIndex)"
+            key="sub-check-square"
+            :type="subTask.isFinished ? 'check-square' : 'border'"
+          />
+        </div>
+        <div v-else>
+          <a-icon
+            v-if="canEdit"
+            :type="isEditing ? 'save' : 'edit'"
+            class="panel-icon"
+            key="sub-edit"
+            @click="editSubTask($event, subTask, subTaskIndex)"
+          ></a-icon>
+        </div>
       </div>
-      <a-descriptions v-if="!isEditing" class="drawer-content" size="small" :column="4">
+      <a-descriptions class="drawer-content" size="small" :column="4">
         <a-descriptions-item label="创建者" span="2">
           <avatar-featured-user :username="subTask.founder" />
         </a-descriptions-item>
         <a-descriptions-item label="负责人" span="2">
-          <a-select v-model="subTask.principal" :default-value="subTask.principal">
+          <a-select v-if="isEditing" v-model="subTask.principal" :default-value="subTask.principal">
             <a-select-option
               v-for="member in projectMembers"
               :key="member.username"
@@ -39,17 +53,19 @@
               <avatar-featured-user :username="member.username" />
             </a-select-option>
           </a-select>
-          <!--  <avatar-featured-user :username="subTask.principal" -->
+          <span v-else><avatar-featured-user :username="subTask.principal" /></span>
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="4">
           {{ subTask.createTime | dateFilter }}
         </a-descriptions-item>
         <a-descriptions-item label="描述" span="4">
-          {{ subTask.description }}
+          <a-textarea v-if="isEditing" v-model="subTask.description"></a-textarea>
+
+          <span v-else>{{ subTask.description }}</span>
         </a-descriptions-item>
       </a-descriptions>
     </a-collapse-panel>
-    <a-collapse-panel disabled :show-arrow="false">
+    <a-collapse-panel v-if="canEdit" disabled :show-arrow="false" :force-render="false">
       <a-input
         v-model="newSubTaskName"
         slot="header"
@@ -73,9 +89,8 @@ export default {
     return {
       labelCol: { lg: { span: 6 }, sm: { span: 4 } },
       wrapperCol: { lg: { span: 16 }, sm: { span: 12 } },
-
       isEditing: false,
-      activeKey: [],
+      activeKey: new Array(),
       newSubTaskName: '',
       defaultSubTask: {
         taskId: 'aklgnlkzzzld',
@@ -89,6 +104,10 @@ export default {
     }
   },
   props: {
+    canEdit: {
+      type: Boolean,
+      default: false,
+    },
     taskId: {
       type: String,
       required: true,
@@ -112,7 +131,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['username', 'projectId', 'projectMembers']),
+    ...mapGetters(['username', 'projectId', 'projectMembers', 'projectAdminName']),
   },
   methods: {
     createSubTask: function (formData) {
@@ -122,6 +141,7 @@ export default {
     updateSubTask: function (subTask, formData) {
       this.$emit('update-sub-task', subTask, formData)
     },
+
     deleteSubTask: function (subTask) {
       this.$emit('delete-sub-task', subTask)
     },
@@ -129,16 +149,25 @@ export default {
     changePrincipal: function (evt, subTask) {
       console.log(evt)
     },
-    removeSubTask: function (evt, subTask, subTaskIndex) {
+    removeSubTask: function (event, subTask, subTaskIndex) {
       event.stopPropagation()
+      this.activeKey = new Array()
       this.$emit('delete-sub-task', subTask)
     },
-    finishSubTask: function (evt, subTask, subTaskIndex) {
+    finishSubTask: function (event, subTask, subTaskIndex) {
       event.stopPropagation()
-      this.$emit('update-sub-task', subTask, { isFinished: !subTask.isFinished })
+
+      if (this.canEdit) this.$emit('update-sub-task', subTask, { isFinished: !subTask.isFinished })
     },
 
-    editSubTask: function (subTask) {
+    editSubTask: function (event, subTask, subTaskIndex) {
+      this.$message.info(this.activeKey.join())
+      if (this.isEditing) {
+        this.$emit('update-sub-task', subTask, {
+          isFinished: !subTask.isFinished,
+          description: this.subTask.description,
+        })
+      }
       this.isEditing = !this.isEditing
     },
 
@@ -156,6 +185,10 @@ export default {
     },
     exitAdding: function () {
       this.newSubTaskName = ''
+    },
+    onClose: function () {
+      this.activeKey = new Array()
+      this.isEditing = false
     },
   },
 }

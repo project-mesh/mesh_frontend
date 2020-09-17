@@ -4,13 +4,11 @@
       <a-input placeholder="请输入任务标题" v-if="editing.taskName" v-model="task.taskName" />
       <span v-else>{{ task.taskName }}</span>
     </div>
-    -
+
     <a-card>
       <a-descriptions class="drawer-content" :column="4">
         <a-descriptions-item label="创建者" span="2">
-          <span style="margin-left: 20px">
-            <avatar-featured-user :username="task.founder" />
-          </span>
+          <avatar-featured-user style="margin-left: 12px" :username="task.founder" />
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
           {{ moment().format('YYYY-MM-DD') }}
@@ -19,11 +17,11 @@
         <a-descriptions-item label="负责人" span="2">
           <div>
             <a-select
+              :dropdown-match-select-width="false"
+              style="width: 150px"
               v-if="editing.principal"
-              width="100%"
-              placeholder="请选择项目负责人"
+              placeholder="负责人"
               v-model="task.principal"
-              :default-value="task.principal"
             >
               <a-select-option
                 v-for="member in projectMembers"
@@ -37,14 +35,12 @@
           </div>
         </a-descriptions-item>
         <a-descriptions-item label="优先级" span="2">
-          {{ task.priority }}
-          <!--      在这里改优先级容易乱掉
           <a-select
-            width="100%"
-            placeholder="请选择项目优先级"
+            style="width: 120px"
+            :dropdown-match-select-width="false"
+            v-if="editable.priority"
             v-model="task.priority"
-            :default-value="task.priority"
-            @change="changePriority"
+            :default-value="1"
           >
             <a-select-option
               v-for="(priorityMark, priorityIndex) in priorityMarks"
@@ -52,10 +48,9 @@
               :value="priorityIndex"
             >
               {{ priorityMark.label }}
-        
             </a-select-option>
           </a-select>
-          -->
+          <span v-else>{{ priorityMarks[task.priority].label }}</span>
         </a-descriptions-item>
 
         <a-descriptions-item label="截止日期" span="4">
@@ -110,7 +105,6 @@
   </a-drawer>
 </template>
 <script>
-import { priorityMarks } from './common/priority'
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
@@ -121,8 +115,12 @@ export default {
   data() {
     return {
       mode: 'create',
-      priorityMarks: priorityMarks,
-
+      priorityMarks: {
+        0: { label: '较低', color: 'blue' },
+        1: { label: '普通', color: 'green' },
+        2: { label: '较高', color: 'orange' },
+        3: { label: '极高', color: 'red' },
+      },
       editing: {
         taskName: true,
         priority: true,
@@ -192,14 +190,14 @@ export default {
     },
 
     close: function () {
+      this.task.priority = this.priority
       this.$emit('change-drawer', '')
     },
   },
   computed: {
     ...mapGetters(['projectMembers']),
   },
-  filters: {
-    formatPriority: (priority) => this.priorityMarks[priority].label,
-  },
 }
 </script>
+
+<style></style>
