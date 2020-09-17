@@ -1,7 +1,7 @@
 <template>
   <vue-friendly-iframe
     class="vue-friendly-iframe"
-    src="https://xuedixuedi.github.io/online_md_edit/text.html"
+    src="https://sagecell.sagemath.org/"
     scrolling="no"
   >
     您的浏览器不支持 iframe 标签，请考虑更换 Edge/Firefox/Chrome 等现代浏览器

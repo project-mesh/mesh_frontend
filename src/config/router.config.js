@@ -230,7 +230,6 @@ export const asyncRouterMap = [
           permission: ['user'],
         },
         children: [
-          // 个人中心
           {
             path: '/toolbox/tool1',
             name: 'calculate',
@@ -238,10 +237,22 @@ export const asyncRouterMap = [
             meta: { title: '计算器', keepAlive: true, permission: ['user'], icon: 'calculator' },
           },
           {
+            path: '/toolbox/tool2',
+            name: 'sagemath',
+            component: () => import('@//views/toolBox/Sagemath'),
+            meta: { title: '数值分析', hideHeader: true, permission: ['user'], icon: 'code' },
+          },
+          {
             path: '/toolbox/tool3',
             name: 'markdown',
             component: () => import('@/views/toolBox/MarkDown'),
             meta: { title: 'MarkDown', keepAlive: true, permission: ['user'], icon: 'medium' },
+          },
+          {
+            path: '/toolbox/tool4',
+            name: 'drawio',
+            component: () => import('@/views/toolBox/DrawIO'),
+            meta: { title: '流程图', keepAlive: true, permission: ['user'], icon: 'apartment' },
           },
         ],
       },
