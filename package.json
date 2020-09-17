@@ -25,6 +25,7 @@
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0",
     "md5": "^2.2.1",
+    "meetyou-ali-oss": "^1.0.9",
     "mockjs2": "1.0.8",
     "moment": "^2.28.0",
     "nprogress": "^0.2.0",
