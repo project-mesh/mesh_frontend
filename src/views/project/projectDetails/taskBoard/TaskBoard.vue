@@ -8,7 +8,7 @@
     delete-sub-task:  task, subTask
     update-sub-task:  task, subTask, formData
 
-        -->
+    -->
     <creating-task-detail
       :visible="drawerMode === 'create'"
       :editable="editable.create"
@@ -16,6 +16,20 @@
       @create-task="createTaskData"
       @change-drawer="changeDrawer"
     ></creating-task-detail>
+    <task-detail
+      :visible="drawerMode === 'edit'"
+      :editable="editable.edit"
+      :task="selectedTask"
+      @create-task="createTaskData"
+      @update-task="updateTaskData"
+      @delete-task="deleteTaskData"
+      @update-sub-task="updateSubTaskData"
+      @delete-sub-task="deleteSubTaskData"
+      @create-sub-task="createSubTaskData"
+      @change-drawer="changeDrawer"
+      @taskUpdate="tryUpdateTask"
+      @taskDelete="tryDeleteTask"
+    ></task-detail>
     <task-detail
       :visible="drawerMode === 'display'"
       :editable="editable.display"
@@ -30,16 +44,6 @@
       @taskUpdate="tryUpdateTask"
       @taskDelete="tryDeleteTask"
     ></task-detail>
-    <editing-task-detail
-      :visible="drawerMode === 'edit'"
-      @edit="enterEditingMode"
-      @change-drawer="changeDrawer"
-      :task="selectedTask"
-      :loading="loading"
-      @close="setEditingDrawerVisible(false)"
-      @taskUpdate="tryUpdateTask"
-      @taskCreate="tryCreateTask"
-    ></editing-task-detail>
     <span
       style="
          {
@@ -119,6 +123,14 @@ export default {
           description: true,
         },
         create: {
+          taskName: true,
+          principal: true,
+          deadline: true,
+          priority: true,
+          isFinished: false,
+          description: true,
+        },
+        edit: {
           taskName: true,
           principal: true,
           deadline: true,

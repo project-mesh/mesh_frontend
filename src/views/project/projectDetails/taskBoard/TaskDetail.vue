@@ -188,7 +188,7 @@ export default {
     },
     editTask: function (task) {
       this.$message.warning('进入编辑模式')
-      this.$emit('change-drawer', 'editing')
+      this.$emit('change-drawer', 'edit')
     },
 
     finishEditing: function () {
@@ -233,7 +233,7 @@ export default {
     ...mapGetters(['projectMembers']),
   },
   filters: {
-    formatPriority: (priority) => priorityMarks[priority].label,
+    formatPriority: (priority) => (priorityMarks[priority] ? priorityMarks[priority].label : '空'),
   },
 }
 </script>
