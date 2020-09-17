@@ -109,9 +109,9 @@ const user = {
       })
     },
     Logout({ commit }) {
+      commit('SET_USERNAME', '')
       commit('SET_ROLE', '')
       commit('SET_ROUTERS', [], { root: true })
-      storage.remove(ACCESS_TOKEN)
     },
     updatePreferenceColor({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
