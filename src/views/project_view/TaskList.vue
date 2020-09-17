@@ -1,7 +1,12 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
   <div>
-    <a-card class="task-list" style="display: inline-block" :title="priorityName">
+    <a-card
+      class="task-list"
+      style="display: inline-block"
+      :title="priorityName"
+      :head-style="{ color: addclassStatus(priorityName) }"
+    >
       <draggable
         group="taskGroup"
         :list="tasks"
@@ -185,6 +190,22 @@ export default {
     moveTask: function (evt, originalEvt) {
       this.setTask(evt.draggedContext.element)
       return true
+    },
+    addclassStatus(priorityName) {
+      let color = ''
+      if (priorityName == '极高') {
+        color = '#FF0000'
+      }
+      if (priorityName == '较高') {
+        color = '#FF7F00'
+      }
+      if (priorityName == '普通') {
+        color = '#238E23'
+      }
+      if (priorityName == '较低') {
+        color = '#007FFF'
+      }
+      return color
     },
   },
 }
