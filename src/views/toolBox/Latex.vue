@@ -1,15 +1,14 @@
 <template>
-  <iframe class="vue-friendly-iframe" id="iframe" src="https://www.processon.com/"></iframe>
+  <vue-friendly-iframe class="vue-friendly-iframe" src="http://www.baidu.com">
+    IE：你们都看我干吗，我现在也是支持的
+  </vue-friendly-iframe>
 </template>
 
 <script></script>
 
 <style>
-.vue-friendly-iframe {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  height: 1000px;
+.vue-friendly-iframe iframe {
+  height: 60em;
   width: 100%;
 }
 </style>

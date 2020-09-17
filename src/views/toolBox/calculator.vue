@@ -1,8 +1,8 @@
 <template>
   <div class="calculator">
     <button @click="changeModeEvent" class="toggle-button">
-      <p v-if="changeMode">Show Advanced Mode &nbsp; &nbsp; &#9864;</p>
-      <p v-else>Show Basic Mode &nbsp; &nbsp; &#9862;</p>
+      <p v-if="changeMode">显示高级模式 &nbsp; &nbsp; &#9864;</p>
+      <p v-else>显示基本模式 &nbsp; &nbsp; &#9862;</p>
     </button>
     <div class="results">
       <input class="input" v-model="current" />
@@ -13,7 +13,7 @@
       <button class="button" @click="press">9</button>
       <button class="button" @click="press">*</button>
       <button class="button" @click="press">&#60;=</button>
-      <button class="button" @click="press">C</button>
+      <button class="button" @click="press">AC</button>
       <button class="button" @click="press">4</button>
       <button class="button" @click="press($event)">5</button>
       <button class="button" @click="press">6</button>
@@ -38,7 +38,7 @@
       <button class="button" @click="press">tan</button>
       <button class="button" @click="press">x^</button>
       <button class="button" @click="press">&#60;=</button>
-      <button class="button" @click="press">C</button>
+      <button class="button" @click="press">AC</button>
       <button class="button" @click="press">log</button>
       <button class="button" @click="press">ln</button>
       <button class="button" @click="press">e</button>
@@ -87,7 +87,7 @@ export default {
       let key = event.target.textContent
       if (
         key != '=' &&
-        key != 'C' &&
+        key != 'AC' &&
         key != '*' &&
         key != '/' &&
         key != '√' &&
@@ -116,7 +116,7 @@ export default {
         } else {
           me.current = eval(me.current)
         }
-      } else if (key === 'C') {
+      } else if (key === 'AC') {
         me.current = ''
       } else if (key === '*') {
         me.current += '*'
@@ -155,7 +155,6 @@ export default {
       } else if (key === 'x^') {
         me.current += '^'
       } else if (key === 'x !') {
-        let number = 1
         if (me.current === 0) {
           me.current = '1'
         } else if (me.current < 0) {
@@ -186,16 +185,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .calculator {
-  width: 440px;
+  width: 80%;
   padding: 20px;
   border-radius: 5px;
-  margin: 12% auto;
+  margin: auto;
   font-size: 16px;
   background-color: hsl(0, 0%, 20%);
 }
 .input {
-  width: 420px;
-  height: 50px;
+  width: 100%;
+  height: 2em;
   border-radius: 0px;
   border: 1px solid hsl(0, 0%, 0%);
   background-color: #333333;
@@ -212,9 +211,9 @@ export default {
 }
 .button {
   margin: 3px;
-  width: 63px;
+  width: 15%;
   border: 1px solid hsl(0, 0%, 5%);
-  height: 30px;
+  height: 3em;
   border-radius: 4px;
   color: hsl(0, 0%, 85%);
   background-color: hsl(0, 0%, 10%);
@@ -227,8 +226,8 @@ export default {
   justify-content: space-evenly;
 }
 .equal-sign {
-  background-color: hsl(120, 100%, 25%);
-  width: 133px;
+  background-color: #03a9f4;
+  width: 31.5%;
 }
 .toggle-button {
   border: none;

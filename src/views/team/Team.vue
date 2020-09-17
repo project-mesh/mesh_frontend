@@ -1,5 +1,21 @@
 <template>
-  <a-card style="margin-top: 24px" :bordered="false" :title="teamName">
+  <a-card style="margin-top: 24px" :bordered="false">
+    <template slot="title">
+      <div>
+        <slot name="title">
+          <editable-cell
+            :text="teamName"
+            :editing="teamNameEditing"
+            :validators="[[isNotEmpty, '团队名不能为空']]"
+            :disabled="username !== teamAdminName"
+            @change="handleRename($event)"
+            @editStatusChange="handleEditStatusChange"
+          >
+            <span>{{ teamName }}</span>
+          </editable-cell>
+        </slot>
+      </div>
+    </template>
     <div class="admin-info">
       <div style="display: inline">管理员：{{ teamAdminName }}</div>
       <div style="display: inline; margin-left: 5%">
@@ -35,9 +51,7 @@
             :data-source="teamMemberTask(item.username)"
           >
             <a-list-item slot="renderItem" slot-scope="task">
-              <router-link
-                :to="{ name: 'statistics', query: { teamId, projectId: task.projectId } }"
-              >
+              <router-link :to="{ name: 'taskList', query: { teamId, projectId: task.projectId } }">
                 {{ task.taskName }}
               </router-link>
             </a-list-item>
@@ -56,7 +70,7 @@
       width="500px"
       centered
       @cancel="hideModal"
-      @ok="handleOk"
+      @ok="handleInviteUsers"
       :ok-button-props="{
         props: {
           disabled: !selectedUsers || selectedUsers.length === 0,
@@ -102,12 +116,15 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
-import pagination from '@/utils/mixins/paginationMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
+import EditableCell from './EditableCell'
+import validator from 'validator'
 
 export default {
-  name: 'StandardList',
   mixins: [teamMixin, paginationMixin],
+  components: {
+    EditableCell,
+  },
   data() {
     return {
       status: 'all',
@@ -115,6 +132,7 @@ export default {
       month: null,
       day: null,
       modalVisible: false,
+      teamNameEditing: false,
       labelCol: {
         xs: { span: 24 },
         sm: { span: 7 },
@@ -156,7 +174,7 @@ export default {
           key: 'username',
           scopedSlots: { customRender: 'username' },
           ellipsis: true,
-          sorter: (a, b) => a.username < b.username,
+          sorter: (a, b) => (a.username < b.username ? 1 : -1),
         },
         {
           title: '职位',
@@ -186,7 +204,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryUser', 'joinTeam']),
+    ...mapActions(['queryUser', 'joinTeam', 'updateTeam']),
     addmember() {},
     dateChange(timeDate) {
       const date = new Date(timeDate) //获取一个时间对象
@@ -221,7 +239,7 @@ export default {
       this.loading = false
       this.users = []
     },
-    handleOk() {
+    handleInviteUsers() {
       this.inviting = true
 
       if (!this.selectedUsers || this.selectedUsers.length === 0) return this.hideModal()
@@ -257,8 +275,34 @@ export default {
       this.inviting = false
       this.hideModal()
     },
+    handleRename(value) {
+      console.log(value)
+      this.updateTeam({
+        username: this.username,
+        teamId: this.teamId,
+        teamName: value,
+      })
+        .then((res) => {
+          console.log('rename team success')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: 'rename team failed',
+            description: err.msg,
+          })
+        })
+        .finally(() => {
+          this.teamNameEditing = false
+        })
+    },
+    handleEditStatusChange($event) {
+      this.teamNameEditing = $event
+    },
     teamMemberTask(username) {
       return this.teamTasks.filter((task) => task.principal === username)
+    },
+    isNotEmpty(value) {
+      return !validator.isEmpty(value, { ignore_whitespace: true })
     },
     onChange(pagination, filters, sorter) {
       console.log('params', pagination, filters, sorter)

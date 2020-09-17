@@ -9,6 +9,9 @@ import router from './router'
 import store from './store'
 import themePluginConfig from '../config/themePluginConfig'
 import VCharts from 'v-charts'
+import VueFriendlyIframe from 'vue-friendly-iframe'
+
+Vue.use(VueFriendlyIframe)
 
 import Blob from './excel/Blob'
 import Export2Excel from './excel/Export2Excel.js'
