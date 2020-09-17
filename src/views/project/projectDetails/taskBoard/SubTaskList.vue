@@ -1,8 +1,8 @@
 <template>
-  <a-collapse v-model="activeKey" @change="console.log(key)">
+  <a-collapse v-model="activeKey" @change="xx" accordion>
     <a-collapse-panel
       v-for="(subTask, subTaskIndex) in subTasks"
-      :key="subTaskIndex"
+      :key="subTaskIndex.toString()"
       :header="subTask.taskName"
       @close="onClose"
     >
@@ -17,7 +17,9 @@
           />
           <a-icon
             v-if="canEdit"
-            :type="isEditing && activeKey.includes(subTaskIndex) ? 'save' : 'edit'"
+            :type="
+              isEditing && activeKey && activeKey === subTaskIndex.toString() ? 'save' : 'edit'
+            "
             class="panel-icon"
             key="sub-edit"
             @click="editSubTask($event, subTask, subTaskIndex)"
@@ -59,8 +61,13 @@
           {{ subTask.createTime | dateFilter }}
         </a-descriptions-item>
         <a-descriptions-item label="描述" span="4">
-          <a-textarea v-if="isEditing" v-model="subTask.description"></a-textarea>
-
+          <a-textarea
+            v-if="isEditing"
+            v-model="subTask.description"
+            :auto-size="{ minRows: 2 }"
+            placeholder="请输入任务描述"
+            style="width: 400px; margin-top: 10px"
+          ></a-textarea>
           <span v-else>{{ subTask.description }}</span>
         </a-descriptions-item>
       </a-descriptions>
@@ -81,6 +88,7 @@
 <script>
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
+import { subTasks } from '../../../../mock/services/data'
 export default {
   components: {
     AvatarFeaturedUser,
@@ -89,8 +97,8 @@ export default {
     return {
       labelCol: { lg: { span: 6 }, sm: { span: 4 } },
       wrapperCol: { lg: { span: 16 }, sm: { span: 12 } },
-      isEditing: false,
-      activeKey: new Array(),
+      selectedSubTask: null,
+      activeKey: null,
       newSubTaskName: '',
       defaultSubTask: {
         taskId: 'aklgnlkzzzld',
@@ -151,22 +159,28 @@ export default {
     },
     removeSubTask: function (event, subTask, subTaskIndex) {
       event.stopPropagation()
-      this.activeKey = new Array()
+      this.activeKey = undefined
       this.$emit('delete-sub-task', subTask)
     },
     finishSubTask: function (event, subTask, subTaskIndex) {
-      event.stopPropagation()
-
       if (this.canEdit) this.$emit('update-sub-task', subTask, { isFinished: !subTask.isFinished })
     },
-
+    xx: function (e) {
+      console.log(e + ' ' + this.isEditing)
+      if (e == undefined && this.isEditing) {
+        this.isEditing = false
+      }
+      if (!this.isEditing && e) {
+        this.activeKey = e
+      }
+    },
     editSubTask: function (event, subTask, subTaskIndex) {
-      this.$message.info(this.activeKey.join())
-      if (this.isEditing) {
-        this.$emit('update-sub-task', subTask, {
-          isFinished: !subTask.isFinished,
-          description: this.subTask.description,
-        })
+      event.stopPropagation()
+      console.log(this.isEditing)
+      if (!this.isEditing) {
+        this.activeKey = subTaskIndex.toString()
+      } else {
+        // emit
       }
       this.isEditing = !this.isEditing
     },

@@ -1,5 +1,5 @@
 <template>
-  <a-drawer width="540" :closable="true" :visible="visible" @close="close">
+  <a-drawer width="540" :closable="true" :visible="visible" @close="close" :destroy-on-close="true">
     <div slot="title">
       <a-input v-if="editing.taskName" v-model="task.taskName" />
       <span v-else>{{ task.taskName }}</span>
@@ -72,9 +72,10 @@
           <div v-else>{{ task.description }}</div>
         </a-descriptions-item>
 
-        <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
+        <a-descriptions-item v-if="editing.subTasks" label="子任务" span="3"></a-descriptions-item>
       </a-descriptions>
       <sub-task-list
+        v-if="editing.subTasks"
         :can-edit="canEdit"
         :task-id="task.taskId"
         :sub-tasks="task.subTasks"
