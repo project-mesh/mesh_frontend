@@ -237,16 +237,6 @@ export const asyncRouterMap = [
             component: () => import('@/views/toolBox/CalculateCard'),
             meta: { title: '计算器', keepAlive: true, permission: ['user'], icon: 'calculator' },
           },
-          // 设置
-          {
-            path: '/toolbox/tool2',
-            name: 'latex',
-            // redirect: '/toolbox/tool2',
-            component: () => import('@//views/toolBox/Latex'),
-            meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
-            // redirect: '/account/settings/base',
-            hideChildrenInMenu: true,
-          },
           {
             path: '/toolbox/tool3',
             name: 'markdown',
