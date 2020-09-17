@@ -6,6 +6,7 @@
         <a-icon type="notification" />
       </a-badge>
     </router-link>
+    <daily-fortune :class="prefixCls" />
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
     <!-- <select-lang :class="prefixCls" /> -->
   </div>
@@ -15,6 +16,7 @@
 // import SelectLang from '@/components/SelectLang'
 import AvatarDropdown from './AvatarDropdown'
 import TeamSelector from './TeamSelector'
+import DailyFortune from './DailyFortune'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -23,6 +25,7 @@ export default {
     AvatarDropdown,
     // SelectLang,
     TeamSelector,
+    DailyFortune,
   },
   props: {
     prefixCls: {

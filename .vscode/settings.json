@@ -24,12 +24,6 @@
     "source.fixAll.eslint": true
   },
   "eslint.alwaysShowStatus": true,
-  "spellright.language": [
-    "en"
-  ],
-  "spellright.documentTypes": [
-    "latex",
-    "plaintext",
-    "vue"
-  ]
+  "spellright.language": ["en"],
+  "spellright.documentTypes": ["latex", "plaintext", "vue"]
 }

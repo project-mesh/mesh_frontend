@@ -15,9 +15,7 @@
       bordered
     >
       <template slot="avatar" slot-scope="avatar">
-        <a-avatar :key="avatar">
-          {{ avatar }}
-        </a-avatar>
+        <a-avatar :key="avatar" :src="avatar" />
       </template>
       <template
         v-for="col in ['nickname', 'gender', 'birthday', 'address', 'status', 'password']"
@@ -89,7 +87,8 @@
           <a-cascader
             v-else-if="record.editable && col === 'address'"
             :options="city"
-            @change="onChange"
+            :default-value="splitAddress(record.address)"
+            @change="handleAddressChange($event, record.username)"
           />
           <template v-else-if="col !== 'password' && col !== 'status' && col !== 'gender'">
             {{ text }}
@@ -229,11 +228,10 @@ export default {
   mounted() {},
   methods: {
     ...mapActions(['queryUserInfo', 'updateUserPasswordAdmin', 'updateUserInfo']),
-    onChange(value) {
-      this.$notification.error({
-        description: '修改地理位置的功能还没做好。',
-      })
-      console.log(value)
+    splitAddress(address) {
+      let oriStr = address
+      let resStr = oriStr.split(' ')
+      return resStr
     },
     getStatusType(status) {
       switch (status) {
@@ -322,6 +320,14 @@ export default {
       const target = newData.find((item) => username === item.username)
       if (target) {
         target[column] = value
+        this.data = newData
+      }
+    },
+    handleAddressChange(value, username) {
+      const newData = [...this.data]
+      const target = newData.find((item) => username === item.username)
+      if (target) {
+        target['address'] = value[0] + ' ' + value[1] + ' ' + value[2]
         this.data = newData
       }
     },

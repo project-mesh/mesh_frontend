@@ -1,8 +1,30 @@
 <template>
   <div class="board">
+    <task-detail
+      :visible="detailDrawerVisible"
+      :task="selectedTask"
+      @edit="enterEdittingMode"
+      @close="setDetailDrawerVisible(false)"
+      @taskUpdate="tryUpdateTask"
+      @taskDelete="tryDeleteTask"
+    ></task-detail>
+    <editting-task-detail
+      :visible="edittingDrawerVisible"
+      :task="selectedTask"
+      :loading="loading"
+      @edit="enterEdittingMode"
+      @close="setEditingDrawerVisible(false)"
+      @taskUpdate="tryUpdateTask"
+      @taskCreate="tryCreateTask"
+    ></editting-task-detail>
+
     <div class="task-group" v-for="status in allStatus" :key="status">
       <div class="topbutton">
-        <a-button type="primary" @click="showDrawer">
+        <a-button
+          :disabled="username !== projectAdminName"
+          type="primary"
+          @click="openCreateDrawer"
+        >
           <a-icon type="plus" />
           {{ status }}
         </a-button>
@@ -11,7 +33,7 @@
       <div class="info-list">
         <a-list item-layout="horizontal" :data-source="getStatusTasks(status)">
           <a-list-item slot="renderItem" slot-scope="task">
-            <a slot="actions" @click="showDrawer">更多</a>
+            <a slot="actions" @click="showTaskDetail(task)">更多</a>
             <a-list-item-meta :description="task.description">
               <a slot="title" style="font-size: 17px">{{ task.taskName }}</a>
             </a-list-item-meta>
@@ -39,96 +61,35 @@
 </template>
 
 <script>
+import TaskDetail from './taskBoard/TaskDetail'
+import EdittingTaskDetail from './taskBoard/EdittingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
+import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 
-const data1 = [
-  {
-    title: '项目1',
-    description: 'asdfghjklssdfghjk',
-    name: 'John',
-    deadline: '2020-12-21',
-    state: '已完成',
-    priority: '重要',
-  },
-  {
-    title: '项目2',
-    description: 'asdfghjklssdfghjk',
-    name: 'John',
-    deadline: '2020-12-21',
-    state: '已完成',
-    priority: '重要',
-  },
-  {
-    title: '项目3',
-    description: 'asdfghjklssdfghjk',
-    name: 'John',
-    deadline: '2020-12-21',
-    state: '已完成',
-    priority: '重要',
-  },
-  {
-    title: '项目4',
-    description: 'asdfghjklssdfghjk',
-    name: 'John',
-    deadline: '2020-12-21',
-    state: '已完成',
-    priority: '重要',
-  },
-]
-const data2 = [
-  {
-    title: '项目1',
-    description: 'asdfghjklssdfghjk',
-    name: 'John',
-    deadline: '2020-12-21',
-    state: '已完成',
-    priority: '重要',
-  },
-  {
-    title: '项目2',
-    description: 'asdfghjklssdfghjk',
-    name: 'John',
-    deadline: '2020-12-21',
-    state: '已完成',
-    priority: '重要',
-  },
-  {
-    title: '项目3',
-    description: 'asdfghjklssdfghjk',
-    name: 'John',
-    deadline: '2020-12-21',
-    state: '已完成',
-    priority: '重要',
-  },
-  {
-    title: '项目4',
-    description: 'asdfghjklssdfghjk',
-    name: 'John',
-    deadline: '2020-12-21',
-    state: '已完成',
-    priority: '重要',
-  },
-]
-
 export default {
-  mixins: [teamMixin, projectMixin],
+  components: {
+    TaskDetail,
+    EdittingTaskDetail,
+  },
+  mixins: [teamMixin, projectMixin, taskDrawerMixin],
   data() {
     return {
-      data1,
-      data2,
       form: this.$form.createForm(this),
       visible: false,
       allStatus: ['开发中', '已完成', '已逾期'],
       moment,
+      selectedTask: {},
+      loading: false,
     }
   },
   computed: {
-    ...mapGetters(['projectTasks']),
+    ...mapGetters(['projectTasks', 'username', 'teamId', 'projectId', 'projectAdminName']),
   },
   methods: {
+    ...mapActions(['updateTask', 'createTask', 'deleteTask']),
     showDrawer() {
       this.visible = true
     },
@@ -156,6 +117,90 @@ export default {
           return '未知优先级'
       }
     },
+    tryUpdateTask($event) {
+      this.loading = true
+
+      this.updateTask($event)
+        .then((res) => {
+          console.log('更新任务信息成功')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '更新任务信息成功失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
+    tryCreateTask($event) {
+      this.loading = true
+
+      this.createTask($event)
+        .then((res) => {
+          console.log('创建任务成功')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: err.message,
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
+    tryDeleteTask($event) {
+      this.deleteTask($event)
+        .then(() => {
+          console.log('删除任务成功')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '删除任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+        })
+    },
+  },
+  mounted() {
+    const { query } = this.$route
+
+    console.log('In taskBoard mounted, this.projectTasks: ', this.projectTasks)
+
+    if (
+      !this.projectTasks ||
+      !this.projectTasks.length ||
+      (query && query.projectId && query.projectId !== this.projectId)
+    ) {
+      this.boardLoading = true
+
+      this.queryProjectTasks({
+        username: this.username,
+        projectId: this.$route.query.projectId,
+      })
+        .then((res) => {
+          console.log('queryProjectTasks success')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '查询项目任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => (this.boardLoading = false))
+    }
+
+    this.$emit('load', 'taskList')
+  },
+  created() {
+    // this.reloadTasks()
   },
 }
 </script>

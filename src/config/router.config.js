@@ -216,6 +216,53 @@ export const asyncRouterMap = [
         ],
       },
 
+      //工具
+      //
+      {
+        path: '/toolbox',
+        name: 'toolBox',
+        component: RouteView,
+        redirect: '/toolbox/tool1',
+        meta: {
+          title: '工具箱',
+          icon: 'inbox',
+          keepAlive: true,
+          permission: ['user'],
+        },
+        children: [
+          {
+            path: '/toolbox/tool1',
+            name: 'calculate',
+            component: () => import('@/views/toolBox/CalculateCard'),
+            meta: { title: '计算器', keepAlive: true, permission: ['user'], icon: 'calculator' },
+          },
+          {
+            path: '/toolbox/tool2',
+            name: 'sagemath',
+            component: () => import('@//views/toolBox/Sagemath'),
+            meta: { title: '数值分析', hideHeader: true, permission: ['user'], icon: 'code' },
+          },
+          {
+            path: '/toolbox/tool3',
+            name: 'markdown',
+            component: () => import('@/views/toolBox/MarkDown'),
+            meta: { title: 'MarkDown', keepAlive: true, permission: ['user'], icon: 'medium' },
+          },
+          {
+            path: '/toolbox/tool4',
+            name: 'drawio',
+            component: () => import('@/views/toolBox/DrawIO'),
+            meta: { title: '流程图', keepAlive: true, permission: ['user'], icon: 'apartment' },
+          },
+          {
+            path: '/toolbox/tool5',
+            name: 'latex',
+            component: () => import('@/views/toolBox/Latex'),
+            meta: { title: 'LaTeX', keepAlive: true, permission: ['user'], icon: 'edit' },
+          },
+        ],
+      },
+
       // account
       {
         path: '/account',
@@ -235,14 +282,14 @@ export const asyncRouterMap = [
             name: 'center',
             beforeEnter: guard,
             component: () => import('@/views/account/center'),
-            meta: { title: '个人中心', keepAlive: true, permission: ['user'] },
+            meta: { title: '个人中心', keepAlive: true, permission: ['user'], icon: 'info-circle' },
           },
           // 设置
           {
             path: '/account/settings',
             name: 'settings',
             component: () => import('@/views/account/settings/Index'),
-            meta: { title: '个人设置', hideHeader: true, permission: ['user'] },
+            meta: { title: '个人设置', hideHeader: true, permission: ['user'], icon: 'setting' },
             redirect: '/account/settings/base',
             hideChildrenInMenu: true,
             children: [
@@ -277,6 +324,12 @@ export const asyncRouterMap = [
         name: 'adminStatistics',
         component: () => import('@/views/management/AdminStatistics'),
         meta: { title: '实时数据', keepAlive: true, permission: ['admin'], icon: 'bar-chart' },
+      },
+      {
+        path: '/dashboard',
+        name: 'adminDashboard',
+        component: () => import('@/views/management/Dashboard'),
+        meta: { title: '服务器监测', keepAlive: true, permission: ['admin'], icon: 'rocket' },
       },
     ],
   },
