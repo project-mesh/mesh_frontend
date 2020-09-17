@@ -1,5 +1,5 @@
 <template>
-  <iframe style="height: 600px; width: 100%; border: 0" src="http://www.baidu.com">
+  <iframe class="vue-friendly-iframe" src="http://www.baidu.com">
     IE：你们都看我干吗，我现在也是支持的
   </iframe>
 </template>
