@@ -22,7 +22,7 @@
 export default {
   methods: {
     changeTaskFinishingStatus: function () {
-      this.$emit('update-task', this.task, 'isFinished', !this.task.isFinished)
+      this.$emit('update-task', this.task, { isFinished: !this.task.isFinished })
     },
   },
   props: {

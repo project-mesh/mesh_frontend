@@ -102,11 +102,10 @@ export default {
   },
   methods: {
     selectTask: function (task) {
-      console.log(task)
       this.$emit('select-task', task)
     },
-    updateTaskData: function (task, key, value) {
-      this.$emit('update-task', task, key, value)
+    updateTaskData: function (task, formData) {
+      this.$emit('update-task', task, formData)
     },
     moveTask: function (evt) {
       this.movingTask = evt.draggedContext.element

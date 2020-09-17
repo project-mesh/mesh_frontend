@@ -134,29 +134,22 @@ export default {
   methods: {
     createSubTask: function (formData) {
       // 本地
-      this.subTasks.push(formData)
-
       this.$emit('create-sub-task', formData)
     },
-    updateSubTask: function (subTask, key, value) {
-      subTask[key] = value
+    updateSubTask: function (subTask, formData) {
+      this.$emit('update-sub-task', subTask, formData)
     },
     deleteSubTask: function (subTask) {
-      event.stopPropagation()
       this.$emit('delete-sub-task', subTask)
     },
 
     removeSubTask: function (evt, subTask, subTaskIndex) {
       event.stopPropagation()
-      // 本地
-      this.subTasks.splice(subTaskIndex, 1)
-      this.deleteSubTask(subTask)
+      this.$emit('delete-sub-task', subTask)
     },
     finishSubTask: function (evt, subTask, subTaskIndex) {
       event.stopPropagation()
-      // 本地
-      subTask.isFinished = !subTask.isFinished
-      this.$emit('update-sub-task', subTask, 'isFinished', !subTask.isFinished)
+      this.$emit('update-sub-task', subTask, { isFinished: !subTask.isFinished })
     },
 
     editSubTask: function (subTask) {
