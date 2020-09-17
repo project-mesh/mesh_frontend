@@ -1,22 +1,37 @@
 <template>
   <div>
+    <!--
+    create-task: formData
+    delete-task: task  
+    update-task: task, formData
+    create-sub-task:  task, formData
+    delete-sub-task:  task, subTask
+    update-sub-task:  task, subTask, formData
+
+        -->
     <task-detail
-      :visible="detailDrawerVisible"
+      :visible="drawerMode === 'detail'"
       :task="selectedTask"
-      @edit="enterEdittingMode"
-      @close="setDetailDrawerVisible(false)"
+      @create-task="createTaskData"
+      @update-task="updateTaskData"
+      @delete-task="deleteTaskData"
+      @update-sub-task="updateSubTaskData"
+      @delete-sub-task="deleteSubTaskData"
+      @create-sub-task="createSubTaskData"
+      @change-drawer="changeDrawer"
       @taskUpdate="tryUpdateTask"
       @taskDelete="tryDeleteTask"
     ></task-detail>
-    <editting-task-detail
-      :visible="edittingDrawerVisible"
+    <editing-task-detail
+      :visible="drawerMode === 'editing'"
+      @edit="enterEditingMode"
+      @change-drawer="changeDrawer"
       :task="selectedTask"
       :loading="loading"
-      @edit="enterEdittingMode"
       @close="setEditingDrawerVisible(false)"
       @taskUpdate="tryUpdateTask"
       @taskCreate="tryCreateTask"
-    ></editting-task-detail>
+    ></editing-task-detail>
     <span
       style="
          {
@@ -38,15 +53,14 @@
           :key="taskListIndex"
         >
           <task-column
-            :tasks="taskListWithPriority.tasks"
+            :tasks.sync="taskListWithPriority.tasks"
             :priority="taskListWithPriority.priority"
-            :priority-name="taskListWithPriority.priorityName"
-            :set-task="setSelectedTask"
             :only-view-mine="onlyViewMine"
             :only-not-finished="onlyNotFinished"
             :try-create-task="openCreateDrawer"
             @end="onDragEnd"
-            @showTaskDetail="showTaskDetail"
+            @select-task="showTaskDetail"
+            @update-task="updateTaskData"
             ghost-class="task-column"
           ></task-column>
         </a-col>
@@ -57,7 +71,7 @@
 <script>
 import TaskColumn from './TaskColumn'
 import TaskDetail from './TaskDetail'
-import EdittingTaskDetail from './EdittingTaskDetail'
+import EditingTaskDetail from './EditingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
@@ -68,20 +82,23 @@ export default {
     //调用组件
     TaskColumn,
     TaskDetail,
-    EdittingTaskDetail,
+    EditingTaskDetail,
   },
   mixins: [teamMixin, projectMixin, taskDrawerMixin],
 
   data() {
     return {
+      drawerMode: '', // 'detail'/'editing'/ ''
+      isEditingMode: false,
       onlyNotFinished: false,
       onlyViewMine: false,
-      // detailDrawerVisible: false,
-      // edittingDrawerVisible: false,
+      detailDrawerVisible: false,
       drag: false,
       taskListGroup: {
         name: 'taskList',
       },
+      selectedTask: null,
+
       bodyStyle: {
         padding: 0,
         minHeight: '1000px',
@@ -128,18 +145,20 @@ export default {
       this.onlyViewMine = e.target.checked
     },
     // 抽屉相关
-    // showTaskDetail(task) {
-    //   this.setSelectedTask(task)
-    //   if (this.selectedTask) {
-    //     this.detailDrawerVisible = true
-    //   }
-    // },
 
-    // setSelectedTask(task) {
-    //   this.selectedTask = task
-    // },
-    // enterEdittingMode(isEdittingMode) {
-    //   if (isEdittingMode) {
+    changeDrawer(drawerMode) {
+      this.drawerMode = drawerMode
+    },
+    showTaskDetail(task) {
+      this.setSelectedTask(task)
+      this.changeDrawer('detail')
+    },
+
+    setSelectedTask(task) {
+      this.selectedTask = task
+    },
+    // enterEditingMode(isEditingMode) {
+    //   if (isEditingMode) {
     //     this.setDetailDrawerVisible(false)
     //     this.setEditingDrawerVisible(true)
     //   }
@@ -147,7 +166,7 @@ export default {
     onDragEnd($event) {
       const toPriority = +$event.to.dataset.priority
       const fromPriority = +$event.from.dataset.priority
-      console.log('dargEnd ', fromPriority, toPriority)
+      console.log('dragEnd ', fromPriority, toPriority)
 
       if (toPriority !== fromPriority && this.selectedTask) {
         // todo:
@@ -177,12 +196,52 @@ export default {
     //   this.detailDrawerVisible = value
     // },
     // setEditingDrawerVisible(value) {
-    //   this.edittingDrawerVisible = value
+    //   this.editingDrawerVisible = value
     // },
     // closeDrawer() {
     //   this.setDetailDrawerVisible(false)
     //   this.setEditingDrawerVisible(false)
     // },
+
+    // CUD task
+    createTaskData(formData) {
+      this.tasks[formData.priority].push(formData)
+      // todo 交互
+    },
+    updateTaskData(task, formData) {
+      for (let key in formData) {
+        task[key] = formData[key]
+        this.$message.info(key + ' is set to ' + formData[key])
+      }
+      // todo 交互
+    },
+    deleteTaskData(task) {
+      const taskArr = this.tasks[task.priority].tasks
+      const toDeleteIndex = taskArr.indexOf(taskArr.find((t) => t.taskId == task.taskId))
+      taskArr.splice(toDeleteIndex, 1)
+    },
+
+    // CUD sub task
+    createSubTaskData(task, formData) {
+      // todo todo todo
+      // todo 交互
+      task.subTasks.push(formData)
+    },
+    updateSubTaskData(task, subTask, formData) {
+      for (var key in formData) {
+        subTask[key] = formData[key]
+      }
+      // todo 交互
+    },
+    deleteSubTaskData(task, subTask) {
+      const subTaskArr = task.subTasks
+      const toDeleteIndex = subTaskArr.indexOf(
+        subTaskArr.find((t) => t.taskName == subTask.taskName)
+      )
+      subTaskArr.splice(toDeleteIndex, 1)
+      // todo 交互
+    },
+
     tryUpdateTask($event) {
       this.loading = true
 

@@ -1,28 +1,16 @@
 <template>
-  <iframe
-    style="height: 720px; width: 100%; border: 0"
-    src="http://120.26.177.56:7777/#/system-status"
-  >
-    IE：你们都看我干吗，我现在也是支持的
-  </iframe>
+  <vue-friendly-iframe class="vue-friendly-iframe" src="http://120.26.177.56:7777/#/system-status">
+    您的浏览器不支持 iframe 标签，请考虑更换 Edge/Firefox/Chrome 等现代浏览器
+  </vue-friendly-iframe>
 </template>
 
 <script>
-export default {
-  name: 'KibanaMonitor',
-  data() {
-    return {
-      serverOptions: {
-        src: 'http://120.26.177.56:7777/#/system-status',
-      },
-    }
-  },
-}
+export default {}
 </script>
 
 <style>
-.vue-friendly-iframe {
-  height: 100%;
+.vue-friendly-iframe iframe {
+  height: 60em;
   width: 100%;
 }
 </style>
