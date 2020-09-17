@@ -9,8 +9,16 @@
     update-sub-task:  task, subTask, formData
 
         -->
+    <creating-task-detail
+      :visible="drawerMode === 'create'"
+      :editable="editable.create"
+      :priority="newPriority"
+      @create-task="createTaskData"
+      @change-drawer="changeDrawer"
+    ></creating-task-detail>
     <task-detail
-      :visible="drawerMode === 'detail'"
+      :visible="drawerMode === 'display'"
+      :editable="editable.display"
       :task="selectedTask"
       @create-task="createTaskData"
       @update-task="updateTaskData"
@@ -23,7 +31,7 @@
       @taskDelete="tryDeleteTask"
     ></task-detail>
     <editing-task-detail
-      :visible="drawerMode === 'editing'"
+      :visible="drawerMode === 'edit'"
       @edit="enterEditingMode"
       @change-drawer="changeDrawer"
       :task="selectedTask"
@@ -57,7 +65,8 @@
             :priority="taskListWithPriority.priority"
             :only-view-mine="onlyViewMine"
             :only-not-finished="onlyNotFinished"
-            :try-create-task="openCreateDrawer"
+            :try-create-task="openCreatingDrawer"
+            @add-task="openCreatingDrawer"
             @end="onDragEnd"
             @select-task="showTaskDetail"
             @update-task="updateTaskData"
@@ -76,13 +85,14 @@ import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
-
+import CreatingTaskDetail from './CreatingTaskDetail'
 export default {
   components: {
     //调用组件
     TaskColumn,
     TaskDetail,
     EditingTaskDetail,
+    CreatingTaskDetail,
   },
   mixins: [teamMixin, projectMixin, taskDrawerMixin],
 
@@ -97,13 +107,34 @@ export default {
       taskListGroup: {
         name: 'taskList',
       },
+      newPriority: 1,
+      editable: {
+        none: {},
+        display: {
+          taskName: false,
+          principal: false,
+          deadline: false,
+          priority: false,
+          isFinished: false,
+          description: true,
+        },
+        create: {
+          taskName: true,
+          principal: true,
+          deadline: true,
+          priority: true,
+          isFinished: false,
+          description: true,
+        },
+      },
+
       selectedTask: null,
 
       bodyStyle: {
         padding: 0,
         minHeight: '1000px',
       },
-      form: this.$form.createForm(this),
+
       boardLoading: false,
       // selectedTask: {},
       loading: false,
@@ -151,9 +182,12 @@ export default {
     },
     showTaskDetail(task) {
       this.setSelectedTask(task)
-      this.changeDrawer('detail')
+      this.drawerMode = 'display'
     },
-
+    openCreatingDrawer(priority) {
+      this.newPriority = priority
+      this.drawerMode = 'create'
+    },
     setSelectedTask(task) {
       this.selectedTask = task
     },

@@ -1,10 +1,10 @@
 <template>
-  <a-drawer width="540" :closable="true" :visible="visible" @close="close">
+  <a-drawer width="540" :closable="false" :visible="visible" @close="close">
     <div slot="title">
-      <a-input v-if="editing.taskName" v-model="task.taskName" />
+      <a-input placeholder="请输入任务标题" v-if="editing.taskName" v-model="task.taskName" />
       <span v-else>{{ task.taskName }}</span>
     </div>
-
+    -
     <a-card>
       <a-descriptions class="drawer-content" :column="4">
         <a-descriptions-item label="创建者" span="2">
@@ -13,8 +13,9 @@
           </span>
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" span="2">
-          {{ task.createTime | dateFilter }}
+          {{ moment().format('YYYY-MM-DD') }}
         </a-descriptions-item>
+
         <a-descriptions-item label="负责人" span="2">
           <div>
             <a-select
@@ -23,7 +24,6 @@
               placeholder="请选择项目负责人"
               v-model="task.principal"
               :default-value="task.principal"
-              @change="changePrincipal"
             >
               <a-select-option
                 v-for="member in projectMembers"
@@ -33,14 +33,13 @@
                 <avatar-featured-user :username="member.username" />
               </a-select-option>
             </a-select>
-            <span v-else><avatar-featured-user :username="task.principal" /></span>
+            <span v-else>{{ task.principal }}</span>
           </div>
         </a-descriptions-item>
         <a-descriptions-item label="优先级" span="2">
-          {{ task.priority | formatPriority }}
-          <!-- 在这里改优先级容易乱掉
+          {{ task.priority }}
+          <!--      在这里改优先级容易乱掉
           <a-select
-
             width="100%"
             placeholder="请选择项目优先级"
             v-model="task.priority"
@@ -53,10 +52,12 @@
               :value="priorityIndex"
             >
               {{ priorityMark.label }}
+        
             </a-select-option>
           </a-select>
           -->
         </a-descriptions-item>
+
         <a-descriptions-item label="截止日期" span="4">
           <div>
             <a-date-picker
@@ -72,18 +73,23 @@
           </div>
         </a-descriptions-item>
         <a-descriptions-item label="描述" span="4">
+          <a-textarea v-model="task.description" width="100%"></a-textarea>
           {{ task.description }}
         </a-descriptions-item>
-        <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
+        <a-descriptions-item v-if="false" label="子任务" span="3"></a-descriptions-item>
       </a-descriptions>
       <sub-task-list
+        v-if="false"
         :task-id="task.taskId"
         :sub-tasks="task.subTasks"
         @update-sub-task="updateSubTask"
         @delete-sub-task="deleteSubTask"
         @create-sub-task="createSubTask"
       />
-      <template slot="actions" class="ant-card-actions">
+      <template v-if="mode === 'create'" slot="actions" class="ant-card-actions">
+        <a-icon key="edit" type="plus" @click="createTask" />
+      </template>
+      <template v-else slot="actions" class="ant-card-actions">
         <a-popconfirm
           title="确认删除该任务？"
           ok-text="确认"
@@ -104,116 +110,76 @@
   </a-drawer>
 </template>
 <script>
-import SubTaskList from './SubTaskList'
 import { priorityMarks } from './common/priority'
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 export default {
   components: {
-    SubTaskList,
     AvatarFeaturedUser,
   },
   data() {
     return {
+      mode: 'create',
       priorityMarks: priorityMarks,
-      editing: this.editable,
+
+      editing: {
+        taskName: true,
+        priority: true,
+        principal: true,
+        deadline: true,
+        description: true,
+      },
+      essential: {
+        taskName: true,
+        principal: true,
+      },
+      defaultValue: {
+        principal: 'username',
+      },
+      task: {
+        taskName: '',
+        founder: 'username',
+        deadline: '',
+        priority: this.priority,
+        principal: '',
+        description: '',
+      },
     }
   },
   props: {
-    editable: {
-      type: Object,
-      default: function () {
-        return {
-          taskName: false,
-          priority: false,
-          principal: false,
-          deadline: false,
-        }
-      },
-    },
     visible: {
       type: Boolean,
       default: function () {
         return false
       },
     },
-
-    task: {
+    priority: {
+      type: Number,
+      default: function () {
+        return 1
+      },
+    },
+    editable: {
       type: Object,
       default: function () {
         return {
-          taskId: 'id',
-          taskName: '任务名',
-          isFinished: false,
-          priority: 0,
-          createTime: '0',
-          deadline: '1970-01-01',
-          description: '描述内容',
-          founder: '创建者',
-          principal: '负责人',
-          subTasks: [
-            {
-              taskId: 'aklgnlkjsald',
-              taskName: '子任务名',
-              isFinished: false,
-              createTime: '16546513231',
-              description: '子任务描述',
-              founder: '子任务创建者',
-              principal: '子任务负责人',
-            },
-          ],
+          taskName: true,
+          priority: true,
+          principal: true,
+          deadline: true,
+          description: true,
         }
       },
     },
   },
   methods: {
     moment,
-    changeDeadline: function (dates, deadline) {
-      this.$emit('update-task', this.task, { deadline: deadline })
-    },
-    changePriority: function (priority) {
-      this.$emit('update-task', this.task, { priority: priority })
-    },
-    changePrincipal: function (principal) {
-      this.$emit('update-task', this.task, { principal: principal })
-    },
-    changeTaskFinishingStatus: function () {
-      this.$emit('update-task', this.task, { isFinished: !this.task.isFinished })
-    },
-    deleteTask: function () {
-      this.$emit('delete-task', this.task)
-      this.close()
-      this.$message.info('删除成功')
-    },
-    editTask: function (task) {
-      this.$message.warning('进入编辑模式')
-      this.$emit('change-drawer', 'editing')
+    createTask: function () {
+      console.log(this.task)
+      this.emit('create-task', this.task)
     },
 
-    finishEditing: function () {
-      if (this.newSubTaskName) {
-        this.$message.info('新建项目：' + this.newSubTaskName)
-        this.addTask()
-      }
-    },
-
-    createSubTask: function (formData) {
-      formData['taskId'] = this.task.taskId
-      this.$emit('create-sub-task', this.task, formData)
-    },
-
-    updateSubTask: function (subTask, formData) {
-      this.$emit('update-sub-task', this.task, subTask, formData)
-    },
-
-    deleteSubTask: function (subTask) {
-      this.$emit('delete-sub-task', this.task, subTask)
-    },
-
-    exitEditing: function () {
-      this.newTaskName = ''
-    },
     addSubTask: function () {
       let formData = {
         username: '', // todo: 当前用户名
@@ -233,7 +199,7 @@ export default {
     ...mapGetters(['projectMembers']),
   },
   filters: {
-    formatPriority: (priority) => priorityMarks[priority].label,
+    formatPriority: (priority) => this.priorityMarks[priority].label,
   },
 }
 </script>

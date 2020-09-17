@@ -29,13 +29,9 @@
           ></task-info>
         </transition-group>
         <div slot="footer">
-          <a-button
-            block
-            :disabled="username !== projectAdminName"
-            type="primary"
-            @click="tryCreateTask()"
-          >
-            + 任务
+          <a-button block type="primary" @click="addTask">
+            <a-icon type="plus" />
+            任务
           </a-button>
         </div>
       </draggable>
@@ -78,10 +74,6 @@ export default {
     },
     tasks: {
       type: Array,
-      required: true,
-    },
-    setTask: {
-      type: Function,
       required: true,
     },
     onlyViewMine: {
@@ -134,15 +126,6 @@ export default {
       }
     },
 
-    // 新建任务等等
-    showTextarea: function () {
-      this.textareaVisible = true
-      this.$emit('edit-new-task-name', this.priority)
-      console.log(this.$refs.textarea)
-      console.log(this.$refs.textarea.focus)
-      this.$refs.textarea.focus()
-    },
-
     finishEditing: function () {
       if (this.newTaskName) {
         this.$message.info('新建项目：' + this.newTaskName)
@@ -155,17 +138,7 @@ export default {
       this.textareaVisible = false
     },
     addTask: function () {
-      let formData = {
-        username: '', // todo: 当前用户名
-        taskName: this.newTaskName,
-        priority: this.priority,
-        deadline: moment().format('YYYY-MM-DD'), // today
-        description: '',
-        principal: '', //todo: 当前用户名
-      }
-
-      // todo: 交互
-      this.newTaskName = ''
+      this.$emit('add-task', this.priority)
     },
 
     handleOk: function () {
