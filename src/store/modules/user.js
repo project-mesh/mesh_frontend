@@ -99,7 +99,6 @@ const user = {
                 commit('SET_DESCRIPTION', res.data.description)
                 commit('SET_STATUS', res.data.status)
               }
-              // commit('SET_TEAMID', res.data.preference.preferenceTeam)
               resolve(res)
             }
           })
@@ -109,9 +108,9 @@ const user = {
       })
     },
     Logout({ commit }) {
+      commit('SET_USERNAME', '')
       commit('SET_ROLE', '')
       commit('SET_ROUTERS', [], { root: true })
-      storage.remove(ACCESS_TOKEN)
     },
     updatePreferenceColor({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {

@@ -13,6 +13,7 @@
   "dependencies": {
     "@ant-design-vue/pro-layout": "^0.3.4",
     "@antv/data-set": "^0.10.2",
+    "ali-oss": "^6.10.0",
     "ant-design-vue": "^1.6.2",
     "axios": "^0.20.0",
     "core-js": "^3.1.2",
@@ -25,6 +26,7 @@
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0",
     "md5": "^2.2.1",
+    "meetyou-ali-oss": "^1.0.9",
     "mockjs2": "1.0.8",
     "moment": "^2.28.0",
     "nprogress": "^0.2.0",
