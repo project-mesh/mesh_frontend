@@ -238,9 +238,9 @@ export const asyncRouterMap = [
           },
           {
             path: '/toolbox/tool2',
-            name: 'sagemath',
-            component: () => import('@//views/toolBox/Sagemath'),
-            meta: { title: '数值分析', hideHeader: true, permission: ['user'], icon: 'code' },
+            name: 'codeSandbox',
+            component: () => import('@//views/toolBox/CodeSandbox'),
+            meta: { title: '图标设计', hideHeader: true, permission: ['user'], icon: 'scissor' },
           },
           {
             path: '/toolbox/tool3',
