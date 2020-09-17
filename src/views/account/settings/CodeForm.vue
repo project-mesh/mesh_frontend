@@ -151,7 +151,6 @@ export default {
           this.updateUserPassword({
             oldPassword: values.oldPassword,
             password: values.password,
-            password2: values.password2,
           }).catch((error) => {
             this.$notification.error({
               message: '修改密码失败',

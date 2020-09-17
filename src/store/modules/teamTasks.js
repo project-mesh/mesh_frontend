@@ -1,12 +1,39 @@
 import sendRequest from '@/api/index'
 
+const addProgressToTask = (item) => {
+  let ct_timeStamp = Date.now()
+  let others = ' 00:00:00'
+  let ddl_timeStamp = new Date(item.deadline + others).getTime()
+  let value = (ct_timeStamp - item.createTime) / (ddl_timeStamp - item.createTime)
+  value = value.toFixed(2)
+  if (value > 100) {
+    item.progress = {
+      value: 100.0,
+      status: 'exception',
+    }
+  } else {
+    if (value <= 0) {
+      value = 0.0
+    }
+    item.progress = {
+      value: value,
+    }
+  }
+  item.short = item.description.substring(0, 41)
+  return item
+}
+
 export const teamTasks = {
   state: {
     tasks: [],
   },
   mutations: {
-    SET_TASKS: (state, tasks) => {
+    SET_TEAM_TASKS: (state, tasks) => {
       state.tasks = tasks
+    },
+    ADD_TEAM_TASK: (state, newTask) => {
+      if ('subTasks' in newTask) delete newTask.subTasks
+      state.tasks.unshift(addProgressToTask(newTask))
     },
   },
   actions: {
@@ -15,30 +42,10 @@ export const teamTasks = {
         sendRequest('queryTeamTasks', requestData)
           .then((response) => {
             const { data } = response
-            let ct_timeStamp = Date.now()
-            let others = ' 00:00:00'
-            let newTeamTasks = data.tasks.map((item) => {
-              let ddl_timeStamp = new Date(item.deadline + others).getTime()
-              let value = (ct_timeStamp - item.createTime) / (ddl_timeStamp - item.createTime)
-              value = value.toFixed(2)
-              if (value > 100) {
-                item.progress = {
-                  value: 100.0,
-                  status: 'exception',
-                }
-              } else {
-                if (value <= 0) {
-                  value = 0.0
-                }
-                item.progress = {
-                  value: value,
-                }
-              }
-              item.short = item.description.substring(0, 41)
-              return item
-            })
+
+            let newTeamTasks = data.tasks.map(addProgressToTask)
             console.log('newTeamTasks', newTeamTasks)
-            if (data.isSuccess) commit('SET_TASKS', newTeamTasks)
+            if (data.isSuccess) commit('SET_TEAM_TASKS', newTeamTasks)
             resolve(response)
           })
           .catch((error) => reject(error))

@@ -1,18 +1,18 @@
 import sendRequest from '../../api'
 import store from '@/store'
+import cloneDeep from 'lodash.clonedeep'
 
 const projectTasks = {
   state: {
     tasks: [],
-    subTasks: [],
   },
 
   mutations: {
-    SET_PROJECTTASKS: (state, tasks) => {
+    SET_PROJECT_TASKS: (state, tasks) => {
       state.tasks = tasks
     },
-    SET_PROJECTSUBTASKS: (state, subTasks) => {
-      state.subTasks = subTasks
+    ADD_PROJECT_TASK: (state, newTask) => {
+      state.tasks.unshift(newTask)
     },
   },
 
@@ -26,53 +26,47 @@ const projectTasks = {
     queryProjectTasks: ({ commit }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('queryProjectTasks', requestData)
-          .then((response) => {
-            console.log('In queryProjectTasks, response', response)
-            let subTasks = response.data.tasks.map((obj) => {
-              let newObj = obj.subTasks.map((subObj) => {
-                subObj.parentTaskId = obj.taskId
-                return subObj
-              })
-              return newObj
-            })
-            let onlyTasks = response.data.tasks.map((obj) => {
-              delete obj.subTasks
-              return obj
-            })
-            commit('SET_PROJECTTASKS', onlyTasks)
-            commit('SET_PROJECTSUBTASKS', subTasks)
-            resolve(response)
+          .then((res) => {
+            const { data } = res
+            if (data.isSuccess) {
+              commit('SET_PROJECT_TASKS', data.tasks)
+              resolve(res)
+            } else {
+              reject(new Error(data.msg))
+            }
           })
-          .catch((error) => {
-            console.log('error in queryProjectTasks is : ', error)
-            reject(error)
+          .catch((err) => {
+            console.log('err in queryProjectTasks is : ', err)
+            reject(err)
           })
       })
     },
-    createTask: ({ commit, rootGetters }, requestData) => {
+    createTask: ({ commit, state, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('createTask', requestData)
-          .then((response) => {
-            if (response.data.isSuccess) {
-              let newRequestData = {}
-              newRequestData.username = requestData.username
-              newRequestData.projectId = requestData.projectId
-              newRequestData.teamId = rootGetters.teamId
-              store.dispatch('queryTasks', newRequestData)
+          .then((res) => {
+            const { data } = res
+            if (data.isSuccess) {
+              console.log('Response in createTask: ', res)
+              commit('ADD_PROJECT_TASK', data.task)
+              console.log(state.tasks)
+              commit('ADD_TEAM_TASK', cloneDeep(data.task), { root: true })
+              resolve(res)
             }
+
+            reject(new Error(data.msg))
           })
-          .then(() => resolve())
-          .catch((error) => {
-            console.log('error from createProjectTasks is:', error)
-            reject(error)
+          .catch((err) => {
+            console.log('err from createProjectTasks is:', err)
+            reject(err)
           })
       })
     },
     createSubTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('createSubTask', requestData)
-          .then((response) => {
-            if (response.data.isSuccess) {
+          .then((res) => {
+            if (res.data.isSuccess) {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
@@ -81,36 +75,40 @@ const projectTasks = {
             }
           })
           .then(() => resolve())
-          .catch((error) => {
-            console.log('error from createSubProjectTasks is:', error)
-            reject(error)
+          .catch((err) => {
+            console.log('err from createSubProjectTasks is:', err)
+            reject(err)
           })
       })
     },
-    updateTask: ({ commit, rootGetters }, requestData) => {
+    updateTask: ({ commit, rootGetters, state }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('updateTask', requestData)
-          .then((response) => {
-            if (response.data.isSuccess) {
+          .then((res) => {
+            if (res.data.isSuccess) {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
               newRequestData.teamId = rootGetters.teamId
-              store.dispatch('queryTasks', newRequestData)
+              return store.dispatch('queryTasks', newRequestData)
             }
+            reject(new Error(res.data.msg))
           })
-          .then(() => resolve())
-          .catch((error) => {
-            console.log('error from updateProjectTasks is:', error)
-            reject(error)
+          .then(() => {
+            console.log(state.tasks)
+            resolve()
+          })
+          .catch((err) => {
+            console.log('err from updateProjectTasks is:', err)
+            reject(err)
           })
       })
     },
     updateSubTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('updateSubTask', requestData)
-          .then((response) => {
-            if (response.data.isSuccess) {
+          .then((res) => {
+            if (res.data.isSuccess) {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
@@ -119,17 +117,17 @@ const projectTasks = {
             }
           })
           .then(() => resolve())
-          .catch((error) => {
-            console.log('error from updateProjectSubTasks is:', error)
-            reject(error)
+          .catch((err) => {
+            console.log('err from updateProjectSubTasks is:', err)
+            reject(err)
           })
       })
     },
     deleteTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('deleteTask', requestData)
-          .then((response) => {
-            if (response.data.isSuccess) {
+          .then((res) => {
+            if (res.data.isSuccess) {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
@@ -138,17 +136,17 @@ const projectTasks = {
             }
           })
           .then(() => resolve())
-          .catch((error) => {
-            console.log('error from deleteProjectTasks is:', error)
-            reject(error)
+          .catch((err) => {
+            console.log('err from deleteProjectTasks is:', err)
+            reject(err)
           })
       })
     },
     deleteSubTask: ({ commit, rootGetters }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('deleteSubTask', requestData)
-          .then((response) => {
-            if (response.data.isSuccess) {
+          .then((res) => {
+            if (res.data.isSuccess) {
               let newRequestData = {}
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
@@ -157,9 +155,9 @@ const projectTasks = {
             }
           })
           .then(() => resolve())
-          .catch((error) => {
-            console.log('error from deleteProjectSubTasks is:', error)
-            reject(error)
+          .catch((err) => {
+            console.log('err from deleteProjectSubTasks is:', err)
+            reject(err)
           })
       })
     },

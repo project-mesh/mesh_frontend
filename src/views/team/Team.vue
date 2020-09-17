@@ -1,8 +1,26 @@
 <template>
-  <a-card style="margin-top: 24px" :bordered="false" :title="teamName">
+  <a-card style="margin-top: 24px" :bordered="false">
+    <template slot="title">
+      <div>
+        <slot name="title">
+          <editable-cell
+            :text="teamName"
+            :editing="teamNameEditing"
+            :validators="[[isNotEmpty, '团队名不能为空']]"
+            :disabled="username !== teamAdminName"
+            @change="handleRename($event)"
+            @editStatusChange="handleEditStatusChange"
+          >
+            <span>{{ teamName }}</span>
+          </editable-cell>
+        </slot>
+      </div>
+    </template>
     <div class="admin-info">
-      <div>管理员：{{ teamAdminName }}</div>
-      <div>创建时间：{{ year }}年{{ month }}月{{ day }}日</div>
+      <div style="display: inline">管理员：{{ teamAdminName }}</div>
+      <div style="display: inline; margin-left: 5%">
+        创建时间：{{ year }}年{{ month }}月{{ day }}日
+      </div>
     </div>
     <div class="operate">
       <a-button
@@ -16,50 +34,46 @@
       </a-button>
     </div>
 
-    <a-list size="large">
-      <a-list-item
-        :key="index"
-        v-for="(item, index) in teamMembers"
-        :class="{ changeColor: index % 2 === 0, changeWidth: index % 2 === 1 }"
-      >
-        <div class="avator-card">
-          <a-avatar slot="avatar" size="large" shape="square" :src="item.avatar" />
-          <a-popover title="成员任务">
-            <a-list
-              v-if="teamMemberTask(item.username).length"
-              size="small"
-              slot="content"
-              :data-source="teamMemberTask(item.username)"
-            >
-              <a-list-item slot="renderItem" slot-scope="task">
-                <router-link
-                  :to="{ name: 'statistics', query: { teamId, projectId: task.projectId } }"
-                >
-                  {{ task.taskName }}
-                </router-link>
-              </a-list-item>
-            </a-list>
-            <span v-else slot="content">该成员暂无任务</span>
-            <a style="margin-left: 10px">{{ item.username }}</a>
-          </a-popover>
-        </div>
-        <div class="list-content">
-          <div class="list-content-item">
-            <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
-          </div>
-        </div>
-      </a-list-item>
-    </a-list>
+    <a-table
+      :columns="columns"
+      row-key="username"
+      :data-source="teamMembers"
+      :pagination="pagination(teamMembers)"
+      @change="onChange"
+    >
+      <template slot="username" slot-scope="text, item">
+        <a-avatar shape="circle" :src="item.avatar" />
+        <a-popover title="成员任务">
+          <a-list
+            v-if="teamMemberTask(item.username).length"
+            size="small"
+            slot="content"
+            :data-source="teamMemberTask(item.username)"
+          >
+            <a-list-item slot="renderItem" slot-scope="task">
+              <router-link :to="{ name: 'taskList', query: { teamId, projectId: task.projectId } }">
+                {{ task.taskName }}
+              </router-link>
+            </a-list-item>
+          </a-list>
+          <span v-else slot="content">该成员暂无任务</span>
+          <a style="margin-left: 10px">{{ item.username }}</a>
+        </a-popover>
+      </template>
+      <template slot="job" slot-scope="text, item">
+        <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
+      </template>
+    </a-table>
     <a-modal
       v-model="modalVisible"
       title="邀请新成员"
       width="500px"
       centered
       @cancel="hideModal"
-      @ok="handleOk"
+      @ok="handleInviteUsers"
       :ok-button-props="{
         props: {
-          disabled: !selectedUsername,
+          disabled: !selectedUsers || selectedUsers.length === 0,
           loading: inviting,
         },
       }"
@@ -75,18 +89,23 @@
           <div v-if="loading" class="loading-container">
             <a-spin />
           </div>
-          <a-radio-group v-else-if="users.length" v-model="selectedUsername">
-            <a-radio
+          <a-select
+            mode="multiple"
+            v-else-if="users.length"
+            placeholder="添加你想邀请的成员"
+            v-model="selectedUsers"
+            style="width: 100%"
+          >
+            <a-select-option
               v-for="user in users"
               :key="user.username"
-              :style="radioStyle"
               :value="user.username"
               :disabled="isTeamMember(user)"
             >
               <a-avatar size="small" :src="user.avatar" />
               <span style="margin-left: 10px; vertical-align: baseline">{{ user.username }}</span>
-            </a-radio>
-          </a-radio-group>
+            </a-select-option>
+          </a-select>
           <div v-else style="color: red; text-align: center">无匹配用户</div>
         </div>
       </a-form>
@@ -97,17 +116,23 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
+import paginationMixin from '@/utils/mixins/paginationMixin'
+import EditableCell from './EditableCell'
+import validator from 'validator'
+
 export default {
-  name: 'StandardList',
-  mixins: [teamMixin],
+  mixins: [teamMixin, paginationMixin],
+  components: {
+    EditableCell,
+  },
   data() {
     return {
-      // data,
       status: 'all',
       year: null,
       month: null,
       day: null,
       modalVisible: false,
+      teamNameEditing: false,
       labelCol: {
         xs: { span: 24 },
         sm: { span: 7 },
@@ -121,13 +146,13 @@ export default {
       userListVisible: false,
       loading: false,
       keyword: '',
-      selectedUsername: '',
       radioStyle: {
         display: 'block',
         height: '30px',
         lineHeight: '30px',
       },
       inviting: false,
+      selectedUsers: [],
     }
   },
   computed: {
@@ -141,12 +166,48 @@ export default {
       'teamId',
       'teamTasks',
     ]),
+    columns() {
+      const columns = [
+        {
+          title: '成员',
+          dataIndex: 'username',
+          key: 'username',
+          scopedSlots: { customRender: 'username' },
+          ellipsis: true,
+          sorter: (a, b) => (a.username < b.username ? 1 : -1),
+        },
+        {
+          title: '职位',
+          key: 'job',
+          scopedSlots: { customRender: 'job' },
+          ellipsis: true,
+          filters: [
+            {
+              text: '管理员',
+              value: '管理员',
+            },
+            {
+              text: '组员',
+              value: '组员',
+            },
+          ],
+          onFilter: (value, record) => {
+            if (value == '管理员') {
+              return record.username === this.teamAdminName
+            } else {
+              return record.username !== this.teamAdminName
+            }
+          },
+        },
+      ]
+      return columns
+    },
   },
   methods: {
-    ...mapActions(['queryUser', 'joinTeam']),
+    ...mapActions(['queryUser', 'joinTeam', 'updateTeam']),
     addmember() {},
     dateChange(timeDate) {
-      var date = new Date(timeDate) //获取一个时间对象
+      const date = new Date(timeDate) //获取一个时间对象
       this.year = date.getFullYear()
       this.month = date.getMonth() + 1
       this.day = date.getDate()
@@ -178,29 +239,73 @@ export default {
       this.loading = false
       this.users = []
     },
-    handleOk() {
+    handleInviteUsers() {
       this.inviting = true
-      this.joinTeam({
+
+      if (!this.selectedUsers || this.selectedUsers.length === 0) return this.hideModal()
+
+      const promises = []
+
+      this.selectedUsers.forEach((username) =>
+        promises.push(
+          this.joinTeam({
+            username,
+            teamId: this.teamId,
+          })
+        )
+      )
+
+      if (promises.length) {
+        return Promise.all(promises)
+          .then(() => {
+            console.log('add team members success!, new members: ', this.selectedUsers)
+          })
+          .catch((err) => {
+            this.$notification.error({
+              message: '成功添加新团队成员',
+              description: err.message,
+            })
+          })
+          .finally(() => {
+            this.inviting = false
+            this.hideModal()
+          })
+      }
+
+      this.inviting = false
+      this.hideModal()
+    },
+    handleRename(value) {
+      console.log(value)
+      this.updateTeam({
+        username: this.username,
         teamId: this.teamId,
-        username: this.selectedUsername,
+        teamName: value,
       })
-        .then(() => {
-          console.log('邀请新成员成功')
+        .then((res) => {
+          console.log('rename team success')
         })
         .catch((err) => {
           this.$notification.error({
-            message: '邀请新成员失败',
-            description: err.message,
+            message: 'rename team failed',
+            description: err.msg,
           })
         })
         .finally(() => {
-          this.inviting = false
-          this.selectedUsername = ''
-          this.hideModal()
+          this.teamNameEditing = false
         })
+    },
+    handleEditStatusChange($event) {
+      this.teamNameEditing = $event
     },
     teamMemberTask(username) {
       return this.teamTasks.filter((task) => task.principal === username)
+    },
+    isNotEmpty(value) {
+      return !validator.isEmpty(value, { ignore_whitespace: true })
+    },
+    onChange(pagination, filters, sorter) {
+      console.log('params', pagination, filters, sorter)
     },
   },
   mounted() {
@@ -222,13 +327,6 @@ export default {
 }
 .admin-info {
   padding-bottom: 10px;
-}
-.avator-card {
-  padding-left: 20px;
-}
-.ant-card {
-  width: 90%;
-  margin-left: 5%;
 }
 .list-content-item {
   color: rgba(0, 0, 0, 0.45);

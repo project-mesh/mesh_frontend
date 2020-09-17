@@ -26,6 +26,7 @@ export default {
         { key: 'taskBoard', tab: '看板' },
         { key: 'projectRepo', tab: '知识库' },
         { key: 'statistics', tab: '统计' },
+        { key: 'projectMember', tab: '成员' },
       ],
       activeKey: 'taskList',
     }
@@ -36,8 +37,12 @@ export default {
   mounted() {},
   methods: {
     handleTabChange(key) {
+      const currRoute = this.$route
       this.activeKey = key
-      this.$router.push({ name: key, query: { teamId: this.teamId, projectId: this.projectId } })
+      this.$router.push({
+        name: key,
+        query: { teamId: currRoute.query.teamId, projectId: currRoute.query.projectId },
+      })
     },
   },
 }

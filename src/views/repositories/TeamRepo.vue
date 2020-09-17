@@ -7,44 +7,6 @@
       <a-button type="primary" icon="plus" @click="add">添加</a-button>
     </div>
 
-    <a-modal
-      :width="700"
-      centered
-      :visible="visible"
-      :confirm-loading="confirmLoading"
-      :title="modalTitle"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
-      <TaskForm :record="selectedItem" ref="taskForm"></TaskForm>
-    </a-modal>
-
-    <!-- <a-list size="large" :data-source="filteredTeamKB" :pagination="pagination(filteredTeamKB)">
-      <a-list-item slot="renderItem" key="item.knowledgeId" slot-scope="item, index">
-        <a-list-item-meta :title="item.knowledgeName">
-          <a slot="description" :href="item.hyperlink">{{ item.hyperlink }}</a>
-          <a-avatar slot="avatar" :src="getAvatar(item.uploaderName)" />
-        </a-list-item-meta>
-        <div slot="actions">
-          <a @click="edit(item)" :disabled="!isTeamAdminOrUploader(item)">编辑</a>
-        </div>
-        <div slot="actions">
-          <a-popconfirm title="是否要删除此行？" @confirm="deleteKB(item, index)">
-            <a :disabled="!isTeamAdminOrUploader(item)">删除</a>
-          </a-popconfirm>
-        </div>
-        <div class="list-content">
-          <div class="list-content-item">
-            <span>上传人</span>
-            <p>{{ item.uploaderName }}</p>
-          </div>
-          <div class="list-content-item">
-            <span>上传时间</span>
-            <p>{{ item.createTimeDisplay }}</p>
-          </div>
-        </div>
-      </a-list-item>
-    </a-list> -->
     <a-table
       size="large"
       :columns="columns"
@@ -56,6 +18,7 @@
         <editable-cell
           :text="text"
           :editing="item.knowledgeNameEditing"
+          :disabled="!isTeamAdminOrUploader(item)"
           :validators="[[isNotEmpty, '知识库标题不能为空']]"
           @change="handleOk(item, 'knowledgeName', $event)"
           @editStatusChange="handleEditStatusChange(item, 'knowledgeName', $event)"
@@ -68,6 +31,7 @@
           :text="text"
           :editing="item.hyperlinkEditing"
           :validators="[[isURL, 'url地址无效！']]"
+          :disabled="!isTeamAdminOrUploader(item)"
           @change="handleOk(item, 'hyperlink', $event)"
           @editStatusChange="handleEditStatusChange(item, 'hyperlink', $event)"
         >
@@ -99,7 +63,7 @@ import { formatDateByPattern } from '@/utils/dateUtil'
 import teamMixin from '@/utils/mixins/teamMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
 import EditableCell from './EditableCell'
-import _ from 'lodash'
+import cloneDeep from 'lodash.clonedeep'
 import Mock from 'mockjs2'
 
 const columns = [
@@ -147,7 +111,6 @@ export default {
   },
   data() {
     return {
-      // data,
       columns,
       status: 'all',
       selectedItem: {},
@@ -170,7 +133,7 @@ export default {
   computed: {
     ...mapGetters(['teamKB', 'username', 'teamId', 'teamAdminName', 'teamMembers']),
     teamKBWithFormatedCreateTime() {
-      const formatedData = _.cloneDeep(this.teamKB)
+      const formatedData = cloneDeep(this.teamKB)
       formatedData.forEach((knowledge) => {
         knowledge.createTimeDisplay = formatDateByPattern(
           new Date(Number(knowledge.createTime)),
@@ -209,9 +172,6 @@ export default {
       return user ? '' : user.avatar
     },
     add() {
-      // this.modalTitle = '新建'
-      // this.selectedItem = {}
-      // this.visible = true
       if (this.creating) {
         return this.$warning({
           content: '当前已有知识库正在创建！',
@@ -281,6 +241,13 @@ export default {
       this.visible = false
     },
     deleteKB(knowledge) {
+      if (this.creating) {
+        this.newKB.knowledgeNameEditing = false
+        this.newKB.hyperlinkEditing = false
+
+        return
+      }
+
       this.deleteTeamKB({
         username: this.username,
         teamId: this.teamId,

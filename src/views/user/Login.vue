@@ -76,7 +76,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
-
+import axios from 'axios'
 export default {
   name: 'Login',
   data() {
@@ -105,22 +105,31 @@ export default {
         if (!err) {
           console.log('Received values of form: ', values)
           this.state.loginBtn = true
-          this.Login(values)
+          setTimeout(() => {
+            this.state.loginBtn = false
+          }, 1000)
+          this.Login({ username: values.username, password: values.password })
             .then((res) => {
               console.log('success,boy', res)
-              if (this.role === 'user') {
-                if (!this.teams || this.teams.length === 0) {
-                  this.$router.push({ name: 'noTeam' })
-                } else this.$router.push({ name: 'projectList' })
-              } else this.$router.push({ name: 'management' })
-              // 延迟 1 秒显示欢迎信息
-              setTimeout(() => {
-                this.$notification.success({
-                  message: '欢迎',
-                  description: `${timeFix()}，欢迎回来`,
+              if (res.data.isSuccess) {
+                if (this.role === 'user') {
+                  if (!this.teams || this.teams.length === 0) {
+                    this.$router.push({ name: 'noTeam' })
+                  } else this.$router.push({ name: 'projectList' })
+                } else this.$router.push({ name: 'management' })
+                // 延迟 1 秒显示欢迎信息
+                setTimeout(() => {
+                  this.$notification.success({
+                    message: '欢迎',
+                    description: `${timeFix()}，欢迎回来`,
+                  })
+                }, 1000)
+                this.isLoginError = false
+              } else {
+                this.$notification.error({
+                  message: res.data.msg,
                 })
-              }, 1000)
-              this.isLoginError = false
+              }
             })
             .catch((err) => {
               console.log('error, boy: ', err)

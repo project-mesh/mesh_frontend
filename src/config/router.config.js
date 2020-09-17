@@ -72,7 +72,7 @@ export const asyncRouterMap = [
                 path: '/project/detail/task-list',
                 name: 'taskList',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/exception/404'),
+                component: () => import('@/views/project/projectDetails/TaskList'),
                 meta: {
                   keepAlive: true,
                   title: '任务列表',
@@ -95,7 +95,7 @@ export const asyncRouterMap = [
                 path: '/project/detail/task-board',
                 name: 'taskBoard',
                 // TODO: 修改成对应页面
-                component: () => import('@/views/project_view/ProjectView'),
+                component: () => import('@/views/project/projectDetails/taskBoard/TaskBoard'),
                 meta: {
                   title: '任务看板',
                   keepAlive: true,
@@ -111,7 +111,6 @@ export const asyncRouterMap = [
                 meta: {
                   title: '统计',
                   keepAlive: true,
-                  icon: 'bar-chart',
                   permission: ['user'],
                 },
               },
@@ -129,6 +128,17 @@ export const asyncRouterMap = [
                 },
               },
               // 公告
+              {
+                path: '/project/detail/members',
+                name: 'projectMember',
+                // TODO: 修改成对应页面
+                component: () => import('@/views/project/projectDetails/members/Members'),
+                meta: {
+                  title: '成员',
+                  keepAlive: true,
+                  permission: ['user'],
+                },
+              },
               {
                 path: '/project/detail/bulletins',
                 name: 'bulletins',
@@ -219,6 +229,7 @@ export const asyncRouterMap = [
           permission: ['user'],
         },
         children: [
+          // 个人中心
           {
             path: '/account/center',
             name: 'center',
@@ -226,6 +237,7 @@ export const asyncRouterMap = [
             component: () => import('@/views/account/center'),
             meta: { title: '个人中心', keepAlive: true, permission: ['user'] },
           },
+          // 设置
           {
             path: '/account/settings',
             name: 'settings',
@@ -234,11 +246,19 @@ export const asyncRouterMap = [
             redirect: '/account/settings/base',
             hideChildrenInMenu: true,
             children: [
+              // 基本设置
               {
                 path: '/account/settings/base',
                 name: 'baseSettings',
                 component: () => import('@/views/account/settings/BaseSetting'),
                 meta: { title: '基本设置', hidden: true, permission: ['user'] },
+              },
+              // 个性化
+              {
+                path: '/account/settings/custom',
+                name: 'customSettings',
+                component: () => import('@/views/account/settings/Custom'),
+                meta: { title: '个性化设置', hidden: true, permission: ['user'] },
               },
             ],
           },

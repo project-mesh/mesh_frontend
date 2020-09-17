@@ -23,7 +23,13 @@
           :wrapper-col="wrapperCol"
           :required="true"
         >
-          <a-select @focus="focus" ref="select" @change="handleChange">
+          <a-select
+            ref="select"
+            v-decorator="[
+              'principal',
+              { rules: [{ required: true, message: '请选择任务负责人' }] },
+            ]"
+          >
             <a-select-option
               v-for="member in projectMembers"
               :key="member.username"
@@ -39,11 +45,14 @@
           :wrapper-col="wrapperCol"
           :required="true"
         >
-          <a-select @focus="focus" ref="select" @change="handleChange">
+          <a-select
+            ref="select"
+            v-decorator="['priority', { rules: [{ required: true, message: '请选择任务优先级' }] }]"
+          >
             <a-select-option
               v-for="(mark, markKey) in priorityMarks"
               :key="markKey"
-              :value="markKey"
+              :value="+markKey"
             >
               {{ mark.label }}
             </a-select-option>
@@ -60,8 +69,9 @@
           />
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 24 }" style="text-align: center">
-          <a-button html-type="submit" type="primary">提交</a-button>
-          <a-button style="margin-left: 8px">保存</a-button>
+          <a-button @click="handleSubmit" :loading="loading" type="primary">
+            {{ isCreating ? '新建' : '保存' }}
+          </a-button>
         </a-form-item>
       </a-form>
     </a-card>
@@ -70,13 +80,24 @@
 
 <script>
 import { priorityMarks } from './common/priority'
+import moment from 'moment'
+import { mapGetters } from 'vuex'
+
 export default {
   props: {
+    task: {
+      type: Object,
+      required: true,
+    },
     visible: {
       type: Boolean,
       default: function () {
         return false
       },
+    },
+    loading: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -92,13 +113,57 @@ export default {
       ],
     }
   },
+  computed: {
+    ...mapGetters(['username', 'teamId', 'projectId', 'projectMembers']),
+    isCreating() {
+      return !('taskId' in this.task)
+    },
+  },
+  watch: {
+    visible(value) {
+      if (value) {
+        this.$nextTick(() => {
+          const time = moment(this.task.deadline, 'YYYY-MM-DD')
+
+          console.log(time)
+
+          this.form.setFieldsValue({
+            taskName: this.task.taskName,
+            deadline: time,
+            principal: this.task.principal,
+            priority: this.task.priority,
+            description: this.task.description,
+          })
+        })
+      }
+    },
+  },
   methods: {
     // handler
     handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values)
+          console.log(values.deadline.format('YYYY-MM-DD'))
+
+          const requestData = {
+            username: this.username,
+            projectId: this.projectId,
+            taskId: this.task.taskId,
+            priority: values.priority,
+            deadline: values.deadline.format('YYYY-MM-DD'),
+            taskName: values.taskName,
+            description: values.description,
+            principal: values.principal,
+          }
+
+          if (this.isCreating) {
+            console.log('create')
+            this.$emit('taskCreate', requestData)
+          } else {
+            console.log('update')
+            this.$emit('taskUpdate', requestData)
+          }
         }
       })
     },

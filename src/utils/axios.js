@@ -13,9 +13,15 @@ const request = axios.create({
 const errorHandler = (error) => Promise.reject(error)
 //
 // request interceptor
-request.interceptors.request.use((config) => config, errorHandler)
+request.interceptors.request.use((config) => {
+  console.log('拦截器：', config)
+  return config
+}, errorHandler)
 //
 // response interceptor
-request.interceptors.response.use((response) => response.data, errorHandler)
+request.interceptors.response.use((response) => {
+  console.log('response拦截器：', response)
+  return response.data
+}, errorHandler)
 
 export default request

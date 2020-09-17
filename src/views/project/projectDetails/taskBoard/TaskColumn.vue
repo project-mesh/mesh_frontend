@@ -25,19 +25,12 @@
           ></task-info>
         </transition-group>
         <div slot="footer">
-          <a-textarea
-            v-show="textareaVisible"
-            ref="textarea"
-            placeholder="请输入新项目名
-按enter确认 按esc取消"
-            allow-clear
-            @keyup.enter="finishEditing"
-            @keyup.esc="exitEditing"
-            @blur="exitEditing"
-            :auto-size="{ minRows: 3, maxRows: 20 }"
-            :value="newTaskName"
-          />
-          <a-button v-show="!textareaVisible" block type="primary" @click="showTextarea">
+          <a-button
+            block
+            :disabled="username !== projectAdminName"
+            type="primary"
+            @click="tryCreateTask()"
+          >
             + 任务
           </a-button>
         </div>
@@ -53,16 +46,15 @@ import TaskInfo from './TaskInfo'
 import TaskDetail from './TaskDetail'
 import { mapGetters, vuex } from 'vuex'
 import { priorityMarks } from './common/priority'
+
 export default {
   components: {
     //调用组件
     draggable,
     TaskInfo,
-    TaskDetail,
   },
   data: function () {
     return {
-      textareaVisible: false,
       taskGroup: {
         name: 'task',
       },
@@ -76,16 +68,6 @@ export default {
     }
   },
   props: {
-    // taskListWithStatus: {
-    //   type: Object,
-    //   default: function () {
-    //     return {
-    //       status: '新建',
-    //       tasks: [],
-    //     }
-    //   },
-    // },
-    //},
     priority: {
       type: Number,
       required: true,
@@ -110,13 +92,12 @@ export default {
         return false
       },
     },
+    tryCreateTask: {
+      type: Function,
+      required: true,
+    },
   },
   computed: {
-    // dragOptions() {
-    //   return {
-    //     animation: 200,
-    //   }
-    // },
     ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
@@ -196,7 +177,7 @@ export default {
 }
 </script>
 <style>
-.task-list {
+.task-column {
   display: inline-block;
   vertical-align: top;
   width: 100%;

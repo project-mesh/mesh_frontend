@@ -38,20 +38,20 @@
     >
       <!-- 项目创建表单 -->
       <a-form
-        :form="form"
+        :form="createForm"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 16 }"
         @submit="handleCreateSubmit"
       >
         <a-form-item label="项目名称">
           <a-input
-            v-decorator="['projName', { rules: [{ required: true, message: '请输入项目名称!' }] }]"
+            v-decorator="['prjName', { rules: [{ required: true, message: '请输入项目名称!' }] }]"
           />
         </a-form-item>
         <a-form-item label="项目权限">
           <a-select
             v-decorator="[
-              'projAuthority',
+              'prjAuthority',
               { rules: [{ required: true, message: '请选择项目权限!' }] },
             ]"
             placeholder="公有/私有"
@@ -63,7 +63,7 @@
         <a-form-item label="项目负责人">
           <a-select
             v-decorator="[
-              'projAdmin',
+              'prjAdmin',
               { rules: [{ required: true, message: '请选择项目负责人!' }] },
             ]"
             placeholder="选择项目管理员"
@@ -84,6 +84,7 @@
             :file-list="fileList"
             @preview="handlePreview"
             @change="handleChange"
+            v-decorator="['prjLogo']"
           >
             <div v-if="fileList.length < 1">
               <a-icon type="plus" />
@@ -105,7 +106,7 @@
     >
       <!-- 项目创建表单 -->
       <a-form
-        :form="form"
+        :form="updateForm"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 16 }"
         @submit="handleUpdateSubmit"
@@ -113,9 +114,8 @@
         <a-form-item label="项目名称">
           <a-input
             v-decorator="[
-              'projName',
+              'prjName',
               {
-                initialValue: (selectedUpdatePrj && selectedUpdatePrj.projectName) || '',
                 rules: [{ required: true, message: '请输入项目名称!' }],
               },
             ]"
@@ -124,7 +124,7 @@
         <a-form-item label="项目权限">
           <a-select
             v-decorator="[
-              'projAuthority',
+              'prjAuthority',
               { rules: [{ required: true, message: '请选择项目权限!' }] },
             ]"
             placeholder="公有/私有"
@@ -136,7 +136,7 @@
         <a-form-item label="项目负责人">
           <a-select
             v-decorator="[
-              'projAdmin',
+              'prjAdmin',
               { rules: [{ required: true, message: '请选择项目负责人!' }] },
             ]"
             placeholder="选择项目管理员"
@@ -157,6 +157,7 @@
             :file-list="fileList"
             @preview="handlePreview"
             @change="handleChange"
+            v-decorator="['prjLogo']"
           >
             <div v-if="fileList.length < 1">
               <a-icon type="plus" />
@@ -168,6 +169,24 @@
           </a-modal>
         </a-form-item>
       </a-form>
+    </a-modal>
+    <a-modal v-model="addMember" title="邀请新成员" centered @ok="handleInviteMember">
+      <!-- 邀请成员 -->
+      <a-select
+        mode="multiple"
+        placeholder="添加你想邀请的成员"
+        :value="selectedItems"
+        style="width: 100%"
+        @change="handleMemberChange"
+      >
+        <a-select-option
+          v-for="item in this.teamMembers"
+          :key="item.username"
+          :value="item.username"
+        >
+          {{ item.username }}
+        </a-select-option>
+      </a-select>
     </a-modal>
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="filteredProjects">
@@ -208,6 +227,9 @@
                 <a :disabled="username !== item.adminName" @click="showUpdatePrjForm(item)">
                   <a-icon key="edit" type="edit" />
                 </a>
+                <a @click="showInviteForm(item)">
+                  <a-icon type="usergroup-add" />
+                </a>
                 <a :disabled="username !== item.adminName" @click="handleProjectDelete(item)">
                   <a-icon key="delete" type="delete" />
                 </a>
@@ -230,6 +252,8 @@ import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
 
+const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
+
 //图片转 base64
 function getBase64(img, callback) {
   const reader = new FileReader()
@@ -249,9 +273,13 @@ export default {
       'teamId',
     ]),
     filteredProjects() {
+      console.log('about filter, teamProjects is:', this.teamProjects)
       return this.teamProjects.filter((project) =>
         project.projectName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
       )
+    },
+    filteredOptions() {
+      return OPTIONS.filter((o) => !this.selectedItems.includes(o))
     },
   },
   watch: {
@@ -266,9 +294,10 @@ export default {
       'updatePreferenceShowMode',
       'deleteProject',
       'updateProject',
+      'joinProject',
     ]),
     tryJumpToProjectDetail(projectId) {
-      this.$router.push({ name: 'statistics', query: { teamId: this.teamId, projectId } })
+      this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
     },
     showListView() {
       console.log('显示列表')
@@ -303,14 +332,14 @@ export default {
     handleChange({ fileList }) {
       this.fileList = fileList
     },
+    handleMemberChange(selectedItems) {
+      this.selectedItems = selectedItems
+    },
     //删除项目
     handleProjectDelete(prj) {
       const vm = this
       this.$confirm({
         title: '您是否要删除该团队?',
-        // okButtonProps: {
-        //   loading: this.deleteLoading,
-        // },
         content: (h) =>
           h('div', { style: { color: 'red' } }, [`请确认即将删除的团队名称：${prj.projectName}`]),
         onOk() {
@@ -340,15 +369,15 @@ export default {
     handleCreateSubmit(e) {
       e.preventDefault()
       this.createLoading = true
-      this.form.validateFields((err, values) => {
+      this.createForm.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
           this.createProject({
             username: store.getters.username,
             teamId: store.getters.teamId,
-            projectName: values.projName,
-            adminName: values.projAdmin,
-            isPublic: values.projAuthority !== 'private',
+            projectName: values.prjName,
+            adminName: values.prjAdmin,
+            isPublic: values.prjAuthority === 'public',
           })
             .then((response) => {
               console.log('success,boy', response)
@@ -374,16 +403,16 @@ export default {
     handleUpdateSubmit(e) {
       e.preventDefault()
       this.updateLoading = true
-      this.form.validateFields((err, values) => {
+      this.updateForm.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
           this.updateProject({
             username: store.getters.username,
             teamId: store.getters.teamId,
             projectId: this.selectedUpdatePrj.projectId,
-            projectName: values.projName,
-            adminName: values.projAdmin,
-            isPublic: values.projAuthority !== 'private',
+            projectName: values.prjName,
+            adminName: values.prjAdmin,
+            isPublic: values.prjAuthority === 'public',
           })
             .then((response) => {
               console.log('success,boy', response)
@@ -412,6 +441,62 @@ export default {
     showUpdatePrjForm(prj) {
       this.selectedUpdatePrj = prj
       this.modifyProjForm = true
+
+      if (Object.keys(prj).length) {
+        this.$nextTick(() => {
+          const formData = {
+            prjName: prj.projectName,
+            prjAuthority: prj.isPublic ? 'public' : 'private',
+            prjLogo: prj.projectLogo,
+            prjAdmin: prj.adminName,
+          }
+
+          this.updateForm.setFieldsValue(formData)
+        })
+      }
+    },
+    handleInviteMember() {
+      console.log(this.selectedItems)
+
+      if (!this.selectedItems || this.selectedItems.length === 0) return this.hideInviteForm()
+
+      const promises = []
+
+      this.selectedItems.forEach((username) =>
+        promises.push(
+          this.joinProject({
+            username,
+            teamId: this.teamId,
+            projectId: this.selectedUpdatePrj.projectId,
+          })
+        )
+      )
+
+      if (promises.length) {
+        return Promise.all(promises)
+          .then(() => {
+            console.log('add project members success!, new members: ', this.selectedItems)
+          })
+          .catch((err) => {
+            this.$notification.error({
+              message: '成功添加新项目成员',
+              description: err.message,
+            })
+          })
+          .finally(() => {
+            this.hideInviteForm()
+          })
+      }
+
+      this.hideInviteForm()
+    },
+    showInviteForm(prj) {
+      this.addMember = true
+      this.selectedUpdatePrj = prj
+    },
+    hideInviteForm() {
+      this.addMember = false
+      this.selectedUpdatePrj = null
     },
   },
   data() {
@@ -419,14 +504,17 @@ export default {
       listVisible: false, //是否显示列表 true显示列表 false显示卡片
       createProjForm: false, //显示创建项目的表单
       modifyProjForm: false, //现实修改项目信息的表单
+      addMember: false, //显示添加项目成员的表单
       previewVisible: false,
       previewImage: '',
       fileList: [],
-      form: this.$form.createForm(this),
+      updateForm: this.$form.createForm(this, { name: 'update' }),
+      createForm: this.$form.createForm(this, { name: 'create' }),
       filterText: '',
       selectedUpdatePrj: null,
       createLoading: false,
       updateLoading: false,
+      selectedItems: [], //选中的成员名单
     }
   },
   mounted: function () {

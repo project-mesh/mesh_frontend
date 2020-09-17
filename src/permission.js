@@ -5,30 +5,12 @@ import storage from 'store'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 // import notification from 'ant-design-vue/es/notification'
 import store from './store'
-
+import Cookies from 'js-cookie'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['login', 'register', 'registerResult'] // no redirect whitelist
 const loginRoutePath = '/user/login'
 const defaultRoutePath = '/project/list'
-
-// var menuQueryMap = {
-//   list: () => ({
-//     teamId: store.getters.teamId,
-//   }),
-//   me: () => ({
-//     teamId: store.getters.teamId,
-//   }),
-//   repositories: () => ({
-//     teamId: store.getters.teamId,
-//   }),
-//   calendar: () => ({
-//     teamId: store.getters.teamId,
-//   }),
-//   members: () => ({
-//     teamId: store.getters.teamId,
-//   }),
-// }
 
 function handle(to, from, next) {
   if (to.path === loginRoutePath) {
@@ -51,33 +33,35 @@ function handle(to, from, next) {
       next({ ...to })
     } else {
       console.log(to)
-      // let menuItem = to.path.split('/').pop()
-      // // console.log('打印：menuItem: ')
-      // console.log('看这里！！！！！', to)
-      // if (menuItem in menuQueryMap && Object.keys(to.query).length === 0) {
-      //   let query = menuQueryMap[menuItem]()
-      //   // tryJump(to, next, { ...to, query })
-      //   next({ ...to, query })
-      // } else {
-      //   next()
-      // }
       next()
     }
   }
 }
 
 router.beforeEach((to, from, next) => {
-  NProgress.start() // start progress bar
+  NProgress.start() // strt progress bar
+  // console.log(Cookies.get())
+  // console.log('state.teams is', store.getters.teams)
+  // if (Cookies.get(store.getters.sessionKey)) {
   if (storage.get(ACCESS_TOKEN)) {
     if (!store.getters.username) {
       store
+        // .dispatch('Login')
         .dispatch('Login', { token: storage.get(ACCESS_TOKEN) })
         .then((res) => {
-          handle(to, from, next)
+          if (res.data.isSuccess) {
+            console.log('success')
+            handle(to, from, next)
+          } else {
+            console.log('fail')
+            store.dispatch('Logout')
+          }
         })
         .catch((err) => {
           console.log('in begin login err is:', err)
           store.dispatch('Logout')
+          // Cookies.remove(store.getters.sessionKey)
+          next({ path: loginRoutePath })
         })
     } else {
       handle(to, from, next)
@@ -87,6 +71,7 @@ router.beforeEach((to, from, next) => {
       // 在免登录白名单，直接进入
       next()
     } else {
+      alert('2')
       next({ path: loginRoutePath })
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }

@@ -77,12 +77,36 @@ const teamInfo = {
       return new Promise((resolve, reject) => {
         sendRequest('queryTeam', requestData)
           .then((res) => {
-            console.log('res in GetTeamInfo is : ', res)
-            commit('SET_ALL', res.data.team)
-            resolve(res)
+            const { data } = res
+
+            if (data.isSuccess) {
+              console.log('res in GetTeamInfo is : ', res)
+              commit('SET_ALL', data.team)
+              return resolve(res)
+            }
+            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.log('err in GetTeamInfo is : ', err)
+            reject(err)
+          })
+      })
+    },
+    updateTeam({ commit }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('updateTeam', requestData)
+          .then((res) => {
+            const { data } = res
+
+            if (data.isSuccess) {
+              console.log('res in UpdateTeam is: ', res)
+              commit('SET_ALL', data.team)
+              return resolve(res)
+            }
+            reject(new Error(data.msg))
+          })
+          .catch((err) => {
+            console.error(err)
             reject(err)
           })
       })
@@ -104,7 +128,9 @@ const teamInfo = {
       return new Promise((resolve, reject) => {
         sendRequest('createTeam', requestData)
           .then((res) => {
-            console.log('res from createTeam action is:', res)
+            console.log('response from createTeam action is:', res)
+            //新建团队没有返回任务列表，增加一个空列表避免undefined
+            res.data.team.teamProjects = []
             commit('SET_ALL', res.data.team)
             resolve(res)
           })

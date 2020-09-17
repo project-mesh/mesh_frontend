@@ -66,7 +66,7 @@ const tasks = [
   },
 ]
 
-const subTasks = [
+let subTasks = [
   {
     parentTaskId: 'aklgnlkjsald',
     taskId: 'aklgnlknbcberui',
@@ -163,7 +163,7 @@ const users = [
     birthday: random.date('yyyy-MM-dd'),
     gender: 1,
     description: '@csentence',
-    status: random.natural(0, 8),
+    status: random.natural(1, 7),
   }),
   Mock.mock({
     username: 'zengze',
@@ -182,7 +182,7 @@ const users = [
     birthday: random.date('yyyy-MM-dd'),
     gender: 1,
     description: '@csentence',
-    status: random.natural(0, 8),
+    status: random.natural(1, 7),
   }),
 ]
 
@@ -231,9 +231,9 @@ for (let i = 0; i < 28; ++i) {
       address: random.county(true),
       nickname: random.cname(),
       birthday: random.date('yyyy-MM-dd'),
-      gender: random.integer(-1, 1),
+      gender: random.integer(0, 2),
       description: '@csentence',
-      status: random.natural(0, 8),
+      status: random.natural(1, 7),
     })
   )
 }
@@ -308,6 +308,12 @@ for (let i = 0; i < projects.length; ++i) {
 
 // console.log('In data, proMem', projectMembers)
 
+const setTaskStatus = (task) => {
+  if (task.isFinished) task.status = '已完成'
+  else if (new Date(task.deadline + ' 24:00:00').getTime() < Date.now()) task.status = '已逾期'
+  else task.status = '开发中'
+}
+
 for (let i = 0; i < 300; ++i) {
   const len = projectMembers.length
   const member = projectMembers[random.natural(0, len - 1)]
@@ -331,7 +337,7 @@ for (let i = 0; i < 300; ++i) {
     taskId: '@id',
     taskName: '@ctitle',
     'isFinished|1': true,
-    priority: random.natural(1, 3),
+    priority: random.natural(0, 3),
     createTime: Date.now(),
     deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
     description: '@cparagraph',
@@ -339,12 +345,45 @@ for (let i = 0; i < 300; ++i) {
     principal: member.username,
   })
 
-  if (newTask.isFinished) newTask.status = '已完成'
-  else if (new Date(newTask.deadline + ' 24:00:00').getTime() < Date.now())
-    newTask.status = '已逾期'
-  else newTask.status = '开发中'
+  setTaskStatus(newTask)
 
   tasks.push(newTask)
+}
+
+for (let i = 0; i < tasks.length; ++i) {
+  //   {
+  //   parentTaskId: 'aklgnlkjsald',
+  //   taskId: 'aklgnlknbcberui',
+  //   taskName: 'UI设计',
+  //   isFinished: false,
+  //   status: '开发中',
+  //   priority: 1,
+  //   createTime: Date.now(),
+  //   deadline: '2020-06-18',
+  //   description: '任务内容详细描述xxxxxxxx',
+  //   founder: 'zengze',
+  //   principal: 'test',
+  // },
+  const task = tasks[i]
+
+  for (let j = 0; j < 5; ++j) {
+    const newSubTask = Mock.mock({
+      parentTaskId: task.taskId,
+      taskId: '@id',
+      taskName: '@ctitle',
+      'isFinished|1': true,
+      priority: random.natural(0, 3),
+      createTime: Date.now(),
+      deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
+      description: '@cparagraph',
+      founder: task.principal,
+      principal: task.principal,
+    })
+
+    setTaskStatus(newSubTask)
+
+    subTasks.push(newSubTask)
+  }
 }
 
 for (let i = 0; i < 200; ++i) {

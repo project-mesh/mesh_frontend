@@ -55,7 +55,7 @@
       <a-breadcrumb separator=">">
         <a-breadcrumb-item>
           <router-link
-            :to="{ name: 'statistics', query: { teamId, projectId: selectedTask.projectId } }"
+            :to="{ name: 'taskList', query: { teamId, projectId: selectedTask.projectId } }"
           >
             {{ selectedTask.projectName }}
           </router-link>
@@ -224,16 +224,18 @@ export default {
       return currentDate
     },
   },
-  mounted() {
-    this.queryTeamTasks({ username: this.username, teamId: this.$route.query.teamId }).catch(
-      (error) => {
-        this.$notification.error({
-          message: '获取团队任务失败',
-          description: `${error.name}: ${error.message}`,
-        })
-      }
-    )
-  },
+  // mounted() {
+  //   if (this.$route.query.teamId && this.$route.query.teamId !== -1) {
+  //     this.queryTeamTasks({ username: this.username, teamId: this.$route.query.teamId }).catch(
+  //       (error) => {
+  //         this.$notification.error({
+  //           message: '获取团队任务失败',
+  //           description: `${error.name}: ${error.message}`,
+  //         })
+  //       }
+  //     )
+  //   }
+  // },
 }
 </script>
 <style scoped>
@@ -299,5 +301,8 @@ export default {
 }
 .ant-fullcalendar-header .ant-radio-group {
   display: none;
+}
+#calendar {
+  /* background-color: #f7f7f7; */
 }
 </style>

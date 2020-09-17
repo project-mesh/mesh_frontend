@@ -5,11 +5,10 @@ export default {
     ...mapGetters(['notifications', 'teamId', 'username', 'preference']),
   },
   methods: {
-    ...mapActions(['queryTeam', 'queryTeamKB', 'queryNotification']),
+    ...mapActions(['queryTeam', 'queryTeamKB', 'queryNotification', 'queryTeamTasks']),
     // 判断是否需要重新加载团队信息
     needToLoadTeamInfo() {
       const currentRoute = this.$route
-
       // 如果团队改变，返回true
       if (
         currentRoute.query &&
@@ -17,11 +16,10 @@ export default {
         currentRoute.query.teamId !== this.teamId
       ) {
         return true
-      } else if (!this.teamId && this.preference.preferenceTeam) {
+      } else if (!this.teamId) {
         // 如果当前沒有团队信息且存在偏好团队，返回true
         return true
       }
-
       return false
     },
     loadTeamInfo() {
@@ -46,7 +44,11 @@ export default {
         if (currentRoute.query && currentRoute.query.teamId)
           requestData.teamId = currentRoute.query.teamId
 
-        promises.push(this.queryTeam(requestData), this.queryTeamKB(requestData))
+        promises.push(
+          this.queryTeam(requestData),
+          this.queryTeamKB(requestData),
+          this.queryTeamTasks(requestData)
+        )
       }
       if (promises.length) {
         Promise.all(promises)
@@ -66,9 +68,13 @@ export default {
     },
   },
   mounted() {
-    this.loadTeamInfo()
+    if (this.preference.preferenceTeam !== -1) {
+      this.loadTeamInfo()
+    }
   },
   activated() {
-    this.loadTeamInfo()
+    if (this.preference.preferenceTeam !== -1) {
+      this.loadTeamInfo()
+    }
   },
 }
