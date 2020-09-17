@@ -351,19 +351,6 @@ for (let i = 0; i < 300; ++i) {
 }
 
 for (let i = 0; i < tasks.length; ++i) {
-  //   {
-  //   parentTaskId: 'aklgnlkjsald',
-  //   taskId: 'aklgnlknbcberui',
-  //   taskName: 'UI设计',
-  //   isFinished: false,
-  //   status: '开发中',
-  //   priority: 1,
-  //   createTime: Date.now(),
-  //   deadline: '2020-06-18',
-  //   description: '任务内容详细描述xxxxxxxx',
-  //   founder: 'zengze',
-  //   principal: 'test',
-  // },
   const task = tasks[i]
 
   for (let j = 0; j < 5; ++j) {
@@ -371,10 +358,9 @@ for (let i = 0; i < tasks.length; ++i) {
       parentTaskId: task.taskId,
       taskId: '@id',
       taskName: '@ctitle',
-      'isFinished|1': true,
-      priority: random.natural(0, 3),
+      isFinished: task.isFinished,
       createTime: Date.now(),
-      deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
+      deadline: task.deadline,
       description: '@cparagraph',
       founder: task.principal,
       principal: task.principal,

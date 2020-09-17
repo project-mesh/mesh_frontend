@@ -12,9 +12,13 @@
         :animation="200"
         :empty-insert-threshold="200"
         :move="moveTask"
-        @end="endMovingTask"
+        @end="onDragEnd"
       >
-        <transition-group type="transition" :name="!drag ? 'flip-list' : null">
+        <transition-group
+          :data-priority="priority"
+          type="transition"
+          :name="!drag ? 'flip-list' : null"
+        >
           <task-info
             class="task-info"
             v-for="(task, taskIndex) in tasks"
@@ -106,34 +110,16 @@ export default {
   },
   methods: {
     selectTask: function (task) {
-      this.$emit('select-task', task)
+      console.log('hello')
+      this.$emit('show-task-detail', task)
     },
     updateTaskData: function (task, formData) {
       this.$emit('update-task', task, formData)
     },
     moveTask: function (evt) {
-      this.movingTask = evt.draggedContext.element
-      this.targetPriority = evt.relatedContext.component.$parent.$parent.priority
+      this.setTask(evt.draggedContext.element)
       return true
     },
-
-    endMovingTask: function () {
-      if (this.movingTask) {
-        this.$message.info(
-          this.movingTask.taskName +
-            ' 的优先级由 ' +
-            priorityMarks[this.movingTask.priority].label +
-            ' 变更为 ' +
-            priorityMarks[this.targetPriority].label
-        )
-        this.$emit('update-task', this.movingTask, 'priority', this.targetPriority)
-        this.movingTask.priority = this.targetPriority
-        this.$emit('update:tasks', this.tasks) // [INFO] 这步是为了和父组件的，重组后的tasks同步,和后端数据无关，
-        this.movingTask = null
-        this.targetPriority = null
-      }
-    },
-
     // 新建任务等等
     showTextarea: function () {
       this.textareaVisible = true
@@ -167,7 +153,9 @@ export default {
       // todo: 交互
       this.newTaskName = ''
     },
-
+    onDragEnd(evt) {
+      this.$emit('end', evt)
+    },
     handleOk: function () {
       // todo: something
       this.visible = false
