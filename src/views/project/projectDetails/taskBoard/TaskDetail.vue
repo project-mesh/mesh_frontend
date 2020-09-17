@@ -78,8 +78,7 @@
       <sub-task-list
         v-if="editing.subTasks"
         :can-edit="canEdit"
-        :task-id="task.taskId"
-        :sub-tasks="task.subTasks"
+        :parent-task="task"
         @update-sub-task="updateSubTask"
         @delete-sub-task="deleteSubTask"
         @create-sub-task="createSubTask"

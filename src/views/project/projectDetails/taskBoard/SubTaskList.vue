@@ -1,44 +1,41 @@
 <template>
-  <a-collapse v-model="activeKey" @change="xx" accordion>
+  <a-collapse v-model="activeKey" @change="onChange" accordion>
     <a-collapse-panel
       v-for="(subTask, subTaskIndex) in parentTask.subTasks"
       :key="subTaskIndex.toString()"
       :header="subTask.taskName"
-      @close="onClose"
     >
       <div slot="extra">
-        <div v-if="!isEditing">
+        <div v-if="isEditing && activeKey === subTaskIndex.toString()">
+          <a-icon
+            v-if="canEdit"
+            type="save"
+            class="panel-icon"
+            key="sub-save"
+            @click="handleEditDone($event, subTask, subTaskIndex)"
+          ></a-icon>
+        </div>
+        <div v-else>
           <a-icon
             v-if="canEdit"
             class="panel-icon"
-            @click="removeSubTask($event, subTask, subTaskIndex)"
+            @click="handleRemove($event, subTask, subTaskIndex)"
             key="sub-delete"
             type="delete"
           />
           <a-icon
             v-if="canEdit"
-            :type="
-              isEditing && activeKey && activeKey === subTaskIndex.toString() ? 'save' : 'edit'
-            "
+            type="edit"
             class="panel-icon"
             key="sub-edit"
-            @click="editSubTask($event, subTask, subTaskIndex)"
+            @click="handleEdit($event, subTask, subTaskIndex)"
           ></a-icon>
           <a-icon
             class="panel-icon"
-            @click="finishSubTask($event, subTask, subTaskIndex)"
+            @click="handleFinishSubTask($event, subTask, subTaskIndex)"
             key="sub-check-square"
             :type="subTask.isFinished ? 'check-square' : 'border'"
           />
-        </div>
-        <div v-else>
-          <a-icon
-            v-if="canEdit"
-            :type="isEditing ? 'save' : 'edit'"
-            class="panel-icon"
-            key="sub-edit"
-            @click="editSubTask($event, subTask, subTaskIndex)"
-          ></a-icon>
         </div>
       </div>
       <a-descriptions class="drawer-content" size="small" :column="4">
@@ -127,52 +124,43 @@ export default {
     ...mapGetters(['username', 'projectId', 'projectMembers', 'projectAdminName']),
   },
   methods: {
-    createSubTask: function (formData) {
-      // 本地
-      this.$emit('create-sub-task', formData)
+    onChange: function (e) {},
+
+    handleEdit: function (event, subTask, subTaskIndex) {
+      event.stopPropagation()
+      console.log(this.activeKey)
+      this.isEditing = true
+      if (this.activeKey === subTaskIndex.toString()) {
+        this.activeKey = undefined
+      }
+      this.activeKey = subTaskIndex.toString()
+
+      console.log('fuckkkkkkkkkkkkkkkkk')
+      //eventBus.$emit('open-sub-drawer', subTask)
     },
-    updateSubTask: function (subTask, formData) {
-      this.$emit('update-sub-task', subTask, formData)
+    handleEditDone: function (event, subTask, subTaskIndex) {
+      this.isEditing = false
+      const requestData = {
+        username: this.username,
+        projectId: this.projectId,
+        taskId: this.parentTask.taskId,
+        deadline: subTask.deadline.format('YYYY-MM-DD'),
+        subTaskName: subTask.taskName,
+        description: subTask.description,
+        principal: subTask.principal,
+      }
+
+      console.log('update')
+      this.$emit('sub-task-update', {
+        subTask: subTask,
+        requestData,
+      })
     },
 
-    deleteSubTask: function (subTask) {
-      this.$emit('delete-sub-task', subTask)
-    },
-    handleEdit(subTask) {
-      console.log('fuckkkkkkkkkkkkkkkkk')
-      eventBus.$emit('open-sub-drawer', subTask)
-    },
-    changePrincipal: function (evt, subTask) {
-      console.log(evt)
-    },
-    removeSubTask: function (event, subTask, subTaskIndex) {
+    handleRemove: function (event, subTask, subTaskIndex) {
       event.stopPropagation()
       this.activeKey = undefined
-      this.$emit('delete-sub-task', subTask)
-    },
-    finishSubTask: function (event, subTask, subTaskIndex) {
-      if (this.canEdit) this.$emit('update-sub-task', subTask, { isFinished: !subTask.isFinished })
-    },
-    xx: function (e) {
-      console.log(e + ' ' + this.isEditing)
-      if (e == undefined && this.isEditing) {
-        this.isEditing = false
-      }
-      if (!this.isEditing && e) {
-        this.activeKey = e
-      }
-    },
-    editSubTask: function (event, subTask, subTaskIndex) {
-      event.stopPropagation()
-      console.log(this.isEditing)
-      if (!this.isEditing) {
-        this.activeKey = subTaskIndex.toString()
-      } else {
-        // emit
-      }
-      this.isEditing = !this.isEditing
-    },
-    handleRemove: function (subTask) {
+
       const requestData = {
         username: this.username,
         projectId: this.projectId,
@@ -182,7 +170,10 @@ export default {
       console.log('delete')
       eventBus.$emit('sub-task-delete', { subTask, requestData })
     },
-    handleFinishSubTask: function (subTask) {
+
+    handleFinishSubTask: function (event, subTask, subTaskIndex) {
+      event.stopPropagation()
+      if (!this.canEdit) return
       const requestData = {
         username: this.username,
         projectId: this.projectId,
