@@ -315,6 +315,12 @@ export const asyncRouterMap = [
         component: () => import('@/views/management/AdminStatistics'),
         meta: { title: '实时数据', keepAlive: true, permission: ['admin'], icon: 'bar-chart' },
       },
+      {
+        path: '/dashboard',
+        name: 'adminDashboard',
+        component: () => import('@/views/management/Dashboard'),
+        meta: { title: '服务器监测', keepAlive: true, permission: ['admin'], icon: 'rocket' },
+      },
     ],
   },
   {
