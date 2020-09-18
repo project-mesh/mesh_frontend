@@ -39,7 +39,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import teamTasks from '../../../../store/modules/teamTasks'
 
 export default {
   name: 'TeamTasksPage',
