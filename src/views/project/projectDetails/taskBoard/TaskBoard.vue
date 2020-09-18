@@ -331,8 +331,6 @@ export default {
       })
     },
     tryCreateSubTask($event) {
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!')
-
       this.createSubTask($event.requestData)
         .then((res) => {
           console.log(('创建子任务成功, res', res))

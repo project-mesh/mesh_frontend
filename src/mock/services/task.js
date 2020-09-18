@@ -4,21 +4,13 @@ import * as utils from '../utils'
 
 const random = Mock.Random
 
-const setTaskStatus = (task) => {
-  if (task.isFinished) task.status = '已完成'
-  else if (new Date(task.deadline + ' 24:00:00').getTime() < Date.now()) task.status = '已逾期'
-  else task.status = '开发中'
-}
-
 const getProjectTasks = (queryParams) => {
   const tasksCopy = utils.deepCopy(tasks)
   const subTasksCopy = utils.deepCopy(subTasks)
   const resTasks = tasksCopy.filter((task) => task.projectId === queryParams.projectId)
 
   resTasks.forEach((task) => {
-    setTaskStatus(task)
     task.subTasks = subTasksCopy.filter((subTask) => subTask.parentTaskId === task.taskId)
-    task.subTasks.forEach((subTask) => setTaskStatus(subTask))
   })
 
   return utils.builder({ tasks: resTasks })
@@ -36,8 +28,6 @@ const getTeamTasks = (queryParams) => {
     task.projectName = projects.find((project) => task.projectId === project.projectId).projectName
   })
 
-  setTaskStatus(resTasks)
-
   return utils.builder({ tasks: resTasks })
 }
 
@@ -51,8 +41,6 @@ const updateTask = (data) => {
   Object.keys(data).forEach((key) => {
     if (key in currentTask) currentTask[key] = data[key]
   })
-
-  setTaskStatus(currentTask)
 
   if ('deadline' in currentTask) {
     subTasks
@@ -93,8 +81,6 @@ const createTask = (data) => {
     if (key in newTask) newTask[key] = data[key]
   })
 
-  setTaskStatus(newTask)
-
   tasks.push(newTask)
 
   return utils.builder({ task: { ...newTask, subTasks: [] } })
@@ -117,8 +103,6 @@ const updateSubTask = (data) => {
     if (key in st) st[key] = data[key]
   })
 
-  setTaskStatus(st)
-
   return utils.builder({ task: st })
 }
 
@@ -136,8 +120,6 @@ const createSubTask = (data) => {
   })
 
   subTasks.push(newSubTask)
-
-  setTaskStatus(newSubTask)
 
   return utils.builder({ subtask: newSubTask })
 }

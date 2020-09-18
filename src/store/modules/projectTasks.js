@@ -1,6 +1,7 @@
 import sendRequest from '../../api'
 import store from '@/store'
 import cloneDeep from 'lodash.clonedeep'
+import { setTaskStatus } from '@/utils/util'
 
 const projectTasks = {
   state: {
@@ -9,12 +10,34 @@ const projectTasks = {
 
   mutations: {
     SET_PROJECT_TASKS: (state, tasks) => {
+      tasks.forEach((task) => {
+        setTaskStatus(task)
+
+        if (task.subTasks) {
+          task.subTasks.forEach((subTask) => {
+            setTaskStatus(subTask)
+          })
+        }
+      })
       state.tasks = tasks
     },
     ADD_PROJECT_TASK: (state, newTask) => {
+      setTaskStatus(newTask)
+      if (newTask.subTasks) {
+        newTask.subTasks.forEach((subTask) => {
+          setTaskStatus(subTask)
+        })
+      }
       state.tasks.unshift(newTask)
     },
-    ADD_SUBTASK: (state, { parentTaskId, newSubTask }) => {},
+    ADD_SUBTASK: (state, { parentTaskId, newSubTask }) => {
+      const parentTask = state.tasks.find((task) => task.taskId === parentTaskId)
+
+      if (parentTask && parentTask.subTasks) {
+        setTaskStatus(newSubTask)
+        parentTask.subTasks.push(newSubTask)
+      }
+    },
   },
 
   actions: {
