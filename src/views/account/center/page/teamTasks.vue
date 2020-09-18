@@ -1,13 +1,13 @@
 <template>
   <div>
-    <a-card style="margin-top: 24px" :bordered="false" title="任务">
+    <a-card style="margin-top: 24px" :bordered="false">
       <a-list
         size="large"
         :pagination="{
           showSizeChanger: true,
           showQuickJumper: true,
           pageSize: 5,
-          total: this.teamTasks.size,
+          total: this.teamTasks.length,
         }"
       >
         <a-list-item :key="index" v-for="(item, index) in teamTasks" @click="handleClick">
@@ -50,7 +50,7 @@ export default {
   methods: {
     ...mapActions(['queryTeamTasks']),
     handleClick() {
-      alert('//TODO:跳转到任务面板详情界面')
+      this.$router.push({ name: 'taskBoard' })
     },
   },
   computed: mapGetters(['teamTasks', 'username', 'teamId']),
