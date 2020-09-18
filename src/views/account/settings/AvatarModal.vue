@@ -53,9 +53,10 @@
   </a-modal>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import { putObject, blobToDataURI, dataURItoBlob } from '../../../utils/oss'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { putObject, dataURItoBlob, getMyAvatar } from '../../../utils/oss'
 import imageCompression from 'browser-image-compression'
+import axios from 'axios'
 
 export default {
   data() {
@@ -76,10 +77,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username', 'nickname']),
+    ...mapGetters(['username', 'nickname', 'birthday', 'avatar']),
   },
   methods: {
     ...mapActions(['updateUserInfo']),
+    ...mapMutations(['SET_AVATAR']),
     edit(id) {
       this.visible = true
       this.id = id
@@ -135,17 +137,32 @@ export default {
       // 输出
       this.$refs.cropper.getCropData((data) => {
         console.log('getCropData', data)
-        // putObject(dataURItoBlob(data))
-        this.updateUserInfo({
-          username: this.username,
-          nickname: this.nickname,
-          avatar: data,
-        }).catch((error) => {
-          this.$notification.error({
-            message: '更新头像失败',
-            description: `${error.name}: ${error.message}`,
-          })
-        })
+        putObject('userAvatar_' + this.username, dataURItoBlob(data))
+        // let imgUrl = testGet('userAvatar_' + this.username)
+        // getBase64(imgUrl).then((ret) => {
+        //   console.log(`data:image/jpg;base64,${ret}`)
+        //   let base64Data = 'data:image/jpg;base64,' + ret.toString()
+        //   this.SET_AVATAR(base64Data)
+        //   console.log('avatar is:', this.avatar)
+        // })
+        getMyAvatar()
+        // axios.get(imgUrl).then((res) => {
+        //   console.log('from ali', res)
+        //   let result = this.getBase64(res)
+        //
+        //   console.log('result is:', result)
+        // })
+        // this.updateUserInfo({
+        //   username: this.username,
+        //   nickname: this.nickname,
+        //   avatar: data,
+        //   birthday: this.birthday,
+        // }).catch((error) => {
+        //   this.$notification.error({
+        //     message: '更新头像失败',
+        //     description: `${error.name}: ${error.message}`,
+        //   })
+        // })
       })
     },
     okHandel() {
