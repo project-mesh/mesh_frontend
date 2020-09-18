@@ -277,7 +277,7 @@ export default {
       // cropper
       city: [],
       defaultCitiesList: [' ', ' ', ' '],
-      birthdayStr: '',
+      birthdayStr: '2020-09-20',
       statusStr: '1', //在数据库中存的是数字，这里需要一步数字转换字符串
       gender: 1,
       shengxiaoTag: '生肖：兔',
@@ -385,7 +385,7 @@ export default {
       )
     },
     dealBirthday() {
-      var oriStr = this.birthDayStr
+      var oriStr = this.birthday
       var dateStr = oriStr.split('-')
       var yearNum = parseInt(dateStr[0])
       var xingzuoNum = parseInt(dateStr[1] + dateStr[2])
@@ -505,7 +505,7 @@ export default {
     },
   },
   async created() {
-    this.dealBirthday()
+    // this.dealBirthday()
     this.city = Object.freeze(allCity.city)
     this.gender = store.getters.gender
     this.birthday = store.getters.birthday
@@ -517,6 +517,9 @@ export default {
     console.log('test console, birthday is:', this.birthday)
     console.log('test console, defaultCitiesList', this.defaultCitiesList)
     console.log('yesyes', this.gender)
+  },
+  mounted() {
+    this.dealBirthday()
   },
 }
 </script>
