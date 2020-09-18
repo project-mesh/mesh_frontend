@@ -3,8 +3,8 @@
   <div>
     <a-card
       class="task-column"
-      style="display: inline-block"
       :title="priorityMarks[priority].label"
+      :head-style="{ color: addclassStatus(priorityMarks[priority].label) }"
     >
       <draggable
         group="taskGroup"
@@ -35,6 +35,7 @@
         <div slot="footer">
           <a-button
             block
+            class="add-task"
             :disabled="username !== projectAdminName"
             type="primary"
             @click="tryCreateTask()"
@@ -164,6 +165,22 @@ export default {
       // todo: something
       this.visible = false
     },
+    addclassStatus(priorityName) {
+      let color = ''
+      if (priorityName == '极高') {
+        color = ' #f5222d'
+      }
+      if (priorityName == '较高') {
+        color = '#faad14'
+      }
+      if (priorityName == '普通') {
+        color = '#52c41a'
+      }
+      if (priorityName == '较低') {
+        color = '#1890ff'
+      }
+      return color
+    },
   },
 }
 </script>
@@ -174,6 +191,7 @@ export default {
   width: 100%;
   height: 800px;
   overflow: auto;
+  margin-top: 15px;
 }
 
 .flip-list-move {
@@ -189,5 +207,9 @@ ul {
 .task-info:not(:last-of-type) {
   margin-bottom: 10px;
   border-bottom: 1px solid #e8e8e8;
+}
+
+.add-task {
+  margin-top: 10px;
 }
 </style>
