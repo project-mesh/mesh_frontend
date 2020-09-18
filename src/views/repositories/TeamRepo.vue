@@ -169,7 +169,7 @@ export default {
     getAvatar(username) {
       const user = this.teamMembers.find((member) => member.username === username)
       // return this.teamMembers.find((member) => member.username === username).avatar
-      return user ? '' : user.avatar
+      return user ? user.avatar : ''
     },
     add() {
       if (this.creating) {

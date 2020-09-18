@@ -1,14 +1,17 @@
 <!-- 展示一个分类下各个的项目的摘要 -->
 <template>
   <div>
-    <a-card class="task-list" :title="priorityName">
+    <a-card
+      class="task-column"
+      style="display: inline-block"
+      :title="priorityMarks[priority].label"
+    >
       <draggable
         group="taskGroup"
         :list="tasks"
-        :move="moveTask"
         :animation="200"
         :empty-insert-threshold="200"
-        @start="onDragStart"
+        :move="moveTask"
         @end="onDragEnd"
       >
         <transition-group
@@ -16,7 +19,7 @@
           type="transition"
           :name="!drag ? 'flip-list' : null"
         >
-          <div
+          <task-info
             class="task-info"
             v-for="(task, taskIndex) in tasks"
             v-show="
@@ -24,10 +27,10 @@
               (!task.isFinished || !onlyNotFinished)
             "
             :key="taskIndex"
-            @click="clickTaskInfo(task)"
-          >
-            <task-info :task="task"></task-info>
-          </div>
+            :task="task"
+            @update-task="updateTaskData"
+            @click.native="selectTask(task)"
+          ></task-info>
         </transition-group>
         <div slot="footer">
           <a-button
@@ -48,7 +51,9 @@
 import draggable from 'vuedraggable'
 import moment from 'moment'
 import TaskInfo from './TaskInfo'
+import TaskDetail from './TaskDetail'
 import { mapGetters } from 'vuex'
+import { priorityMarks } from './common/priority'
 
 export default {
   components: {
@@ -61,16 +66,16 @@ export default {
       taskGroup: {
         name: 'task',
       },
+      newTaskName: '',
+      drag: false,
       modalTitle: '新建',
       confirmLoading: false,
-      drag: false,
+      movingTask: null,
+      targetPriority: null,
+      priorityMarks: priorityMarks,
     }
   },
   props: {
-    priorityName: {
-      type: String,
-      required: true,
-    },
     priority: {
       type: Number,
       required: true,
@@ -104,6 +109,37 @@ export default {
     ...mapGetters(['username', 'projectAdminName']),
   },
   methods: {
+    selectTask: function (task) {
+      console.log('hello')
+      this.$emit('show-task-detail', task)
+    },
+    updateTaskData: function (task, formData) {
+      this.$emit('update-task', task, formData)
+    },
+    moveTask: function (evt) {
+      this.setTask(evt.draggedContext.element)
+      return true
+    },
+    // 新建任务等等
+    showTextarea: function () {
+      this.textareaVisible = true
+      this.$emit('edit-new-task-name', this.priority)
+      console.log(this.$refs.textarea)
+      console.log(this.$refs.textarea.focus)
+      this.$refs.textarea.focus()
+    },
+
+    finishEditing: function () {
+      if (this.newTaskName) {
+        this.$message.info('新建项目：' + this.newTaskName)
+        this.addTask()
+      }
+      this.textareaVisible = false
+    },
+    exitEditing: function () {
+      this.newTaskName = ''
+      this.textareaVisible = false
+    },
     addTask: function () {
       let formData = {
         username: '', // todo: 当前用户名
@@ -117,13 +153,9 @@ export default {
       // todo: 交互
       this.newTaskName = ''
     },
-
-    clickTaskInfo: function (task) {
-      console.log(task)
-      console.log(task.taskId + ' is clicked')
-      this.$emit('showTaskDetail', task)
+    onDragEnd(evt) {
+      this.$emit('end', evt)
     },
-
     handleOk: function () {
       // todo: something
       this.visible = false
@@ -131,20 +163,6 @@ export default {
     handleCancel: function () {
       // todo: something
       this.visible = false
-    },
-    addTag: function () {
-      this.showModal()
-    },
-    onDragStart() {
-      console.log('dragStart')
-      this.drag = true
-    },
-    onDragEnd(evt) {
-      this.$emit('end', evt)
-    },
-    moveTask: function (evt, originalEvt) {
-      this.setTask(evt.draggedContext.element)
-      return true
     },
   },
 }

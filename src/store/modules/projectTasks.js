@@ -1,6 +1,7 @@
 import sendRequest from '../../api'
 import store from '@/store'
 import cloneDeep from 'lodash.clonedeep'
+import { setTaskStatus } from '@/utils/util'
 
 const projectTasks = {
   state: {
@@ -9,10 +10,33 @@ const projectTasks = {
 
   mutations: {
     SET_PROJECT_TASKS: (state, tasks) => {
+      tasks.forEach((task) => {
+        setTaskStatus(task)
+
+        if (task.subTasks) {
+          task.subTasks.forEach((subTask) => {
+            setTaskStatus(subTask)
+          })
+        }
+      })
       state.tasks = tasks
     },
     ADD_PROJECT_TASK: (state, newTask) => {
+      setTaskStatus(newTask)
+      if (newTask.subTasks) {
+        newTask.subTasks.forEach((subTask) => {
+          setTaskStatus(subTask)
+        })
+      }
       state.tasks.unshift(newTask)
+    },
+    ADD_SUBTASK: (state, { parentTaskId, newSubTask }) => {
+      const parentTask = state.tasks.find((task) => task.taskId === parentTaskId)
+
+      if (parentTask && parentTask.subTasks) {
+        setTaskStatus(newSubTask)
+        parentTask.subTasks.push(newSubTask)
+      }
     },
   },
 
@@ -67,14 +91,15 @@ const projectTasks = {
         sendRequest('createSubTask', requestData)
           .then((res) => {
             if (res.data.isSuccess) {
-              let newRequestData = {}
-              newRequestData.username = requestData.username
-              newRequestData.projectId = requestData.projectId
-              newRequestData.teamId = rootGetters.teamId
-              store.dispatch('queryTasks', newRequestData)
+              commit('ADD_SUBTASK', {
+                parentTaskId: requestData.taskId,
+                newSubTask: res.data.subtask,
+              })
+              return resolve(res)
             }
+
+            reject(new Error(res.data.msg))
           })
-          .then(() => resolve())
           .catch((err) => {
             console.log('err from createSubProjectTasks is:', err)
             reject(err)
@@ -113,8 +138,9 @@ const projectTasks = {
               newRequestData.username = requestData.username
               newRequestData.projectId = requestData.projectId
               newRequestData.teamId = rootGetters.teamId
-              store.dispatch('queryTasks', newRequestData)
+              return store.dispatch('queryTasks', newRequestData)
             }
+            reject(new Error(res.data.msg))
           })
           .then(() => resolve())
           .catch((err) => {

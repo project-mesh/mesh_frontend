@@ -193,7 +193,7 @@ export default {
       this.$router.replace({ name: 'noTeam' })
     }
 
-    this.$emit('load', 'projectMembers')
+    this.$emit('load', 'projectMember')
   },
   created() {
     this.dateChange(this.teamCreateTime)
