@@ -20,7 +20,7 @@ const addProgressToTask = (item) => {
       value: value,
     }
   }
-  item.short = item.description.substring(0, 41)
+  item.short = (item.description && item.description.substring(0, 41)) || ''
   return item
 }
 

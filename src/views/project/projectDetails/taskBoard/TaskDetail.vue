@@ -155,6 +155,8 @@ export default {
         projectId: this.projectId,
         taskId: this.task.taskId,
         isFinished: status,
+        principal: this.task.principal,
+        deadline: this.task.deadline,
       }
       this.$emit('task-update', {
         task: this.task,
@@ -166,6 +168,8 @@ export default {
         username: this.username,
         projectId: this.projectId,
         taskId: this.task.taskId,
+        principal: this.task.principal,
+        deadline: this.task.deadline,
       }
       this.$emit('task-delete', {
         task: this.task,

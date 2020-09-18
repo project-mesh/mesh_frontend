@@ -174,6 +174,8 @@ export default {
           projectId: this.projectId,
           taskId: this.selectedTask.taskId,
           priority: toPriority,
+          principal: this.selectedTask.principal,
+          deadline: this.selectedTask.deadline,
         }
 
         console.log(this.updateTask)
@@ -332,10 +334,11 @@ export default {
       })
     },
     tryCreateSubTask($event) {
+      console.log('llllllllllllllllllllllllll')
       this.createSubTask($event.requestData)
         .then((res) => {
           console.log(('创建子任务成功, res', res))
-          this.createSubTaskLocal({ subTask: res.data.subtask })
+          this.createSubTaskLocal({ subTask: res.data.subTask })
         })
         .catch((err) => {
           this.$notification.error({

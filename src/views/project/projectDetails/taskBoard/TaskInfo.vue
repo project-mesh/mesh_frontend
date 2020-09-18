@@ -48,6 +48,8 @@ export default {
           projectId: this.projectId,
           taskId: this.task.taskId,
           isFinished: !this.task.isFinished,
+          principal: this.task.principal,
+          deadline: this.task.deadline,
         },
       })
     },

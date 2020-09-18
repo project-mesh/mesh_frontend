@@ -21,6 +21,7 @@
         </a-descriptions-item>
         <a-descriptions-item label="负责人" :span="2">
           <avatar-featured-user :username="subTask.principal" />
+          <!--  <avatar-featured-user :username="subTask.principal" -->
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" :span="4">
           {{ subTask.createTime | dateFilter }}
@@ -47,7 +48,6 @@
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
 import eventBus from '../eventBus'
-
 export default {
   components: {
     AvatarFeaturedUser,
@@ -56,7 +56,6 @@ export default {
     return {
       labelCol: { lg: { span: 6 }, sm: { span: 4 } },
       wrapperCol: { lg: { span: 16 }, sm: { span: 12 } },
-
       isEditing: false,
       activeKey: [],
       newSubTaskName: '',
@@ -81,22 +80,8 @@ export default {
     ...mapGetters(['username', 'projectId', 'projectMembers']),
   },
   methods: {
-    createSubTask: function (formData) {
-      // 本地
-      this.$emit('create-sub-task', formData)
-    },
-    updateSubTask: function (subTask, formData) {
-      this.$emit('update-sub-task', subTask, formData)
-    },
-    deleteSubTask: function (subTask) {
-      this.$emit('delete-sub-task', subTask)
-    },
     handleEdit(subTask) {
-      console.log('fuckkkkkkkkkkkkkkkkk')
       eventBus.$emit('open-sub-drawer', subTask)
-    },
-    changePrincipal: function (evt, subTask) {
-      console.log(evt)
     },
     handleRemove: function (subTask) {
       const requestData = {
@@ -104,6 +89,7 @@ export default {
         projectId: this.projectId,
         taskId: this.parentTask.taskId,
         subTaskName: subTask.taskName,
+        principal: subTask.principal,
       }
       console.log('delete')
       eventBus.$emit('sub-task-delete', { subTask, requestData })
@@ -114,9 +100,9 @@ export default {
         projectId: this.projectId,
         taskId: this.parentTask.taskId,
         subTaskName: subTask.taskName,
+        principal: subTask.principal,
         isFinished: !subTask.isFinished,
       }
-
       console.log('finish')
       eventBus.$emit('sub-task-finish', { subTask, requestData })
     },
@@ -130,7 +116,6 @@ export default {
             message: '已有同名子任务！',
           })
         }
-
         console.log('fuckkkkkkkkkkkkkk')
         const requestData = {
           username: this.username,
@@ -138,9 +123,7 @@ export default {
           projectId: this.projectId,
           taskId: this.parentTask.taskId,
           principal: this.username,
-          founder: this.username,
         }
-
         console.log('create')
         eventBus.$emit('sub-task-create', { task: this.parentTask, requestData })
       }
@@ -148,9 +131,6 @@ export default {
     exitAdding: function () {
       this.newSubTaskName = ''
     },
-  },
-  created() {
-    console.log('In SubTaskList, parentTask: ', this.parentTask)
   },
 }
 </script>
@@ -160,4 +140,3 @@ export default {
   padding-right: 10px;
 }
 </style>
->

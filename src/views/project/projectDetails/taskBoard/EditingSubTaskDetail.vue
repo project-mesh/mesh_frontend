@@ -9,13 +9,6 @@
             name="taskName"
           />
         </a-form-item>
-        <a-form-item label="截止日期" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-date-picker
-            name="deadline"
-            style="width: 100%"
-            v-decorator="['deadline', { rules: [{ required: true, message: '请选择截止日期' }] }]"
-          />
-        </a-form-item>
 
         <a-form-item
           label="负责人"
@@ -99,13 +92,8 @@ export default {
     visible(value) {
       if (value) {
         this.$nextTick(() => {
-          const time = moment(this.task.deadline, 'YYYY-MM-DD')
-
-          console.log(time)
-
           this.form.setFieldsValue({
             taskName: this.task.taskName,
-            deadline: time,
             principal: this.task.principal,
             description: this.task.description,
           })
@@ -125,7 +113,6 @@ export default {
             username: this.username,
             projectId: this.projectId,
             taskId: this.parentTask.taskId,
-            deadline: values.deadline.format('YYYY-MM-DD'),
             subTaskName: values.taskName,
             description: values.description,
             principal: values.principal,
