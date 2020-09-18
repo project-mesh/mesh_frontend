@@ -94,7 +94,7 @@
               v-decorator="[
                 'city',
                 {
-                  initialValue: this.defaultAddress ? this.defaultAddress : null,
+                  //initialValue: this.defaultAddress ? this.defaultAddress : null,
                   rules: [{ type: 'array', required: true, message: '请输入你的地址' }],
                 },
               ]"
