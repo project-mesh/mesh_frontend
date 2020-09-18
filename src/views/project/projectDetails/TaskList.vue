@@ -27,6 +27,18 @@
       @close="setSubEditingDrawerVisible(false)"
       @sub-task-update="tryUpdateSubTask"
     ></editing-sub-task-detail>
+    <span
+      style="
+         {
+          display: block;
+          text-align: right;
+          padding: 8px 16px;
+        }
+      "
+    >
+      <a-checkbox @change="onOnlyNotFinishedChange">仅显示未完成</a-checkbox>
+      <a-checkbox @change="onOnlyViewMineChange">只看我负责的</a-checkbox>
+    </span>
     <div class="task-group" v-for="status in allStatus" :key="status">
       <div class="topbutton">
         <a-button
@@ -38,18 +50,22 @@
           {{ status }}
         </a-button>
       </div>
-
       <div class="info-list">
         <a-list item-layout="horizontal" :data-source="getStatusTasks(status)">
           <a-list-item slot="renderItem" slot-scope="task">
             <a slot="actions" @click="showTaskDetail(task)">更多</a>
-            <a-list-item-meta :description="task.description">
-              <a slot="title" style="font-size: 17px">{{ task.taskName }}</a>
-            </a-list-item-meta>
-            <div class="description" style="width: 35%">
-              <a-descriptions layout="vertical" :column="6" size="small">
-                <a-descriptions-item :span="1" label="负责人">
-                  {{ task.principal }}
+            <div style="width: 35%" class="task-description">
+              <a-list-item-meta :description="task.description" class="description">
+                <a slot="title" style="font-size: 17px">{{ task.taskName }}</a>
+              </a-list-item-meta>
+            </div>
+            <div style="width: 40%">
+              <a-descriptions layout="vertical" :column="7" size="small">
+                <a-descriptions-item :span="2" label="负责人">
+                  <div>
+                    <a-avatar slot="avatar" :src="getAvatar(task.principal)" />
+                    {{ task.principal }}
+                  </div>
                 </a-descriptions-item>
                 <a-descriptions-item :span="2" label="截止日期">
                   {{ task.deadline }}
@@ -58,7 +74,16 @@
                   {{ moment(+task.createTime).format('YYYY-MM-DD hh:mm') }}
                 </a-descriptions-item>
                 <a-descriptions-item :span="1" label="优先级">
-                  {{ getTextTaskPriority(task.priority) }}
+                  <div
+                    :class="{
+                      red: task.priority === 3,
+                      yellow: task.priority === 2,
+                      green: task.priority === 1,
+                      blue: task.priority === 0,
+                    }"
+                  >
+                    {{ getTextTaskPriority(task.priority) }}
+                  </div>
                 </a-descriptions-item>
               </a-descriptions>
             </div>
@@ -97,10 +122,19 @@ export default {
       selectedTask: {},
       loading: false,
       priorityMarks,
+      onlyNotFinished: false,
+      onlyViewMine: false,
     }
   },
   computed: {
-    ...mapGetters(['projectTasks', 'username', 'teamId', 'projectId', 'projectAdminName']),
+    ...mapGetters([
+      'projectTasks',
+      'username',
+      'teamId',
+      'projectId',
+      'projectAdminName',
+      'projectMembers',
+    ]),
   },
   methods: {
     ...mapActions([
@@ -137,6 +171,17 @@ export default {
         default:
           return '未知优先级'
       }
+    },
+    getAvatar(username) {
+      const user = this.projectMembers.find((member) => member.username === username)
+      return user ? user.avatar : ''
+    },
+    onOnlyNotFinishedChange(e) {
+      this.onlyNotFinished = e.target.checked
+    },
+
+    onOnlyViewMineChange(e) {
+      this.onlyViewMine = e.target.checked
     },
     tryUpdateTask($event) {
       this.loading = true
@@ -290,12 +335,34 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.task-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .task-group {
   padding: 20px;
 }
 
 .task-group:not(:last-of-type) {
   margin-bottom: 40px;
+}
+
+.red {
+  color: #f5222d;
+}
+
+.green {
+  color: #52c41a;
+}
+
+.blue {
+  color: #1890ff;
+}
+
+.yellow {
+  color: #faad14;
 }
 </style>
