@@ -395,8 +395,22 @@ export default {
                   message: '创建成功',
                   description: `${timeFix()}，已成功添加新项目`,
                 })
+                this.queryTeam({
+                  username: this.username,
+                  teamId: this.teamId,
+                })
+                  .then(() => {
+                    this.$notification.success({
+                      message: '团队信息加载成功！',
+                    })
+                  })
+                  .catch((err) => {
+                    this.$notification.error({
+                      message: '请求团队信息失败，请重试',
+                    })
+                  })
               }, 0)
-              // 12
+              // 实时更新
             })
             .catch((err) => {
               console.log('error, boy: ', err)
@@ -406,20 +420,6 @@ export default {
               })
             })
             .finally(() => (this.createLoading = false))
-          this.queryTeam({
-            username: this.username,
-            teamId: this.teamId,
-          })
-            .then(() => {
-              this.$notification.success({
-                message: '团队信息加载成功！',
-              })
-            })
-            .catch((err) => {
-              this.$notification.error({
-                message: '请求团队信息失败，请重试',
-              })
-            })
         }
       })
     },
