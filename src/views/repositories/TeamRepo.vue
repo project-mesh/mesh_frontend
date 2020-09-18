@@ -245,12 +245,17 @@ export default {
     },
     update(item, key, value) {
       const { knowledgeId } = item
-      this.updateTeamKB({
+      const requestData = {
         username: this.username,
         teamId: this.teamId,
         knowledgeId,
-        [key]: value,
-      }).catch((err) => {
+        knowledgeName: item.knowledgeName,
+        hyperlink: item.hyperlink,
+      }
+
+      requestData[key] = value
+
+      this.updateTeamKB(requestData).catch((err) => {
         this.$notification.error({
           message: '更新知识库失败',
           description: err.message,

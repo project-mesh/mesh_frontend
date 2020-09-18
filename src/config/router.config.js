@@ -76,6 +76,7 @@ export const asyncRouterMap = [
                 meta: {
                   title: '任务列表',
                   permission: ['user'],
+                  keepAlive: true,
                 },
               },
               {
@@ -86,6 +87,7 @@ export const asyncRouterMap = [
                 meta: {
                   title: '任务看板',
                   permission: ['user'],
+                  keepAlive: true,
                 },
               },
               // 统计

@@ -145,7 +145,7 @@ const teamInfo = {
     },
     joinTeam({ commit }, requestData) {
       return new Promise((resolve, reject) => {
-        sendRequest('joinTeam', requestData)
+        sendRequest('inviteNewTeamMember', requestData)
           .then((res) => {
             console.log('res from joinTeam action is:', res)
             commit('SET_ALL', res.data.team)

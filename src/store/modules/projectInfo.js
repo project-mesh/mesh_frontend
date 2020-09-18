@@ -169,7 +169,7 @@ const projectInfo = {
     },
     joinProject({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
-        sendRequest('joinProject', requestData)
+        sendRequest('inviteNewProjectMember', requestData)
           .then((res) => {
             const { data } = res
             if (data.isSuccess) {
