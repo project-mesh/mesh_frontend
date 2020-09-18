@@ -93,7 +93,7 @@ const projectTasks = {
             if (res.data.isSuccess) {
               commit('ADD_SUBTASK', {
                 parentTaskId: requestData.taskId,
-                newSubTask: res.data.subtask,
+                newSubTask: res.data.subTask,
               })
               return resolve(res)
             }

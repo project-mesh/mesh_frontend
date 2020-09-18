@@ -21,7 +21,6 @@
         </a-descriptions-item>
         <a-descriptions-item label="负责人" :span="2">
           <avatar-featured-user :username="subTask.principal" />
-          <!--  <avatar-featured-user :username="subTask.principal" -->
         </a-descriptions-item>
         <a-descriptions-item label="创建时间" :span="4">
           {{ subTask.createTime | dateFilter }}
@@ -149,6 +148,9 @@ export default {
     exitAdding: function () {
       this.newSubTaskName = ''
     },
+  },
+  created() {
+    console.log('In SubTaskList, parentTask: ', this.parentTask)
   },
 }
 </script>

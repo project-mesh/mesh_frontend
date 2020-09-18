@@ -17,6 +17,8 @@ export default {
   computed: {
     ...mapGetters(['projectMembers']),
     avatar() {
+      console.log('In AvatarFeatureUser, username', this.username)
+      console.log('In AvatarFeatureUser, projectMembers', this.projectMembers)
       return this.projectMembers.find((member) => member.username === this.username).avatar
     },
   },

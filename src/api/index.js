@@ -199,7 +199,7 @@ const sendRequest = (apiName, data) => {
   if (!apiMap[apiName]) throw new Error('api未定义！')
   // if (apiName === 'login' && typeof data === 'string') return loginByToken(data)
   const config = { ...apiMap[apiName] }
-  if (config.method === 'get') config.params = data
+  if (config.method === 'get' || config.method === 'delete') config.params = data
   else config.data = data
   console.log('apiName is: ', apiName, 'config:', config)
   return request(config)
