@@ -286,6 +286,13 @@ export default {
       }
     },
     onKeywordSearch(value) {
+      if (value === '') {
+        this.$notification.error({
+          message: '搜索关键词失败',
+          description: '不支持搜索空的关键词',
+        })
+        return undefined
+      }
       this.queryUserInfo({ keyword: value, username: this.username })
         .then((res) => {
           //不要把下面这句代码改成this.data.length = 0，会导致列表不被正确清空
