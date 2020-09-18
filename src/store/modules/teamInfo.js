@@ -2,7 +2,7 @@
 // 该模块存储当前团队下的数据
 import sendRequest from '../../api'
 import store from '@/store'
-
+import { getProjectLogo } from '../../utils/oss'
 const teamInfo = {
   state: {
     teamId: '',
@@ -78,9 +78,21 @@ const teamInfo = {
         sendRequest('queryTeam', requestData)
           .then((res) => {
             const { data } = res
-
             if (data.isSuccess) {
-              console.log('res in GetTeamInfo is : ', res)
+              console.log('data.team in GetTeamInfo is : ', data.team)
+              for (let i = 0; i < data.team.teamProjects.length; i++) {
+                console.log('teamProjects in', i, 'is: ', data.team.teamProjects[i])
+                let projectId = data.team.teamProjects[i].projectId
+                getProjectLogo(projectId)
+                  .then((ret) => {
+                    console.log('getProjectLogo ret is:', ret)
+                    data.team.teamProjects[i].projectLogo = ret
+                  })
+                  .catch((err) => {
+                    console.log('get projectLogo error in: ', i, ' ', err)
+                  })
+              }
+              console.log('in new queryTeam teamProjects: ', data.team.teamProjects)
               commit('SET_ALL', data.team)
               return resolve(res)
             }

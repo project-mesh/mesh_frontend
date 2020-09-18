@@ -137,7 +137,9 @@ export default {
       // 输出
       this.$refs.cropper.getCropData((data) => {
         console.log('getCropData', data)
-        putObject('userAvatar_' + this.username, dataURItoBlob(data))
+        putObject('userAvatar_' + this.username, dataURItoBlob(data)).then((res) => {
+          getMyAvatar()
+        })
         // let imgUrl = testGet('userAvatar_' + this.username)
         // getBase64(imgUrl).then((ret) => {
         //   console.log(`data:image/jpg;base64,${ret}`)
@@ -145,7 +147,8 @@ export default {
         //   this.SET_AVATAR(base64Data)
         //   console.log('avatar is:', this.avatar)
         // })
-        getMyAvatar()
+        this.$emit('ok', data)
+        this.okHandel()
         // axios.get(imgUrl).then((res) => {
         //   console.log('from ali', res)
         //   let result = this.getBase64(res)
