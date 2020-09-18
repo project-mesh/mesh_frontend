@@ -90,11 +90,10 @@
           <a-form-item label="地址">
             <a-cascader
               placeholder="地址"
-              :default-value="defaultCitiesList ? defaultCitiesList : null"
               v-decorator="[
                 'city',
                 {
-                  initialValue: this.defaultAddress ? this.defaultAddress : null,
+                  initialValue: this.defaultCitiesList ? this.defaultCitiesList : null,
                   rules: [{ type: 'array', required: true, message: '请输入你的地址' }],
                 },
               ]"
