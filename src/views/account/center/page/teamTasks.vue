@@ -50,7 +50,7 @@ export default {
   methods: {
     ...mapActions(['queryTeamTasks']),
     handleClick() {
-      alert('//TODO:跳转到任务面板详情界面')
+      this.$router.push({ name: 'taskBoard' })
     },
   },
   computed: mapGetters(['teamTasks', 'username', 'teamId']),
