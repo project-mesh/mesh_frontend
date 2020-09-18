@@ -36,7 +36,6 @@
         }
       "
     >
-      <a-checkbox @change="onOnlyNotFinishedChange">仅显示未完成</a-checkbox>
       <a-checkbox @change="onOnlyViewMineChange">只看我负责的</a-checkbox>
     </span>
     <div class="task-group" v-for="status in allStatus" :key="status">
@@ -122,7 +121,6 @@ export default {
       selectedTask: {},
       loading: false,
       priorityMarks,
-      onlyNotFinished: false,
       onlyViewMine: false,
     }
   },
@@ -156,7 +154,12 @@ export default {
       this.visible = false
     },
     getStatusTasks(status) {
-      return this.projectTasks.filter((task) => task.status === status)
+      let resTasks = this.projectTasks.filter((task) => task.status === status)
+
+      if (this.onlyViewMine)
+        resTasks = this.projectTasks.filter((task) => task.principal === this.username)
+
+      return resTasks
     },
     getTextTaskPriority(priorityNumber) {
       switch (priorityNumber) {
@@ -176,10 +179,6 @@ export default {
       const user = this.projectMembers.find((member) => member.username === username)
       return user ? user.avatar : ''
     },
-    onOnlyNotFinishedChange(e) {
-      this.onlyNotFinished = e.target.checked
-    },
-
     onOnlyViewMineChange(e) {
       this.onlyViewMine = e.target.checked
     },
