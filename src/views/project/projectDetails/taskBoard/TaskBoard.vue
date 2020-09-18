@@ -53,6 +53,7 @@
             :only-not-finished="onlyNotFinished"
             :try-create-task="openCreateDrawer"
             :set-task="setSelectedTask"
+            :id="taskListWithPriority.priority"
             @end="onDragEnd"
             @show-task-detail="showTaskDetail"
             ghost-class="task-column"
@@ -385,6 +386,23 @@ export default {
         description: '',
       }
     },
+    addclassStatus(priority) {
+      let color = ''
+      if (priority == 3) {
+        color = '#f5222d'
+      }
+      if (priority == 2) {
+        color = '#faad14'
+      }
+      if (priority == 1) {
+        color = '#52c41a'
+      }
+      if (priority == 0) {
+        color = '#1890ff'
+      }
+      console.log(color)
+      return color
+    },
   },
   mounted() {
     this.resetSelectedTask()
@@ -441,3 +459,8 @@ export default {
   },
 }
 </script>
+<style lang="less">
+#0 {
+  color: red;
+}
+</style>
