@@ -27,6 +27,18 @@
       @close="setSubEditingDrawerVisible(false)"
       @sub-task-update="tryUpdateSubTask"
     ></editing-sub-task-detail>
+    <span
+      style="
+         {
+          display: block;
+          text-align: right;
+          padding: 8px 16px;
+        }
+      "
+    >
+      <a-checkbox @change="onOnlyNotFinishedChange">仅显示未完成</a-checkbox>
+      <a-checkbox @change="onOnlyViewMineChange">只看我负责的</a-checkbox>
+    </span>
     <div class="task-group" v-for="status in allStatus" :key="status">
       <div class="topbutton">
         <a-button
@@ -38,7 +50,6 @@
           {{ status }}
         </a-button>
       </div>
-
       <div class="info-list">
         <a-list item-layout="horizontal" :data-source="getStatusTasks(status)">
           <a-list-item slot="renderItem" slot-scope="task">
@@ -111,6 +122,8 @@ export default {
       selectedTask: {},
       loading: false,
       priorityMarks,
+      onlyNotFinished: false,
+      onlyViewMine: false,
     }
   },
   computed: {
@@ -162,6 +175,13 @@ export default {
     getAvatar(username) {
       const user = this.projectMembers.find((member) => member.username === username)
       return user ? user.avatar : ''
+    },
+    onOnlyNotFinishedChange(e) {
+      this.onlyNotFinished = e.target.checked
+    },
+
+    onOnlyViewMineChange(e) {
+      this.onlyViewMine = e.target.checked
     },
     tryUpdateTask($event) {
       this.loading = true
