@@ -128,6 +128,7 @@ export default {
       taskListGroup: {
         name: 'taskList',
       },
+      drawerMode: '',
       newPriority: 1,
       editable: {
         none: {},
@@ -237,12 +238,7 @@ export default {
     setSelectedTask(task) {
       this.selectedTask = task
     },
-    // enterEditingMode(isEditingMode) {
-    //   if (isEditingMode) {
-    //     this.setDetailDrawerVisible(false)
-    //     this.setEditingDrawerVisible(true)
-    //   }
-    // },
+
     onDragEnd($event) {
       const toPriority = +$event.to.dataset.priority
       const fromPriority = +$event.from.dataset.priority
