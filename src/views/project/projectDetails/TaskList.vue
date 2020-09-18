@@ -63,7 +63,16 @@
                   {{ moment(+task.createTime).format('YYYY-MM-DD hh:mm') }}
                 </a-descriptions-item>
                 <a-descriptions-item :span="1" label="优先级">
-                  {{ getTextTaskPriority(task.priority) }}
+                  <div
+                    :class="{
+                      red: task.priority === 3,
+                      yellow: task.priority === 2,
+                      green: task.priority === 1,
+                      blue: task.priority === 0,
+                    }"
+                  >
+                    {{ getTextTaskPriority(task.priority) }}
+                  </div>
                 </a-descriptions-item>
               </a-descriptions>
             </div>
@@ -319,5 +328,21 @@ export default {
 
 .task-group:not(:last-of-type) {
   margin-bottom: 40px;
+}
+
+.red {
+  color: #f5222d;
+}
+
+.green {
+  color: #52c41a;
+}
+
+.blue {
+  color: #1890ff;
+}
+
+.yellow {
+  color: #faad14;
 }
 </style>
