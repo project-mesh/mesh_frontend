@@ -191,6 +191,7 @@ export default {
   width: 100%;
   height: 800px;
   overflow: auto;
+  margin-top: 15px;
 }
 
 .flip-list-move {
