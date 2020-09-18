@@ -35,6 +35,7 @@
         <div slot="footer">
           <a-button
             block
+            class="add-task"
             :disabled="username !== projectAdminName"
             type="primary"
             @click="tryCreateTask()"
@@ -205,5 +206,9 @@ ul {
 .task-info:not(:last-of-type) {
   margin-bottom: 10px;
   border-bottom: 1px solid #e8e8e8;
+}
+
+.add-task {
+  margin-top: 10px;
 }
 </style>
