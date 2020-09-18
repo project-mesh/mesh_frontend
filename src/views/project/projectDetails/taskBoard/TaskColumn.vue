@@ -3,8 +3,8 @@
   <div>
     <a-card
       class="task-column"
-      style="display: inline-block"
       :title="priorityMarks[priority].label"
+      :head-style="{ color: addclassStatus(priorityMarks[priority].label) }"
     >
       <draggable
         group="taskGroup"
@@ -163,6 +163,22 @@ export default {
     handleCancel: function () {
       // todo: something
       this.visible = false
+    },
+    addclassStatus(priorityName) {
+      let color = ''
+      if (priorityName == '极高') {
+        color = ' #f5222d'
+      }
+      if (priorityName == '较高') {
+        color = '#faad14'
+      }
+      if (priorityName == '普通') {
+        color = '#52c41a'
+      }
+      if (priorityName == '较低') {
+        color = '#1890ff'
+      }
+      return color
     },
   },
 }
