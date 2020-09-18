@@ -7,7 +7,7 @@
           showSizeChanger: true,
           showQuickJumper: true,
           pageSize: 5,
-          total: this.teamTasks.size(),
+          total: this.teamTasks.length,
         }"
       >
         <a-list-item :key="index" v-for="(item, index) in teamTasks" @click="handleClick">
