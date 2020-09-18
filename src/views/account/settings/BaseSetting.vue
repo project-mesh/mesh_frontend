@@ -94,6 +94,7 @@
               v-decorator="[
                 'city',
                 {
+                  initialValue: this.defaultAddress ? this.defaultAddress : null,
                   rules: [{ type: 'array', required: true, message: '请输入你的地址' }],
                 },
               ]"
@@ -285,6 +286,7 @@ export default {
       xingzuoTag: '星座：巨蟹座',
       xingzuoIcon: 'icon-juxiezuo',
       dateFormat: 'YYYY-MM-DD',
+      defaultAddress: '',
       preview: {},
       form: this.$form.createForm(this),
       option: {
@@ -317,15 +319,16 @@ export default {
           console.log('Received values of form: ', values)
           values.city = values.city[0] + ' ' + values.city[1] + ' ' + values.city[2]
           console.log('new values of form: ', values)
-          this.updateUserInfo({
+          let sendData = {
             username: this.username,
             nickname: values.nickname,
             status: Number(values.status),
-            address: values.city,
+            address: values.city || store.getters.address,
             description: values.description,
-            birthday: this.birthdayStr,
+            birthday: this.birthdayStr || store.getters.birthday,
             gender: this.gender,
-          })
+          }
+          this.updateUserInfo(sendData)
             .then((res) => {
               if (res.data.isSuccess) {
                 this.$notification.success({
@@ -397,6 +400,7 @@ export default {
     this.city = Object.freeze(allCity.city)
     this.gender = store.getters.gender
     this.birthday = store.getters.birthday
+    this.defaultAddress = store.getters.address
     if (store.getters.address && store.getters.address.split(' ').length === 3) {
       this.defaultCitiesList = store.getters.address.split(' ')
     }

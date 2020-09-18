@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card style="margin-top: 24px" :bordered="false" title="任务">
+    <a-card style="margin-top: 24px" :bordered="false">
       <a-list
         size="large"
         :pagination="{
@@ -50,7 +50,7 @@ export default {
   methods: {
     ...mapActions(['queryTeamTasks']),
     handleClick() {
-      alert('//TODO:跳转到任务面板详情界面')
+      this.$router.push({ name: 'taskBoard' })
     },
   },
   computed: mapGetters(['teamTasks', 'username', 'teamId']),
