@@ -39,11 +39,11 @@ export default {
       tabListNoTitle: [
         {
           key: 'teamTasks',
-          tab: '任务(8)',
+          tab: '任务',
         },
         {
           key: 'teamNotice',
-          tab: '通知(8)',
+          tab: '通知',
         },
       ],
       noTitleKey: 'teamTasks',

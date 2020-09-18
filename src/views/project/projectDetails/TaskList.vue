@@ -5,19 +5,39 @@
       :task="selectedTask"
       @edit="enterEditingMode"
       @close="setDetailDrawerVisible(false)"
-      @taskUpdate="tryUpdateTask"
-      @taskDelete="tryDeleteTask"
+      @task-update="tryUpdateTask"
+      @task-celete="tryDeleteTask"
+      @task-delete="tryDeleteTask"
     ></task-detail>
     <editing-task-detail
       :visible="editingDrawerVisible"
       :task="selectedTask"
       :loading="loading"
-      @edit="enterEditingMode"
+      @edit="enterEditingMode(true)"
       @close="setEditingDrawerVisible(false)"
-      @taskUpdate="tryUpdateTask"
-      @taskCreate="tryCreateTask"
+      @task-update="tryUpdateTask"
+      @task-create="tryCreateTask"
     ></editing-task-detail>
-
+    <editing-sub-task-detail
+      :visible="subEditingDrawerVisiable"
+      :task="selectedSubTask"
+      :parent-task="selectedTask"
+      :loading="loading"
+      @edit="enterSubEditingMode(true)"
+      @close="setSubEditingDrawerVisible(false)"
+      @sub-task-update="tryUpdateSubTask"
+    ></editing-sub-task-detail>
+    <span
+      style="
+         {
+          display: block;
+          text-align: right;
+          padding: 8px 16px;
+        }
+      "
+    >
+      <a-checkbox @change="onOnlyViewMineChange">只看我负责的</a-checkbox>
+    </span>
     <div class="task-group" v-for="status in allStatus" :key="status">
       <div class="topbutton">
         <a-button
@@ -29,18 +49,22 @@
           {{ status }}
         </a-button>
       </div>
-
       <div class="info-list">
         <a-list item-layout="horizontal" :data-source="getStatusTasks(status)">
           <a-list-item slot="renderItem" slot-scope="task">
             <a slot="actions" @click="showTaskDetail(task)">更多</a>
-            <a-list-item-meta :description="task.description">
-              <a slot="title" style="font-size: 17px">{{ task.taskName }}</a>
-            </a-list-item-meta>
-            <div class="description" style="width: 35%">
-              <a-descriptions layout="vertical" :column="6" size="small">
-                <a-descriptions-item :span="1" label="负责人">
-                  {{ task.principal }}
+            <div style="width: 35%" class="task-description">
+              <a-list-item-meta :description="task.description" class="description">
+                <a slot="title" style="font-size: 17px">{{ task.taskName }}</a>
+              </a-list-item-meta>
+            </div>
+            <div style="width: 40%">
+              <a-descriptions layout="vertical" :column="7" size="small">
+                <a-descriptions-item :span="2" label="负责人">
+                  <div>
+                    <a-avatar slot="avatar" :src="getAvatar(task.principal)" />
+                    {{ task.principal }}
+                  </div>
                 </a-descriptions-item>
                 <a-descriptions-item :span="2" label="截止日期">
                   {{ task.deadline }}
@@ -49,7 +73,16 @@
                   {{ moment(+task.createTime).format('YYYY-MM-DD hh:mm') }}
                 </a-descriptions-item>
                 <a-descriptions-item :span="1" label="优先级">
-                  {{ getTextTaskPriority(task.priority) }}
+                  <div
+                    :class="{
+                      red: task.priority === 3,
+                      yellow: task.priority === 2,
+                      green: task.priority === 1,
+                      blue: task.priority === 0,
+                    }"
+                  >
+                    {{ getTextTaskPriority(task.priority) }}
+                  </div>
                 </a-descriptions-item>
               </a-descriptions>
             </div>
@@ -65,14 +98,18 @@ import TaskDetail from './taskBoard/TaskDetail'
 import EditingTaskDetail from './taskBoard/EditingTaskDetail'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
+import EditingSubTaskDetail from './taskBoard/EditingSubTaskDetail'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
+import { priorityMarks } from './taskBoard/common/priority'
+import eventBus from './eventBus'
 
 export default {
   components: {
     TaskDetail,
     EditingTaskDetail,
+    EditingSubTaskDetail,
   },
   mixins: [teamMixin, projectMixin, taskDrawerMixin],
   data() {
@@ -83,13 +120,29 @@ export default {
       moment,
       selectedTask: {},
       loading: false,
+      priorityMarks,
+      onlyViewMine: false,
     }
   },
   computed: {
-    ...mapGetters(['projectTasks', 'username', 'teamId', 'projectId', 'projectAdminName']),
+    ...mapGetters([
+      'projectTasks',
+      'username',
+      'teamId',
+      'projectId',
+      'projectAdminName',
+      'projectMembers',
+    ]),
   },
   methods: {
-    ...mapActions(['updateTask', 'createTask', 'deleteTask']),
+    ...mapActions([
+      'updateTask',
+      'createTask',
+      'deleteTask',
+      'createSubTask',
+      'updateSubTask',
+      'deleteSubTask',
+    ]),
     showDrawer() {
       this.visible = true
     },
@@ -101,7 +154,12 @@ export default {
       this.visible = false
     },
     getStatusTasks(status) {
-      return this.projectTasks.filter((task) => task.status === status)
+      let resTasks = this.projectTasks.filter((task) => task.status === status)
+
+      if (this.onlyViewMine)
+        resTasks = this.projectTasks.filter((task) => task.principal === this.username)
+
+      return resTasks
     },
     getTextTaskPriority(priorityNumber) {
       switch (priorityNumber) {
@@ -117,10 +175,17 @@ export default {
           return '未知优先级'
       }
     },
+    getAvatar(username) {
+      const user = this.projectMembers.find((member) => member.username === username)
+      return user ? user.avatar : ''
+    },
+    onOnlyViewMineChange(e) {
+      this.onlyViewMine = e.target.checked
+    },
     tryUpdateTask($event) {
       this.loading = true
 
-      this.updateTask($event)
+      this.updateTask($event.requestData)
         .then((res) => {
           console.log('更新任务信息成功')
         })
@@ -135,10 +200,48 @@ export default {
           this.loading = false
         })
     },
+    tryUpdateSubTask($event) {
+      this.loading = true
+
+      console.log('$event: ', $event)
+
+      this.updateSubTask($event.requestData)
+        .then((res) => {
+          console.log('更新任务信息成功')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '更新任务信息失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
+    tryCreateSubTask($event) {
+      console.log('PPPPPPPPPPPPPPPPPPPPPPPPPP')
+
+      this.createSubTask($event.requestData)
+        .then((res) => {
+          console.log(('创建子任务成功, res', res))
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '创建子任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+          this.loading = false
+        })
+    },
     tryCreateTask($event) {
       this.loading = true
 
-      this.createTask($event)
+      this.createTask($event.requestData)
         .then((res) => {
           console.log('创建任务成功')
         })
@@ -153,8 +256,23 @@ export default {
           this.loading = false
         })
     },
+    tryDeleteSubTask($event) {
+      this.deleteSubTask($event.requestData)
+        .then(() => {
+          console.log('删除子任务成功')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: '删除子任务失败',
+            description: err.message,
+          })
+        })
+        .finally(() => {
+          this.closeDrawer()
+        })
+    },
     tryDeleteTask($event) {
-      this.deleteTask($event)
+      this.deleteTask($event.requestData)
         .then(() => {
           console.log('删除任务成功')
         })
@@ -201,16 +319,51 @@ export default {
   },
   created() {
     // this.reloadTasks()
+
+    eventBus.$on('task-update', this.tryUpdateTask)
+
+    eventBus.$on('sub-task-delete', this.tryDeleteSubTask)
+
+    eventBus.$on('sub-task-finish', this.tryUpdateSubTask)
+
+    eventBus.$on('sub-task-create', this.tryCreateSubTask)
+
+    eventBus.$on('open-sub-drawer', ($event) => {
+      this.selectedSubTask = $event
+      this.enterSubEditingMode(true)
+    })
   },
 }
 </script>
 
-<style>
+<style scoped>
+.task-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .task-group {
   padding: 20px;
 }
 
 .task-group:not(:last-of-type) {
   margin-bottom: 40px;
+}
+
+.red {
+  color: #f5222d;
+}
+
+.green {
+  color: #52c41a;
+}
+
+.blue {
+  color: #1890ff;
+}
+
+.yellow {
+  color: #faad14;
 }
 </style>

@@ -19,11 +19,7 @@
         <div class="search-box">
           <a-input-search placeholder="输入要查找的项目" v-model="filterText" enter-button />
         </div>
-        <a-button
-          :disabled="username !== teamAdminName"
-          type="primary"
-          @click="() => (createProjForm = true)"
-        >
+        <a-button :disabled="username !== teamAdminName" type="primary" @click="showCreateForm">
           创建新项目
           <a-icon type="folder-add" />
         </a-button>
@@ -396,7 +392,10 @@ export default {
                 description: err.message,
               })
             })
-            .finally(() => (this.createLoading = false))
+            .finally(() => {
+              this.createLoading = false
+              this.createProjForm = false
+            })
         }
       })
     },
@@ -497,6 +496,19 @@ export default {
     hideInviteForm() {
       this.addMember = false
       this.selectedUpdatePrj = null
+    },
+    showCreateForm() {
+      this.createProjForm = true
+
+      this.$nextTick(() => {
+        const formData = {
+          prjName: '',
+          prjAuthority: 'public',
+          prjLogo: 'xxxxxxxx',
+          prjAdmin: '',
+        }
+        this.createForm.setFieldsValue(formData)
+      })
     },
   },
   data() {

@@ -3,8 +3,8 @@
   <div>
     <a-card
       class="task-column"
-      style="display: inline-block"
       :title="priorityMarks[priority].label"
+      :head-style="{ color: addclassStatus(priorityMarks[priority].label) }"
     >
       <draggable
         group="taskGroup"
@@ -12,9 +12,13 @@
         :animation="200"
         :empty-insert-threshold="200"
         :move="moveTask"
-        @end="endMovingTask"
+        @end="onDragEnd"
       >
-        <transition-group type="transition" :name="!drag ? 'flip-list' : null">
+        <transition-group
+          :data-priority="priority"
+          type="transition"
+          :name="!drag ? 'flip-list' : null"
+        >
           <task-info
             class="task-info"
             v-for="(task, taskIndex) in tasks"
@@ -31,6 +35,7 @@
         <div slot="footer">
           <a-button
             block
+            class="add-task"
             :disabled="username !== projectAdminName"
             type="primary"
             @click="tryCreateTask()"
@@ -48,7 +53,7 @@ import draggable from 'vuedraggable'
 import moment from 'moment'
 import TaskInfo from './TaskInfo'
 import TaskDetail from './TaskDetail'
-import { mapGetters, vuex } from 'vuex'
+import { mapGetters } from 'vuex'
 import { priorityMarks } from './common/priority'
 
 export default {
@@ -106,34 +111,16 @@ export default {
   },
   methods: {
     selectTask: function (task) {
-      this.$emit('select-task', task)
+      console.log('hello')
+      this.$emit('show-task-detail', task)
     },
     updateTaskData: function (task, formData) {
       this.$emit('update-task', task, formData)
     },
     moveTask: function (evt) {
-      this.movingTask = evt.draggedContext.element
-      this.targetPriority = evt.relatedContext.component.$parent.$parent.priority
+      this.setTask(evt.draggedContext.element)
       return true
     },
-
-    endMovingTask: function () {
-      if (this.movingTask) {
-        this.$message.info(
-          this.movingTask.taskName +
-            ' 的优先级由 ' +
-            priorityMarks[this.movingTask.priority].label +
-            ' 变更为 ' +
-            priorityMarks[this.targetPriority].label
-        )
-        this.$emit('update-task', this.movingTask, 'priority', this.targetPriority)
-        this.movingTask.priority = this.targetPriority
-        this.$emit('update:tasks', this.tasks) // [INFO] 这步是为了和父组件的，重组后的tasks同步,和后端数据无关，
-        this.movingTask = null
-        this.targetPriority = null
-      }
-    },
-
     // 新建任务等等
     showTextarea: function () {
       this.textareaVisible = true
@@ -167,7 +154,9 @@ export default {
       // todo: 交互
       this.newTaskName = ''
     },
-
+    onDragEnd(evt) {
+      this.$emit('end', evt)
+    },
     handleOk: function () {
       // todo: something
       this.visible = false
@@ -175,6 +164,22 @@ export default {
     handleCancel: function () {
       // todo: something
       this.visible = false
+    },
+    addclassStatus(priorityName) {
+      let color = ''
+      if (priorityName == '极高') {
+        color = ' #f5222d'
+      }
+      if (priorityName == '较高') {
+        color = '#faad14'
+      }
+      if (priorityName == '普通') {
+        color = '#52c41a'
+      }
+      if (priorityName == '较低') {
+        color = '#1890ff'
+      }
+      return color
     },
   },
 }
@@ -186,6 +191,7 @@ export default {
   width: 100%;
   height: 800px;
   overflow: auto;
+  margin-top: 15px;
 }
 
 .flip-list-move {
@@ -201,5 +207,9 @@ ul {
 .task-info:not(:last-of-type) {
   margin-bottom: 10px;
   border-bottom: 1px solid #e8e8e8;
+}
+
+.add-task {
+  margin-top: 10px;
 }
 </style>

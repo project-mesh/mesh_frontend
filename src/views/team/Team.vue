@@ -234,7 +234,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryUser', 'joinTeam', 'updateTeam']),
+    ...mapActions(['queryUser', 'joinTeam', 'updateTeam', 'inviteMember']),
     addmember() {},
     isAdminButNotHimself(chosedUser) {
       return this.username === this.teamAdminName && chosedUser.username !== this.teamAdminName

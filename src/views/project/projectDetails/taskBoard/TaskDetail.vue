@@ -1,96 +1,54 @@
 <template>
   <a-drawer :title="task.taskName" width="540" :closable="true" :visible="visible" @close="close">
     <a-card>
-      <a-descriptions class="drawer-content" :column="4">
-        <a-descriptions-item label="创建者" span="2">
-          <span style="margin-left: 20px">
-            <avatar-featured-user :username="task.founder" />
-          </span>
+      <a-descriptions class="drawer-content" :column="3">
+        <a-descriptions-item label="创建者">
+          {{ task.founder }}
         </a-descriptions-item>
-        <a-descriptions-item label="创建时间" span="2">
+        <a-descriptions-item label="创建时间" :span="2">
           {{ task.createTime | dateFilter }}
         </a-descriptions-item>
 
-        <a-descriptions-item label="负责人" span="2">
-          <a-select
-            width="100%"
-            placeholder="请选择项目负责人"
-            v-model="task.principal"
-            :default-value="task.principal"
-            @change="changePrincipal"
-          >
-            <a-select-option
-              v-for="member in projectMembers"
-              :key="member.username"
-              :value="member.username"
-            >
-              <avatar-featured-user :username="member.username" />
-            </a-select-option>
-          </a-select>
-        </a-descriptions-item>
-        <a-descriptions-item label="优先级" span="2">
-          {{ task.priority | formatPriority }}
-          <!-- 在这里改优先级容易乱掉
-          <a-select
-
-            width="100%"
-            placeholder="请选择项目优先级"
-            v-model="task.priority"
-            :default-value="task.priority"
-            @change="changePriority"
-          >
-            <a-select-option
-              v-for="(priorityMark, priorityIndex) in priorityMarks"
-              :key="priorityIndex"
-              :value="priorityIndex"
-            >
-              {{ priorityMark.label }}
-            </a-select-option>
-          </a-select>
-          -->
-        </a-descriptions-item>
-        <a-descriptions-item label="截止日期" span="4">
+        <a-descriptions-item label="负责人" :span="1">{{ task.principal }}</a-descriptions-item>
+        <a-descriptions-item label="截止日期" :span="2" :contenteditable="true">
           {{ task.deadline }}
         </a-descriptions-item>
+        <a-descriptions-item label="优先级" :span="1">
+          {{ task.priority | formatPriority }}
+        </a-descriptions-item>
+        <a-descriptions-item label="状态" :span="1">{{ task.status }}</a-descriptions-item>
 
-        <a-descriptions-item label="截止日期" span="4">
-          <a-date-picker
-            size="small"
-            placeholder="请选择任务截止日期"
-            @change="changeDeadline"
-            :allow-clear="false"
-            :value="task.deadline"
-            :disabled-date="(date) => date < moment().startOf('day')"
-          ></a-date-picker>
+        <a-descriptions-item label="已完成" :span="1">
+          {{ task.isFinished ? '是' : '否' }}
         </a-descriptions-item>
-        <a-descriptions-item label="描述" span="4">
-          {{ task.description }}
-        </a-descriptions-item>
-        <a-descriptions-item label="子任务" span="3"></a-descriptions-item>
+
+        <a-descriptions-item label="描述" :span="3">{{ task.description }}</a-descriptions-item>
+        <a-descriptions-item label="子任务" :span="3"></a-descriptions-item>
       </a-descriptions>
       <sub-task-list
-        :task-id="task.taskId"
-        :sub-tasks="task.subTasks"
+        :parent-task="task"
         @update-sub-task="updateSubTask"
         @delete-sub-task="deleteSubTask"
         @create-sub-task="createSubTask"
       />
       <template slot="actions" class="ant-card-actions">
-        <a-popconfirm
-          title="确认删除该任务？"
-          ok-text="确认"
-          cancel-text="取消"
-          @confirm="deleteTask"
-        >
-          <a-icon key="delete" type="delete" />
+        <a-popconfirm title="是否要删除此行？" @confirm="handleDelete">
+          <a :disabled="username !== projectAdminName">
+            <a-icon key="delete" type="delete" />
+          </a>
         </a-popconfirm>
-
-        <a-icon key="edit" type="edit" @click="editTask(task)" />
-        <a-icon
-          key="check-square"
-          :type="task.isFinished ? 'check-square' : 'border'"
-          @click="changeTaskFinishingStatus"
-        />
+        <a :disabled="username !== projectAdminName">
+          <a-icon key="edit" type="edit" @click="editTask(task)" />
+        </a>
+        <a :disbled="username !== projectAdminName && username !== task.principal">
+          <a-icon
+            v-if="task.isFinished"
+            key="check-square"
+            type="check-square"
+            @click="handleUpdate(false)"
+          />
+          <a-icon v-else key="check" type="check" @click="handleUpdate(true)" />
+        </a>
       </template>
     </a-card>
   </a-drawer>
@@ -101,6 +59,8 @@ import { priorityMarks } from './common/priority'
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
+import eventBus from '../eventBus'
+
 export default {
   components: {
     SubTaskList,
@@ -122,31 +82,11 @@ export default {
 
     task: {
       type: Object,
-      default: function () {
-        return {
-          taskId: 'id',
-          taskName: '任务名',
-          isFinished: false,
-          priority: 0,
-          createTime: '0',
-          deadline: '1970-01-01',
-          description: '描述内容',
-          founder: '创建者',
-          principal: '负责人',
-          subTasks: [
-            {
-              taskId: 'aklgnlkjsald',
-              taskName: '子任务名',
-              isFinished: false,
-              createTime: '16546513231',
-              description: '子任务描述',
-              founder: '子任务创建者',
-              principal: '子任务负责人',
-            },
-          ],
-        }
-      },
+      required: true,
     },
+  },
+  computed: {
+    ...mapGetters(['projectMembers', 'username', 'teamId', 'projectId', 'projectAdminName']),
   },
   methods: {
     moment,
@@ -167,11 +107,6 @@ export default {
       this.close()
       this.$message.info('删除成功')
     },
-    editTask: function (task) {
-      this.$message.warning('进入编辑模式')
-      this.$emit('change-drawer', 'editing')
-    },
-
     finishEditing: function () {
       if (this.newSubTaskName) {
         this.$message.info('新建项目：' + this.newSubTaskName)
@@ -207,19 +142,55 @@ export default {
     },
 
     close: function () {
-      this.$emit('change-drawer', '')
+      this.$emit('close')
+    },
+
+    editTask: function (task) {
+      this.$message.warning('进入编辑模式')
+      this.$emit('edit', true)
+    },
+    handleUpdate(status) {
+      const requestData = {
+        username: this.username,
+        projectId: this.projectId,
+        taskId: this.task.taskId,
+        isFinished: status,
+        principal: this.task.principal,
+        deadline: this.task.deadline,
+      }
+      this.$emit('task-update', {
+        task: this.task,
+        requestData,
+      })
+    },
+    handleDelete: function () {
+      const requestData = {
+        username: this.username,
+        projectId: this.projectId,
+        taskId: this.task.taskId,
+        principal: this.task.principal,
+        deadline: this.task.deadline,
+      }
+      this.$emit('task-delete', {
+        task: this.task,
+        requestData,
+      })
     },
   },
-  computed: {
-    ...mapGetters(['projectMembers']),
-  },
   filters: {
-    formatPriority: (priority) => priorityMarks[priority].label,
+    formatPriority: (priority) => {
+      return (priority in priorityMarks && priorityMarks[priority].label) || ''
+    },
     getUserInfo: function (username) {
       const user = this.projectMembers.find((member) => member.username === username)
       // return this.teamMembers.find((member) => member.username === username).avatar
       return user ? user : { username: username, avatar: '' }
     },
+  },
+  mounted() {
+    eventBus.$on('sub-task-create', ($event) => {
+      console.log('hello')
+    })
   },
 }
 </script>

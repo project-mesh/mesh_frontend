@@ -74,23 +74,10 @@ export const asyncRouterMap = [
                 // TODO: 修改成对应页面
                 component: () => import('@/views/project/projectDetails/TaskList'),
                 meta: {
-                  keepAlive: true,
                   title: '任务列表',
                   permission: ['user'],
                 },
               },
-              // {
-              //   path: '/project_view',
-              //   name: 'project_view',
-              //   // TODO: 修改成对应页面
-              //   component: () => import('@/views/project_view/ProjectView'),
-              //   meta: {
-              //     title: '项目视图',
-              //     icon: 'form',
-              //     permission: ['user'],
-              //   },
-              // },
-              // 任务看板
               {
                 path: '/project/detail/task-board',
                 name: 'taskBoard',
@@ -98,7 +85,6 @@ export const asyncRouterMap = [
                 component: () => import('@/views/project/projectDetails/taskBoard/TaskBoard'),
                 meta: {
                   title: '任务看板',
-                  keepAlive: true,
                   permission: ['user'],
                 },
               },
@@ -238,9 +224,9 @@ export const asyncRouterMap = [
           },
           {
             path: '/toolbox/tool2',
-            name: 'sagemath',
-            component: () => import('@//views/toolBox/Sagemath'),
-            meta: { title: '数值分析', hideHeader: true, permission: ['user'], icon: 'code' },
+            name: 'codeSandbox',
+            component: () => import('@//views/toolBox/CodeSandbox'),
+            meta: { title: '图标设计', hideHeader: true, permission: ['user'], icon: 'scissor' },
           },
           {
             path: '/toolbox/tool3',

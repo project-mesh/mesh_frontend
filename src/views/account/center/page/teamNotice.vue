@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card style="margin-top: 24px" :bordered="false" title="通知">
+    <a-card style="margin-top: 24px" :bordered="false">
       <div slot="extra">
         <a-button class="operate" style="margin-left: 8px" @click="add">全部标为已读</a-button>
       </div>

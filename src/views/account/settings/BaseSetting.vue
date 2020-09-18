@@ -94,6 +94,7 @@
               v-decorator="[
                 'city',
                 {
+                  initialValue: this.defaultAddress ? this.defaultAddress : null,
                   rules: [{ type: 'array', required: true, message: '请输入你的地址' }],
                 },
               ]"
@@ -285,6 +286,7 @@ export default {
       xingzuoTag: '星座：巨蟹座',
       xingzuoIcon: 'icon-juxiezuo',
       dateFormat: 'YYYY-MM-DD',
+      defaultAddress: '',
       preview: {},
       form: this.$form.createForm(this),
       option: {
@@ -317,15 +319,16 @@ export default {
           console.log('Received values of form: ', values)
           values.city = values.city[0] + ' ' + values.city[1] + ' ' + values.city[2]
           console.log('new values of form: ', values)
-          this.updateUserInfo({
+          let sendData = {
             username: this.username,
             nickname: values.nickname,
             status: Number(values.status),
-            address: values.city,
+            address: values.city || store.getters.address,
             description: values.description,
-            birthday: this.birthdayStr,
+            birthday: this.birthdayStr || store.getters.birthday,
             gender: this.gender,
-          })
+          }
+          this.updateUserInfo(sendData)
             .then((res) => {
               if (res.data.isSuccess) {
                 this.$notification.success({
@@ -382,7 +385,116 @@ export default {
         }
       )
     },
-    dealBirthday() {},
+    dealBirthday() {
+      var oriStr = this.birthDayStr
+      var dateStr = oriStr.split('-')
+      var yearNum = parseInt(dateStr[0])
+      var xingzuoNum = parseInt(dateStr[1] + dateStr[2])
+      var shengXiaoNum = yearNum % 12
+      //从猴开始，0为猴
+      switch (shengXiaoNum) {
+        case 0: {
+          this.$set(this, 'shengxiaoTag', '生肖：猴')
+          this.$set(this, 'shengxiaoIcon', 'icon-houxiao')
+          break
+        }
+        case 1: {
+          this.$set(this, 'shengxiaoTag', '生肖：鸡')
+          this.$set(this, 'shengxiaoIcon', 'icon-jixiao')
+          break
+        }
+        case 2: {
+          this.$set(this, 'shengxiaoTag', '生肖：狗')
+          this.$set(this, 'shengxiaoIcon', 'icon-gouxiao')
+          break
+        }
+        case 3: {
+          this.$set(this, 'shengxiaoTag', '生肖：猪')
+          this.$set(this, 'shengxiaoIcon', 'icon-zhuxiao')
+          break
+        }
+        case 4: {
+          this.$set(this, 'shengxiaoTag', '生肖：鼠')
+          this.$set(this, 'shengxiaoIcon', 'icon-shuxiao')
+          break
+        }
+        case 5: {
+          this.$set(this, 'shengxiaoTag', '生肖：牛')
+          this.$set(this, 'shengxiaoIcon', 'icon-niuxiao')
+          break
+        }
+        case 6: {
+          this.$set(this, 'shengxiaoTag', '生肖：虎')
+          this.$set(this, 'shengxiaoIcon', 'icon-huxiao')
+          break
+        }
+        case 7: {
+          this.$set(this, 'shengxiaoTag', '生肖：兔')
+          this.$set(this, 'shengxiaoIcon', 'icon-tuxiao')
+          break
+        }
+        case 8: {
+          this.$set(this, 'shengxiaoTag', '生肖：龙')
+          this.$set(this, 'shengxiaoIcon', 'icon-longxiao')
+          break
+        }
+        case 9: {
+          this.$set(this, 'shengxiaoTag', '生肖：蛇')
+          this.$set(this, 'shengxiaoIcon', 'icon-shexiao')
+          break
+        }
+        case 10: {
+          this.$set(this, 'shengxiaoTag', '生肖：马')
+          this.$set(this, 'shengxiaoIcon', 'icon-maxiao')
+          break
+        }
+        case 11: {
+          this.$set(this, 'shengxiaoTag', '生肖：羊')
+          this.$set(this, 'shengxiaoIcon', 'icon-yangxiao')
+          break
+        }
+      }
+      if (xingzuoNum > 1221) {
+        this.$set(this, 'xingzuoTag', '星座：摩羯座')
+        this.$set(this, 'xingzuoIcon', 'icon-mojiezuo')
+      } else if (xingzuoNum > 1122) {
+        this.$set(this, 'xingzuoTag', '星座：射手座')
+        this.$set(this, 'xingzuoIcon', 'icon-sheshouzuo')
+      } else if (xingzuoNum > 1023) {
+        this.$set(this, 'xingzuoTag', '星座：天蝎座')
+        this.$set(this, 'xingzuoIcon', 'icon-tianxiezuo')
+      } else if (xingzuoNum > 922) {
+        this.$set(this, 'xingzuoTag', '星座：天秤座')
+        this.$set(this, 'xingzuoIcon', 'icon-tianchengzuo')
+      } else if (xingzuoNum > 822) {
+        this.$set(this, 'xingzuoTag', '星座：处女座')
+        this.$set(this, 'xingzuoIcon', 'icon-chunvzuo')
+      } else if (xingzuoNum > 722) {
+        this.$set(this, 'xingzuoTag', '星座：狮子座')
+        this.$set(this, 'xingzuoIcon', 'icon-shizizuo')
+      } else if (xingzuoNum > 621) {
+        this.$set(this, 'xingzuoTag', '星座：巨蟹座')
+        this.$set(this, 'xingzuoIcon', 'icon-juxiezuo')
+      } else if (xingzuoNum > 520) {
+        this.$set(this, 'xingzuoTag', '星座：双子座')
+        this.$set(this, 'xingzuoIcon', 'icon-shuangzizuo')
+      } else if (xingzuoNum > 419) {
+        this.$set(this, 'xingzuoTag', '星座：金牛座')
+        this.$set(this, 'xingzuoIcon', 'icon-jinniuzuo')
+      } else if (xingzuoNum > 320) {
+        this.$set(this, 'xingzuoTag', '星座：白羊座')
+        this.$set(this, 'xingzuoIcon', 'icon-baiyangzuo')
+      } else if (xingzuoNum > 218) {
+        this.$set(this, 'xingzuoTag', '星座：双鱼座')
+        this.$set(this, 'xingzuoIcon', 'icon-shuangyuzuo')
+      } else if (xingzuoNum > 119) {
+        this.$set(this, 'xingzuoTag', '星座：水瓶座')
+        this.$set(this, 'xingzuoIcon', 'icon-shuipingzuo')
+      } else {
+        this.$set(this, 'xingzuoTag', '星座：摩羯座')
+        this.$set(this, 'xingzuoIcon', 'icon-mojiezuo')
+      }
+    },
     chooseMale() {
       this.gender = 1
     },
@@ -394,9 +506,11 @@ export default {
     },
   },
   async created() {
+    this.dealBirthday()
     this.city = Object.freeze(allCity.city)
     this.gender = store.getters.gender
     this.birthday = store.getters.birthday
+    this.defaultAddress = store.getters.address
     if (store.getters.address && store.getters.address.split(' ').length === 3) {
       this.defaultCitiesList = store.getters.address.split(' ')
     }

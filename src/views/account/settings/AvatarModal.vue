@@ -54,6 +54,9 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { putObject, blobToDataURI, dataURItoBlob } from '../../../utils/oss'
+import imageCompression from 'browser-image-compression'
+
 export default {
   data() {
     return {
@@ -103,14 +106,27 @@ export default {
       const reader = new FileReader()
       // 把Array Buffer转化为blob 如果是base64不需要
       // 转化为base64
-      reader.readAsDataURL(file)
-      reader.onload = () => {
-        this.options.img = reader.result
-      }
-      console.log('in before', file)
+
+      // reader.readAsDataURL(file)
+      // reader.onload = () => {
+      //   this.options.img = reader.result
+      // }
+      // console.log('in before', file)
       // 转化为blob
       // reader.readAsArrayBuffer(file)
+      const options = {
+        maxSizeMB: 0.1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      }
 
+      imageCompression(file, options).then((resultFile) => {
+        reader.readAsDataURL(resultFile)
+        reader.onload = () => {
+          this.options.img = reader.result
+        }
+        console.log('in before', resultFile)
+      })
       return false
     },
 
@@ -119,6 +135,7 @@ export default {
       // 输出
       this.$refs.cropper.getCropData((data) => {
         console.log('getCropData', data)
+        // putObject(dataURItoBlob(data))
         this.updateUserInfo({
           username: this.username,
           nickname: this.nickname,

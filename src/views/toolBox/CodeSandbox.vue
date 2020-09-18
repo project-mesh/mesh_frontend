@@ -1,7 +1,7 @@
 <template>
   <vue-friendly-iframe
     class="vue-friendly-iframe"
-    src="https://sagecell.sagemath.org/"
+    src="https://c.runoob.com/more/svgeditor/"
     scrolling="no"
   >
     您的浏览器不支持 iframe 标签，请考虑更换 Edge/Firefox/Chrome 等现代浏览器
