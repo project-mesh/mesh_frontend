@@ -15,9 +15,6 @@
         {{ task.createTime | dateFilter }}
       </a-descriptions-item>
       <a-descriptions-item label="截止日期" :span="4">{{ task.deadline }}</a-descriptions-item>
-      <a-descriptions-item label="创建者" :span="4">
-        <avatar-featured-user :username="task.founder" />
-      </a-descriptions-item>
       <a-descriptions-item label="负责人" :span="4">
         <avatar-featured-user :username="task.principal" />
       </a-descriptions-item>
