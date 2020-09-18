@@ -1,4 +1,5 @@
 import sendRequest from '@/api/index'
+import { setTaskStatus } from '@/utils/util'
 
 const addProgressToTask = (item) => {
   let ct_timeStamp = Date.now()
@@ -29,10 +30,12 @@ export const teamTasks = {
   },
   mutations: {
     SET_TEAM_TASKS: (state, tasks) => {
+      tasks.forEach((task) => setTaskStatus(task))
       state.tasks = tasks
     },
     ADD_TEAM_TASK: (state, newTask) => {
       if ('subTasks' in newTask) delete newTask.subTasks
+      setTaskStatus(newTask)
       state.tasks.unshift(addProgressToTask(newTask))
     },
   },

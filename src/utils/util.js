@@ -1,3 +1,9 @@
+export function setTaskStatus(task) {
+  if (task.isFinished) task.status = '已完成'
+  else if (new Date(task.deadline + ' 24:00:00').getTime() < Date.now()) task.status = '已逾期'
+  else task.status = '开发中'
+}
+
 export function timeFix() {
   const time = new Date()
   const hour = time.getHours()

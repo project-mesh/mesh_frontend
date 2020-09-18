@@ -276,11 +276,6 @@ for (let i = 0; i < 10; ++i) {
   }
 }
 
-console.log(teamMembers.filter((member) => member.teamId === '数据库'))
-
-// console.log('In data, pro: ', projects)
-// console.log('In data, teamMem: ', teamMembers)
-
 for (let i = 0; i < projects.length; ++i) {
   const curProjectId = projects[i].projectId
   const curTeamId = projects[i].teamId
@@ -306,23 +301,17 @@ for (let i = 0; i < projects.length; ++i) {
   }
 }
 
-// console.log('In data, proMem', projectMembers)
-
-const setTaskStatus = (task) => {
-  if (task.isFinished) task.status = '已完成'
-  else if (new Date(task.deadline + ' 24:00:00').getTime() < Date.now()) task.status = '已逾期'
-  else task.status = '开发中'
-}
-
 for (let i = 0; i < 300; ++i) {
   const len = projectMembers.length
   const member = projectMembers[random.natural(0, len - 1)]
-  const teamId = projects.find((prj) => prj.projectId === member.projectId).teamId
+  const project = projects.find((prj) => prj.projectId === member.projectId)
+  const teamId = project.teamId
+  const adminName = project.adminName
   notifications.push(
     Mock.mock({
       teamId,
       projectId: member.projectId,
-      founder: '@cname',
+      founder: adminName,
       principal: member.username,
       notificationId: '@id',
       title: '@ctitle',
@@ -341,11 +330,9 @@ for (let i = 0; i < 300; ++i) {
     createTime: Date.now(),
     deadline: '2020' + random.date('yyyy-MM-dd').slice(4),
     description: '@cparagraph',
-    founder: '@cname',
+    founder: adminName,
     principal: member.username,
   })
-
-  setTaskStatus(newTask)
 
   tasks.push(newTask)
 }
@@ -365,8 +352,6 @@ for (let i = 0; i < tasks.length; ++i) {
       founder: task.principal,
       principal: task.principal,
     })
-
-    setTaskStatus(newSubTask)
 
     subTasks.push(newSubTask)
   }

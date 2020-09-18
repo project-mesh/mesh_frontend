@@ -52,7 +52,7 @@ import draggable from 'vuedraggable'
 import moment from 'moment'
 import TaskInfo from './TaskInfo'
 import TaskDetail from './TaskDetail'
-import { mapGetters, vuex } from 'vuex'
+import { mapGetters } from 'vuex'
 import { priorityMarks } from './common/priority'
 
 export default {

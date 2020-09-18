@@ -144,7 +144,6 @@ export default {
           const requestData = {
             username: this.username,
             projectId: this.projectId,
-            taskId: this.task.taskId,
             priority: values.priority,
             deadline: values.deadline.format('YYYY-MM-DD'),
             taskName: values.taskName,
@@ -160,6 +159,7 @@ export default {
             })
           } else {
             console.log('update')
+            requestData.taskId = this.task.taskId
             this.$emit('task-update', {
               task: this.task,
               requestData,
