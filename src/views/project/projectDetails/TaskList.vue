@@ -43,13 +43,21 @@
         <a-list item-layout="horizontal" :data-source="getStatusTasks(status)">
           <a-list-item slot="renderItem" slot-scope="task">
             <a slot="actions" @click="showTaskDetail(task)">更多</a>
-            <a-list-item-meta :description="task.description">
-              <a slot="title" style="font-size: 17px">{{ task.taskName }}</a>
-            </a-list-item-meta>
-            <div class="description" style="width: 35%">
-              <a-descriptions layout="vertical" :column="6" size="small">
-                <a-descriptions-item :span="1" label="负责人">
-                  {{ task.principal }}
+            <div style="width: 35%" class="task-description">
+              <a-list-item-meta :description="task.description" class="description">
+                <a slot="title" style="font-size: 17px">{{ task.taskName }}</a>
+              </a-list-item-meta>
+            </div>
+            <div style="width: 40%">
+              <a-descriptions layout="vertical" :column="7" size="small">
+                <a-descriptions-item :span="2" label="负责人">
+                  <div>
+                    <a-avatar
+                      slot="avatar"
+                      src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                    />
+                    {{ task.principal }}
+                  </div>
                 </a-descriptions-item>
                 <a-descriptions-item :span="2" label="截止日期">
                   {{ task.deadline }}
@@ -290,7 +298,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.task-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .task-group {
   padding: 20px;
 }
