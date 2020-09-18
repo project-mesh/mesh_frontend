@@ -23,7 +23,7 @@
       </a-col>
       <a-col :xs="24" :md="12" :style="{ height: '350px' }">
         <div class="avatar-upload-preview">
-          <img :src="previews.url" :style="previews.img" />
+          <img :src="this.avatar" :style="previews.img" />
         </div>
       </a-col>
     </a-row>
