@@ -52,10 +52,7 @@
               <a-descriptions layout="vertical" :column="7" size="small">
                 <a-descriptions-item :span="2" label="负责人">
                   <div>
-                    <a-avatar
-                      slot="avatar"
-                      src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                    />
+                    <a-avatar slot="avatar" :src="getAvatar(task.principal)" />
                     {{ task.principal }}
                   </div>
                 </a-descriptions-item>
@@ -108,7 +105,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['projectTasks', 'username', 'teamId', 'projectId', 'projectAdminName']),
+    ...mapGetters([
+      'projectTasks',
+      'username',
+      'teamId',
+      'projectId',
+      'projectAdminName',
+      'projectMembers',
+    ]),
   },
   methods: {
     ...mapActions([
@@ -145,6 +149,10 @@ export default {
         default:
           return '未知优先级'
       }
+    },
+    getAvatar(username) {
+      const user = this.projectMembers.find((member) => member.username === username)
+      return user ? user.avatar : ''
     },
     tryUpdateTask($event) {
       this.loading = true
