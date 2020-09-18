@@ -16,6 +16,7 @@
     "ali-oss": "^6.10.0",
     "ant-design-vue": "^1.6.2",
     "axios": "^0.19.0",
+    "compressorjs": "^1.0.6",
     "core-js": "^3.1.2",
     "echarts": "^4.8.0",
     "enquire.js": "^2.1.6",

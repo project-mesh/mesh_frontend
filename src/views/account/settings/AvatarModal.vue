@@ -55,6 +55,8 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { putObject, blobToDataURI, dataURItoBlob } from '../../../utils/oss'
+import Compressor from 'compressorjs'
+
 export default {
   data() {
     return {
@@ -104,11 +106,17 @@ export default {
       const reader = new FileReader()
       // 把Array Buffer转化为blob 如果是base64不需要
       // 转化为base64
-      reader.readAsDataURL(file)
-      reader.onload = () => {
-        this.options.img = reader.result
-      }
-      console.log('in before', file)
+      const vm = this
+      new Compressor(file, {
+        convertSize: 400000,
+        success(resultFile) {
+          reader.readAsDataURL(resultFile)
+          reader.onload = () => {
+            vm.options.img = reader.result
+          }
+          console.log('in before', resultFile)
+        },
+      })
       // 转化为blob
       // reader.readAsArrayBuffer(file)
 
@@ -120,17 +128,17 @@ export default {
       // 输出
       this.$refs.cropper.getCropData((data) => {
         console.log('getCropData', data)
-        putObject(dataURItoBlob(data))
-        // this.updateUserInfo({
-        //   username: this.username,
-        //   nickname: this.nickname,
-        //   avatar: data,
-        // }).catch((error) => {
-        //   this.$notification.error({
-        //     message: '更新头像失败',
-        //     description: `${error.name}: ${error.message}`,
-        //   })
-        // })
+        // putObject(dataURItoBlob(data))
+        this.updateUserInfo({
+          username: this.username,
+          nickname: this.nickname,
+          avatar: data,
+        }).catch((error) => {
+          this.$notification.error({
+            message: '更新头像失败',
+            description: `${error.name}: ${error.message}`,
+          })
+        })
       })
     },
     okHandel() {
