@@ -65,6 +65,15 @@ export function getMyAvatar() {
   })
 }
 
+export function getUserAvatar(username) {
+  let object_key = 'userAvatar_' + username
+  let imgUrl = testGet(object_key)
+  return getBase64(imgUrl).then((ret) => {
+    let base64Data = 'data:image/jpg;base64,' + ret.toString()
+    return Promise.resolve(base64Data)
+  })
+}
+
 export function putProjectLogo(projectId, data) {
   let object_key = 'projectAvatar_' + projectId.toString()
   putObject(object_key, data)
@@ -73,9 +82,7 @@ export function putProjectLogo(projectId, data) {
 export function getProjectLogo(projectId) {
   let object_key = 'projectAvatar_' + projectId.toString()
   let imgUrl = testGet(object_key)
-  console.log('111111111')
   return getBase64(imgUrl).then((ret) => {
-    console.log('2222222222')
     let base64Data = 'data:image/jpg;base64,' + ret.toString()
     return Promise.resolve(base64Data)
   })

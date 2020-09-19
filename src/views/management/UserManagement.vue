@@ -205,6 +205,8 @@ import { mapActions, mapGetters } from 'vuex'
 import _ from 'lodash'
 import { Icon } from 'ant-design-vue'
 import allCity from '../account/settings/cities.js'
+import { getUserAvatar } from '../../utils/oss'
+
 const IconFont = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_2053325_5hl9fgurem.js',
 })
@@ -295,20 +297,32 @@ export default {
           this.editingKey = ''
           this.cacheData = []
           this.cachePassword = ''
+          console.log('res.data.users is:', res.data.users)
           res.data.users.forEach((queryUser) => {
-            this.data.push({
-              username: queryUser.username,
-              avatar: queryUser.avatar,
-              nickname: queryUser.nickname,
-              gender: queryUser.gender,
-              birthday: queryUser.birthday,
-              address: queryUser.address,
-              status: queryUser.status,
-              description: queryUser.description,
-            })
+            getUserAvatar(queryUser.username)
+              .then((ret) => {
+                if (!queryUser.nickname) {
+                  queryUser.nickname = queryUser.username
+                }
+                queryUser.birthday = queryUser.birthday.spilt('T')[0]
+                this.data.push({
+                  username: queryUser.username,
+                  avatar: ret,
+                  nickname: queryUser.nickname,
+                  gender: queryUser.gender,
+                  birthday: queryUser.birthday,
+                  address: queryUser.address,
+                  status: queryUser.status,
+                  description: queryUser.description,
+                })
+                this.cacheData = _.cloneDeep(this.data)
+                console.log('cacheData is:', this.cacheData)
+                console.log('Data is:', this.data)
+              })
+              .catch((err) => {
+                console.log('error in avatar of', queryUser.username)
+              })
           })
-
-          this.cacheData = _.cloneDeep(this.data)
         })
         .catch((error) => {
           this.$notification.error({
