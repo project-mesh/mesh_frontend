@@ -77,7 +77,7 @@
               type="user-delete"
               class="removeIcon"
               style="font-size: 23px"
-              :disabled="!isAdminButNotHimself(item)"
+              v-if="isAdminButNotHimself(item) && item.username !== teamAdminName"
             />
           </a-tooltip>
         </a-popconfirm>
