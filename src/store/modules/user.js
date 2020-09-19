@@ -114,6 +114,11 @@ const user = {
       commit('SET_USERNAME', '')
       commit('SET_ROLE', '')
       commit('SET_ROUTERS', [], { root: true })
+      commit('SET_TEAMID', '', { root: true })
+      commit('SET_PROJECT_ID', '', { root: true })
+      commit('SET_NOTIFICATIONS', [], { root: true })
+      commit('SET_PROJECT_TASKS', [], { root: true })
+      commit('SET_TEAM_TASKS', [], { root: true })
     },
     updatePreferenceColor({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
