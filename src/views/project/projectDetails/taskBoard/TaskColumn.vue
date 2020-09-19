@@ -122,26 +122,7 @@ export default {
       this.setTask(evt.draggedContext.element)
       return true
     },
-    // 新建任务等等
-    showTextarea: function () {
-      this.textareaVisible = true
-      this.$emit('edit-new-task-name', this.priority)
-      console.log(this.$refs.textarea)
-      console.log(this.$refs.textarea.focus)
-      this.$refs.textarea.focus()
-    },
 
-    finishEditing: function () {
-      if (this.newTaskName) {
-        this.$message.info('新建项目：' + this.newTaskName)
-        this.addTask()
-      }
-      this.textareaVisible = false
-    },
-    exitEditing: function () {
-      this.newTaskName = ''
-      this.textareaVisible = false
-    },
     addTask: function () {
       let formData = {
         username: '', // todo: 当前用户名
