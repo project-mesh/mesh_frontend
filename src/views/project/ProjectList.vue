@@ -442,11 +442,31 @@ export default {
           })
             .then((response) => {
               console.log('success,boy', response)
+              putProjectLogo(
+                this.selectedUpdatePrj.projectId,
+                dataURItoBlob(values.prjLogo.file.thumbUrl)
+              )
               // 延迟显示欢迎信息
-              this.$notification.success({
-                message: '更新成功',
-                description: `${timeFix()}，已成功更新项目`,
-              })
+              setTimeout(() => {
+                this.$notification.success({
+                  message: '修改成功',
+                  description: `${timeFix()}，已成功修改项目`,
+                })
+                this.queryTeam({
+                  username: this.username,
+                  teamId: this.teamId,
+                })
+                  .then(() => {
+                    this.$notification.success({
+                      message: '团队信息加载成功！',
+                    })
+                  })
+                  .catch((err) => {
+                    this.$notification.error({
+                      message: '请求团队信息失败，请重试',
+                    })
+                  })
+              }, 1000)
             })
             .catch((err) => {
               this.$notification.error({
