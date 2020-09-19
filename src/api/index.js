@@ -162,7 +162,7 @@ const apiMap = {
     method: 'post',
   },
   updateUserInfo: {
-    url: '/admin/information',
+    url: '/user',
     method: 'patch',
   },
   queryUser: {
