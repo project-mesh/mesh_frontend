@@ -22,7 +22,7 @@
     <template v-slot:footerRender>
       <global-footer />
     </template>
-    <a-modal v-model="isCreatingTeam" title="创建新团队" centered @ok="handleSubmit">
+    <a-modal v-model="localCreatingTeam" title="创建新团队" centered @ok="handleSubmit">
       <!-- 项目创建表单 -->
       <a-form
         :form="form"
@@ -99,6 +99,7 @@ export default {
 
       //创建新团队
       form: this.$form.createForm(this),
+      localCreatingTeam: false,
     }
   },
   computed: {
@@ -135,6 +136,14 @@ export default {
     if (this.preference.preferenceLayout) this.settings.layout = this.preference.preferenceLayout
 
     updateTheme(this.settings.primaryColor)
+  },
+  watch: {
+    localCreatingTeam: function (newValue) {
+      store.commit('TOGGLE_CREATING_TEAM', newValue)
+    },
+    isCreatingTeam: function (newValue) {
+      this.localCreatingTeam = newValue
+    },
   },
   methods: {
     ...mapActions([
