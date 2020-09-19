@@ -75,6 +75,7 @@ export default {
         validateFields((errors, values) => {
           if (!errors) {
             console.log('values', values)
+            console.log(this.record)
 
             const requestData = {
               username: this.username,

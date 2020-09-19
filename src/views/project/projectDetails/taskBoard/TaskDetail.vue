@@ -27,9 +27,10 @@
       </a-descriptions>
       <sub-task-list
         :parent-task="task"
-        @update-sub-task="updateSubTask"
-        @delete-sub-task="deleteSubTask"
-        @create-sub-task="createSubTask"
+        @open-sub-drawer="$emit('open-sub-drawer', $event)"
+        @sub-task-create="$emit('sub-task-create', $event)"
+        @sub-task-delete="$emit('sub-task-delete', $event)"
+        @sub-task-finish="$emit('sub-task-finish', $event)"
       />
       <template slot="actions" class="ant-card-actions">
         <a-popconfirm title="是否要删除此行？" @confirm="handleDelete">
@@ -187,10 +188,6 @@ export default {
       return user ? user : { username: username, avatar: '' }
     },
   },
-  mounted() {
-    eventBus.$on('sub-task-create', ($event) => {
-      console.log('hello')
-    })
-  },
+  mounted() {},
 }
 </script>

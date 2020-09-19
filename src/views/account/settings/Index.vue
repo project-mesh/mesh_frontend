@@ -33,7 +33,7 @@
 <script>
 import { RouteView } from '@/layouts'
 import { baseMixin } from '@/store/app-mixin'
-
+import { mapGetters } from 'vuex'
 export default {
   components: {
     RouteView,

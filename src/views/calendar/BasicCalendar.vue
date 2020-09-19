@@ -35,7 +35,7 @@
                 :disabled="![item.principal, teamAdminName].includes(username)"
                 :checked="item.isFinished"
                 @change="onProjectFinishedChange"
-                :value="[item.taskId, item.projectId]"
+                :value="item"
               ></a-checkbox>
               <div @click="handleClickOnTask(item)" id="taskCheckbox">
                 {{ item.taskName }}
@@ -119,13 +119,16 @@ export default {
     onProjectFinishedChange(e) {
       let taskUpdated = this.teamTasks.find(
         (currentTask) =>
-          currentTask.taskId === e.target.value[0] && currentTask.projectId === e.target.value[1]
+          currentTask.taskId === e.target.value.taskId &&
+          currentTask.projectId === e.target.value.projectId
       )
       this.updateTask({
         username: this.username,
-        taskId: e.target.value[0],
-        projectId: e.target.value[1],
+        taskId: e.target.value.taskId,
+        projectId: e.target.value.projectId,
         isFinished: e.target.checked,
+        principal: e.target.value.principal,
+        deadline: e.target.value.deadline,
       })
         .then(() => {
           this.$notification.success({

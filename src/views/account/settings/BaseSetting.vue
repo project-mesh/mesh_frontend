@@ -90,11 +90,10 @@
           <a-form-item label="地址">
             <a-cascader
               placeholder="地址"
-              :default-value="defaultCitiesList ? defaultCitiesList : null"
               v-decorator="[
                 'city',
                 {
-                  initialValue: this.defaultAddress ? this.defaultAddress : null,
+                  initialValue: this.defaultCitiesList ? this.defaultCitiesList : null,
                   rules: [{ type: 'array', required: true, message: '请输入你的地址' }],
                 },
               ]"
@@ -149,7 +148,7 @@ export default {
     IconFont,
   },
   computed: {
-    ...mapGetters(['username', 'status', 'nickname', 'address', 'description']),
+    ...mapGetters(['username', 'status', 'nickname', 'address', 'description', 'avatar']),
     cities: function () {
       let tmp = this.address.split(' ')
       if (tmp) {
@@ -278,7 +277,7 @@ export default {
       // cropper
       city: [],
       defaultCitiesList: [' ', ' ', ' '],
-      birthdayStr: '',
+      birthdayStr: '2020-09-20',
       statusStr: '1', //在数据库中存的是数字，这里需要一步数字转换字符串
       gender: 1,
       shengxiaoTag: '生肖：兔',
@@ -290,7 +289,7 @@ export default {
       preview: {},
       form: this.$form.createForm(this),
       option: {
-        img: '/avatar2.jpg',
+        img: '',
         info: true,
         size: 1,
         outputType: 'jpeg',
@@ -386,7 +385,7 @@ export default {
       )
     },
     dealBirthday() {
-      var oriStr = this.birthDayStr
+      var oriStr = this.birthday
       var dateStr = oriStr.split('-')
       var yearNum = parseInt(dateStr[0])
       var xingzuoNum = parseInt(dateStr[1] + dateStr[2])
@@ -506,11 +505,12 @@ export default {
     },
   },
   async created() {
-    this.dealBirthday()
+    // this.dealBirthday()
     this.city = Object.freeze(allCity.city)
     this.gender = store.getters.gender
     this.birthday = store.getters.birthday
     this.defaultAddress = store.getters.address
+    this.option.img = this.avatar
     if (store.getters.address && store.getters.address.split(' ').length === 3) {
       this.defaultCitiesList = store.getters.address.split(' ')
     }
@@ -518,6 +518,9 @@ export default {
     console.log('test console, birthday is:', this.birthday)
     console.log('test console, defaultCitiesList', this.defaultCitiesList)
     console.log('yesyes', this.gender)
+  },
+  mounted() {
+    this.dealBirthday()
   },
 }
 </script>

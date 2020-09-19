@@ -2,7 +2,9 @@
   <div>
     <a-card style="margin-top: 24px" :bordered="false">
       <div slot="extra">
-        <a-button class="operate" style="margin-left: 8px" @click="add">全部标为已读</a-button>
+        <a-button class="operate" style="margin-left: 8px margin-top: 0%" @click="readAll">
+          全部标为已读
+        </a-button>
       </div>
       <a-list
         size="large"
@@ -10,22 +12,21 @@
           showSizeChanger: true,
           showQuickJumper: true,
           pageSize: 5,
-          total: 50,
+          total: this.data.size,
         }"
       >
         <a-list-item :key="index" v-for="(item, index) in data">
-          <a-list-item-meta :description="item.description">
-            <a-avatar slot="avatar" size="small" shape="round" :src="item.avatar" />
+          <a-list-item-meta @click="dealOneClick(item.title)">
             <a slot="title">{{ item.title }}</a>
           </a-list-item-meta>
-          <div class="unread">.</div>
+          <div class="unread" v-if="item.isRead">.</div>
           <div class="list-content">
             <div class="list-content-item">
-              <span>发布人</span>
+              <span>操作人</span>
               <p>{{ item.owner }}</p>
             </div>
             <div class="list-content-item">
-              <span>发布时间</span>
+              <span>操作时间</span>
               <p>{{ item.startAt }}</p>
             </div>
           </div>
@@ -37,12 +38,59 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-
+const data = []
+data.push({
+  title: '你被设置为后端数据库项目的管理员',
+  startAt: '2019-09-19 11:55',
+  owner: 'test',
+  isRead: false,
+})
+data.push({
+  title: '你被设置为前端设计项目的任务UI/UX的负责人',
+  startAt: '2020-09-19 11:22',
+  owner: 'zengze',
+  isRead: true,
+})
+data.push({
+  title: '你发布的知识库百度百科被管理员删除',
+  startAt: '2020-09-19 12:36',
+  owner: 'zengze',
+  isRead: true,
+})
+data.push({
+  title: '你负责的前端设计项目的任务Axure被管理员修改',
+  startAt: '2019-09-17 13:20',
+  owner: 'test',
+  isRead: false,
+})
+data.push({
+  title: '团队新增成员copy',
+  startAt: '2019-09-16 22:59',
+  owner: 'lxd',
+  isRead: true,
+})
 export default {
   name: 'TeamNoticePage',
   components: {},
   data() {
-    return {}
+    return {
+      data,
+    }
+  },
+  methods: {
+    dealOneClick(listTitle) {
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].title == listTitle) {
+          data[i].isRead = false
+          break
+        }
+      }
+    },
+    readAll() {
+      for (var i = 0; i < data.length; i++) {
+        data[i].isRead = false
+      }
+    },
   },
 }
 </script>

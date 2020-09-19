@@ -107,8 +107,6 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log(values.deadline.format('YYYY-MM-DD'))
-
           const requestData = {
             username: this.username,
             projectId: this.projectId,
