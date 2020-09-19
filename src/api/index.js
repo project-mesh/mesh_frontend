@@ -153,6 +153,10 @@ const apiMap = {
     url: '/team/invite',
     method: 'post',
   },
+  removeTeamMember: {
+    url: '/team/remove',
+    method: 'delete',
+  },
   login: {
     url: '/login',
     method: 'post',
