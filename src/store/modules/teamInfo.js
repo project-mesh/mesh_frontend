@@ -79,6 +79,11 @@ const teamInfo = {
       if (knowledgeIndex !== -1) return state.knowledgeBase.splice(knowledgeIndex, 1, updatedKB)
       throw new Error('In teamInfo>UPDATE_TEAMKB: Invalid knowledgeId')
     },
+    SET_PROJECTMEMBERS(state, { projectId, members }) {
+      const currPrj = state.teamProjects.find((prj) => prj.projectId === projectId)
+
+      if (currPrj) currPrj.members = members.map((member) => member.username)
+    },
   },
   actions: {
     queryTeam({ commit }, requestData) {

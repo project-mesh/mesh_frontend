@@ -100,7 +100,6 @@
       @ok="handleUpdateSubmit"
       :ok-button-props="{ loading: updateLoading }"
     >
-      <!-- 项目创建表单 -->
       <a-form
         :form="updateForm"
         :label-col="{ span: 5 }"
@@ -137,12 +136,8 @@
             ]"
             placeholder="选择项目管理员"
           >
-            <a-select-option
-              v-for="member in teamMembers"
-              :key="member.username"
-              :value="member.username"
-            >
-              {{ member.username }}
+            <a-select-option v-for="member in prjMembers" :key="member" :value="member">
+              {{ member }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -165,24 +160,6 @@
           </a-modal>
         </a-form-item>
       </a-form>
-    </a-modal>
-    <a-modal v-model="addMember" title="邀请新成员" centered @ok="handleInviteMember">
-      <!-- 邀请成员 -->
-      <a-select
-        mode="multiple"
-        placeholder="添加你想邀请的成员"
-        :value="selectedItems"
-        style="width: 100%"
-        @change="handleMemberChange"
-      >
-        <a-select-option
-          v-for="item in this.teamMembers"
-          :key="item.username"
-          :value="item.username"
-        >
-          {{ item.username }}
-        </a-select-option>
-      </a-select>
     </a-modal>
     <div v-if="listVisible" class="list-view">
       <a-list item-layout="horizontal" :data-source="filteredProjects">
@@ -267,7 +244,6 @@ export default {
       'teamId',
     ]),
     filteredProjects() {
-      console.log('about filter, teamProjects is:', this.teamProjects)
       return this.teamProjects.filter((project) =>
         project.projectName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
       )
@@ -315,7 +291,7 @@ export default {
       this.listVisible = false
       this.updatePreferenceShowMode({
         username: this.username,
-        howMode: 'card',
+        showMode: 'card',
       }).then(() => {
         console.log('update preferenceShowMode success')
       })
@@ -384,33 +360,14 @@ export default {
             .then((response) => {
               console.log('success,boy', response)
               console.log('projectId is:', response.data.project.projectId)
-              console.log('prjLogo is:', values.prjLogo.file.thumbUrl)
-              putProjectLogo(
-                response.data.project.projectId,
-                dataURItoBlob(values.prjLogo.file.thumbUrl)
-              )
-              // 延迟显示欢迎信息
-              // setTimeout(() => {
-              //   this.$notification.success({
-              //     message: '创建成功',
-              //     description: `${timeFix()}，已成功添加新项目`,
-              //   })
-              //   this.queryTeam({
-              //     username: this.username,
-              //     teamId: this.teamId,
-              //   })
-              //     .then(() => {
-              //       this.$notification.success({
-              //         message: '团队信息加载成功！',
-              //       })
-              //     })
-              //     .catch((err) => {
-              //       this.$notification.error({
-              //         message: '请求团队信息失败，请重试',
-              //       })
-              //     })
-              // }, 1000)
-              // 实时更新
+
+              if (values.prjLogo && values.prjLogo.file) {
+                console.log('prjLogo is:', values.prjLogo.file.thumbUrl)
+                putProjectLogo(
+                  response.data.project.projectId,
+                  dataURItoBlob(values.prjLogo.file.thumbUrl)
+                )
+              }
             })
             .catch((err) => {
               console.log('error, boy: ', err)
@@ -436,37 +393,18 @@ export default {
             username: store.getters.username,
             teamId: store.getters.teamId,
             projectId: this.selectedUpdatePrj.projectId,
+            isPublic: values.prjAuthority === 'public',
             projectName: values.prjName,
             adminName: values.prjAdmin,
-            isPublic: values.prjAuthority === 'public',
           })
             .then((response) => {
               console.log('success,boy', response)
-              putProjectLogo(
-                this.selectedUpdatePrj.projectId,
-                dataURItoBlob(values.prjLogo.file.thumbUrl)
-              )
-              // 延迟显示欢迎信息
-              setTimeout(() => {
-                this.$notification.success({
-                  message: '修改成功',
-                  description: `${timeFix()}，已成功修改项目`,
-                })
-                this.queryTeam({
-                  username: this.username,
-                  teamId: this.teamId,
-                })
-                  .then(() => {
-                    this.$notification.success({
-                      message: '团队信息加载成功！',
-                    })
-                  })
-                  .catch((err) => {
-                    this.$notification.error({
-                      message: '请求团队信息失败，请重试',
-                    })
-                  })
-              }, 1000)
+              if (values.prjLogo && values.prjLogo.file) {
+                putProjectLogo(
+                  this.selectedUpdatePrj.projectId,
+                  dataURItoBlob(values.prjLogo.file.thumbUrl)
+                )
+              }
             })
             .catch((err) => {
               this.$notification.error({
@@ -484,6 +422,8 @@ export default {
     showUpdatePrjForm(prj) {
       this.selectedUpdatePrj = prj
       this.modifyProjForm = true
+      console.log('In showUpdatePrjForm, prj: ', prj)
+      this.prjMembers = prj.members.filter((member) => typeof member === 'string')
 
       if (Object.keys(prj).length) {
         this.$nextTick(() => {
@@ -497,49 +437,6 @@ export default {
           this.updateForm.setFieldsValue(formData)
         })
       }
-    },
-    handleInviteMember() {
-      console.log(this.selectedItems)
-
-      if (!this.selectedItems || this.selectedItems.length === 0) return this.hideInviteForm()
-
-      const promises = []
-
-      this.selectedItems.forEach((username) =>
-        promises.push(
-          this.joinProject({
-            username,
-            teamId: this.teamId,
-            projectId: this.selectedUpdatePrj.projectId,
-          })
-        )
-      )
-
-      if (promises.length) {
-        return Promise.all(promises)
-          .then(() => {
-            console.log('add project members success!, new members: ', this.selectedItems)
-          })
-          .catch((err) => {
-            this.$notification.error({
-              message: '成功添加新项目成员',
-              description: err.message,
-            })
-          })
-          .finally(() => {
-            this.hideInviteForm()
-          })
-      }
-
-      this.hideInviteForm()
-    },
-    showInviteForm(prj) {
-      this.addMember = true
-      this.selectedUpdatePrj = prj
-    },
-    hideInviteForm() {
-      this.addMember = false
-      this.selectedUpdatePrj = null
     },
     showCreateForm() {
       this.createProjForm = true
@@ -571,6 +468,7 @@ export default {
       createLoading: false,
       updateLoading: false,
       selectedItems: [], //选中的成员名单
+      prjMembers: [],
     }
   },
   mounted: function () {

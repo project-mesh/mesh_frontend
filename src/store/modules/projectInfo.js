@@ -104,6 +104,11 @@ const projectInfo = {
               commit('SET_CREATE_TIME', project.createTime)
               commit('SET_PROJECT_LOGO', project.projectLogo)
               commit('SET_ADMIN_NAME', project.adminName)
+              commit(
+                'SET_PROJECTMEMBERS',
+                { projectId: project.projectId, members: project.members },
+                { root: true }
+              )
               // 获取团队成员的Avatar
               for (let i = 0; i < project.members.length; i++) {
                 getUserAvatar(project.members[i].username)
@@ -128,6 +133,7 @@ const projectInfo = {
         sendRequest('updateProject', requestData)
           .then((res) => {
             const { data } = res
+            console.warn('In updateProject, res', res)
             if (data.isSuccess) {
               const { project } = data
               commit('SET_PROJECT_ID', project.projectId)
@@ -139,8 +145,10 @@ const projectInfo = {
               commit('SET_VISIBILITY', project.isPublic)
 
               commit('UPDATE_PROJECT', project, { root: true })
+              resolve(res)
             }
-            resolve(res)
+
+            reject(data.msg)
           })
           .catch((err) => reject(err))
       })
@@ -175,7 +183,11 @@ const projectInfo = {
             const { data } = res
             if (data.isSuccess) {
               const { project } = data
-              commit('ADD_PROJECT', project, { root: true })
+              commit(
+                'ADD_PROJECT',
+                { ...project, members: [requestData.adminName] },
+                { root: true }
+              )
             }
             resolve(res)
           })
