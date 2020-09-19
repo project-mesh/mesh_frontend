@@ -119,15 +119,13 @@ const projectInfo = {
             const { data } = res
             if (data.isSuccess) {
               const { project } = data
-              if (project.projectId === requestData.projectId) {
-                commit('SET_PROJECT_ID', project.projectId)
-                commit('SET_PROJECT_NAME', project.projectName)
-                commit('SET_CREATE_TIME', project.createTime)
-                commit('SET_PROJECT_LOGO', project.projectLogo)
-                commit('SET_ADMIN_NAME', project.adminName)
-                commit('SET_PROJECT_MEMBERS', project.members)
-                commit('SET_VISIBILITY', project.isPublic)
-              }
+              commit('SET_PROJECT_ID', project.projectId)
+              commit('SET_PROJECT_NAME', project.projectName)
+              commit('SET_CREATE_TIME', project.createTime)
+              commit('SET_PROJECT_LOGO', project.projectLogo)
+              commit('SET_ADMIN_NAME', project.adminName)
+              commit('SET_PROJECT_MEMBERS', project.members)
+              commit('SET_VISIBILITY', project.isPublic)
 
               commit('UPDATE_PROJECT', project, { root: true })
             }

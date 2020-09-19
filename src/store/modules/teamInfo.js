@@ -1,7 +1,6 @@
 // teamName存储team-selector选择的具体团队
 // 该模块存储当前团队下的数据
 import sendRequest from '../../api'
-import store from '@/store'
 import { getProjectLogo, getUserAvatar } from '../../utils/oss'
 const teamInfo = {
   state: {
@@ -86,7 +85,6 @@ const teamInfo = {
                 let username = data.team.members[i].username
                 getUserAvatar(username)
                   .then((ret) => {
-                    console.log('getUserAvatar ret is:', ret)
                     data.team.members[i].avatar = ret
                   })
                   .catch((err) => {
@@ -208,9 +206,9 @@ const teamInfo = {
             const { data } = res
             if (data.isSuccess) {
               commit('ADD_TEAMKB', data.knowledge)
+              resolve(res)
             }
-            console.log('createTeamKB success')
-            resolve(res)
+            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.log('err in createTeamKB is : ', err)

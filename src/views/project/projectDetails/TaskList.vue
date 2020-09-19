@@ -107,7 +107,6 @@ import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import { priorityMarks } from './taskBoard/common/priority'
-import eventBus from './eventBus'
 
 export default {
   components: {
@@ -159,8 +158,7 @@ export default {
     getStatusTasks(status) {
       let resTasks = this.projectTasks.filter((task) => task.status === status)
 
-      if (this.onlyViewMine)
-        resTasks = this.projectTasks.filter((task) => task.principal === this.username)
+      if (this.onlyViewMine) resTasks = resTasks.filter((task) => task.principal === this.username)
 
       return resTasks
     },
