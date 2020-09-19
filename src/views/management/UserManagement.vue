@@ -15,9 +15,7 @@
       bordered
     >
       <template slot="avatar" slot-scope="avatar">
-        <a-avatar :key="avatar">
-          {{ avatar }}
-        </a-avatar>
+        <a-avatar :key="avatar" :src="avatar"></a-avatar>
       </template>
       <template
         v-for="col in ['nickname', 'gender', 'birthday', 'address', 'status', 'password']"
@@ -290,6 +288,7 @@ export default {
       }
     },
     onKeywordSearch(value) {
+      console.log('u click, avatar is:', this.data, this.avatar)
       this.queryUserInfo({ keyword: value, username: this.username })
         .then((res) => {
           //不要把下面这句代码改成this.data.length = 0，会导致列表不被正确清空
@@ -304,7 +303,9 @@ export default {
                 if (!queryUser.nickname) {
                   queryUser.nickname = queryUser.username
                 }
-                queryUser.birthday = queryUser.birthday.spilt('T')[0]
+                console.log('in 1, birthday is:', queryUser.birthday)
+                queryUser.birthday = queryUser.birthday.substring(0, 11)
+                console.log('in 2, birthday is:', queryUser.birthday)
                 this.data.push({
                   username: queryUser.username,
                   avatar: ret,
