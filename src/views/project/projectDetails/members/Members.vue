@@ -159,9 +159,10 @@ export default {
         console.log(username)
         promises.push(
           this.joinProject({
-            username,
+            username: this.username,
             teamId: this.teamId,
             projectId: this.projectId,
+            inviteName: username,
           })
         )
       })

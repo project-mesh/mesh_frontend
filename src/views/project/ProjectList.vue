@@ -300,7 +300,7 @@ export default {
       this.listVisible = true
       this.updatePreferenceShowMode({
         username: this.username,
-        preferenceShowMode: 'list',
+        showMode: 'list',
       }).then(() => {
         console.log('update preferenceShowMode success')
       })
@@ -310,7 +310,7 @@ export default {
       this.listVisible = false
       this.updatePreferenceShowMode({
         username: this.username,
-        preferenceShowMode: 'card',
+        howMode: 'card',
       }).then(() => {
         console.log('update preferenceShowMode success')
       })

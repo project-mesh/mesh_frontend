@@ -193,8 +193,9 @@ const projectInfo = {
         sendRequest('queryBulletin', requestData)
           .then((res) => {
             const { data } = res
-            if (data.isSuccess && requestData.projectId === state.projectId) {
+            if (data.isSuccess) {
               commit('SET_BULLETINS', data.bulletins)
+              console.log(state.bulletins)
             }
             resolve(res)
           })
@@ -206,7 +207,7 @@ const projectInfo = {
         sendRequest('createBulletin', requestData)
           .then((res) => {
             const { data } = res
-            if (data.isSuccess && requestData.projectId === state.projectId) {
+            if (data.isSuccess) {
               commit('ADD_BULLETIN', data.bulletin)
               return resolve(res)
             }
@@ -225,8 +226,9 @@ const projectInfo = {
             const { data } = res
             if (data.isSuccess) {
               commit('REMOVE_BULLETIN', requestData.bulletinId)
+              resolve(res)
             }
-            resolve(res)
+            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.error('error in deleteBulletin: ', err)
@@ -243,8 +245,9 @@ const projectInfo = {
             if (data.isSuccess) {
               commit('UPDATE_BULLETIN', data.bulletin)
               console.log('updated bulletins: ', state.bulletins)
+              resolve(res)
             }
-            resolve(res)
+            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.error('error in updateBulletin: ', err)

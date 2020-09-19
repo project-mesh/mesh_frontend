@@ -77,7 +77,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['bulletins', 'username', 'projectAdminName']),
+    ...mapGetters(['bulletins', 'username', 'projectAdminName', 'projectId']),
     bulletinWithFormatedCreateTime() {
       const formatedData = _.cloneDeep(this.bulletins)
       formatedData.forEach((bulletin) => {
@@ -103,7 +103,7 @@ export default {
       this.$set(this.deleteLoading, index, true)
       this.deleteBulletin({
         username: this.username,
-        projectId: bulletin.projectId,
+        projectId: this.projectId,
         bulletinId: bulletin.bulletinId,
       })
         .then(() => {
@@ -136,11 +136,11 @@ export default {
       this.$refs.createForm
         .handleSubmit()
         .then(() => {
-          console.log('createBulletin seccess')
+          console.log('创建公告成功')
         })
         .catch((err) => {
           this.$notification.error({
-            message: 'createBulletin failed',
+            message: '无效公告ID',
             description: err.message,
           })
         })
