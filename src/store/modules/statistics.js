@@ -61,9 +61,10 @@ const statistics = {
             const { data } = res
             if (data.isSuccess) {
               commit('SET_USERS', data.users)
+              console.log('response in queryUserInfo, response: ', res)
+              resolve(res)
             }
-            console.log('response in queryUserInfo, response: ', res)
-            resolve(res)
+            reject(data.msg)
           })
           .catch((err) => {
             console.log('error in queryUserInfo, err: ', err)

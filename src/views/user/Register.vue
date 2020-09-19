@@ -195,9 +195,17 @@ export default {
         if (!err) {
           this.state.passwordLevelChecked = false
           sendRequest('register', { ...values })
-            .then((response) => {
+            .then((res) => {
               //TODO : store commit
-              this.$router.push({ name: 'registerResult', params: { ...values } })
+              const { data } = res
+              console.log('register result, data: ', data)
+              if (data.isSuccess)
+                return this.$router.push({ name: 'registerResult', params: { ...values } })
+
+              if (res.err_code === 101)
+                this.$notification.error({
+                  message: '该用户名已被注册！',
+                })
             })
             .catch((err) => {})
         }

@@ -28,6 +28,15 @@ const teamInfo = {
     SET_MEMBERS: (state, members) => {
       state.members = members
     },
+    UPDATE_TEAM_MEMBER: (state, updatedMember) => {
+      const currMember = state.members.find((member) => member.username === updatedMember.username)
+
+      if (currMember) {
+        Object.keys(updatedMember).forEach((key) => {
+          if (key in currMember) currMember[key] = updatedMember[key]
+        })
+      }
+    },
     SET_TEAMPROJECTS: (state, teamProjects) => {
       state.teamProjects = teamProjects
     },
@@ -98,7 +107,6 @@ const teamInfo = {
                 let projectId = data.team.teamProjects[i].projectId
                 getProjectLogo(projectId)
                   .then((ret) => {
-                    console.log('getProjectLogo ret is:', ret)
                     data.team.teamProjects[i].projectLogo = ret
                   })
                   .catch((err) => {

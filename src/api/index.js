@@ -157,12 +157,16 @@ const apiMap = {
     url: '/login',
     method: 'post',
   },
+  logout: {
+    url: '/logout',
+    method: 'post',
+  },
   register: {
     url: '/register',
     method: 'post',
   },
   updateUserInfo: {
-    url: '/admin/information',
+    url: '/user',
     method: 'patch',
   },
   queryUser: {
@@ -171,11 +175,15 @@ const apiMap = {
   },
   updateUserPassword: {
     url: '/user/password',
-    method: 'post',
+    method: 'patch',
   },
   queryUserInfo: {
     url: '/statistics/search-user',
     method: 'get',
+  },
+  updateUserInfoAdmin: {
+    url: '/admin/information',
+    method: 'patch',
   },
   queryGeneralStatistics: {
     url: '/statistics/general',

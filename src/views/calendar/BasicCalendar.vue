@@ -32,7 +32,7 @@
               "
             >
               <a-checkbox
-                :disabled="![item.principal, teamAdminName].includes(username)"
+                :disabled="hasNoPermission(username, item)"
                 :checked="item.isFinished"
                 @change="onProjectFinishedChange"
                 :value="item"
@@ -183,7 +183,14 @@ export default {
     getMonthData(value) {
       return this.getListData(value, 'month')
     },
+    hasNoPermission(username, task) {
+      if (username === task.principal) return false
 
+      const taskPrj = this.teamProjects.find((prj) => prj.projectId === task.projectId)
+      if (taskPrj && taskPrj.adminName === username) return false
+
+      return true
+    },
     getDayData(value) {
       return this.getListData(value, 'day')
     },

@@ -41,14 +41,14 @@
         <a :disabled="username !== projectAdminName">
           <a-icon key="edit" type="edit" @click="editTask(task)" />
         </a>
-        <a :disbled="username !== projectAdminName && username !== task.principal">
-          <a-icon
-            v-if="task.isFinished"
-            key="check-square"
-            type="check-square"
-            @click="handleUpdate(false)"
-          />
-          <a-icon v-else key="check" type="check" @click="handleUpdate(true)" />
+        <a
+          v-if="task.isFinished"
+          :disabled="username !== projectAdminName && username !== task.principal"
+        >
+          <a-icon key="check-square" type="check-square" @click="handleUpdate(false)" />
+        </a>
+        <a v-else :disabled="username !== projectAdminName && username !== task.principal">
+          <a-icon key="check" type="check" @click="handleUpdate(true)" />
         </a>
       </template>
     </a-card>
@@ -57,15 +57,12 @@
 <script>
 import SubTaskList from './SubTaskList'
 import { priorityMarks } from './common/priority'
-import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import eventBus from '../eventBus'
 
 export default {
   components: {
     SubTaskList,
-    AvatarFeaturedUser,
   },
   data() {
     return {

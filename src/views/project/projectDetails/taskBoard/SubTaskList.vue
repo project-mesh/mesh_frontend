@@ -35,7 +35,8 @@
       <a-input
         v-model="newSubTaskName"
         slot="header"
-        placeholder="按enter添加 点击其他地方退出"
+        placeholder="按enter添加，点击其他地方退出"
+        :disabled="username !== projectAdminName && username !== parentTask.principal"
         @keypress.enter="handleSubTaskCreate"
         @keypress.esc="exitAdding"
         @blur="exitAdding"
@@ -76,7 +77,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['username', 'projectId', 'projectMembers']),
+    ...mapGetters(['username', 'projectId', 'projectMembers', 'projectAdminName']),
   },
   methods: {
     handleEdit(subTask) {

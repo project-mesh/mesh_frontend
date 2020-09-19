@@ -32,6 +32,17 @@ const projectInfo = {
     SET_PROJECT_MEMBERS: (state, members) => {
       state.projectMembers = members
     },
+    UPDATE_PROJECT_MEMBER: (state, updatedMember) => {
+      const currMember = state.projectMembers.find(
+        (member) => member.username === updatedMember.username
+      )
+
+      if (currMember) {
+        Object.keys(updatedMember).forEach((key) => {
+          if (key in currMember) currMember[key] = updatedMember[key]
+        })
+      }
+    },
     SET_VISIBILITY: (state, isPublic) => {
       state.isPublic = isPublic
     },

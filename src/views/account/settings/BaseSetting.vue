@@ -45,31 +45,31 @@
               placeholder="挑一个自己的状态"
               @change="handleChange"
             >
-              <a-select-option value="1">
+              <a-select-option :value="1">
                 <icon-font type="icon-yao" />
                 生病难受中
               </a-select-option>
-              <a-select-option value="2">
+              <a-select-option :value="2">
                 <icon-font type="icon-xiujia" />
                 休假充电中
               </a-select-option>
-              <a-select-option value="3">
+              <a-select-option :value="3">
                 <icon-font type="icon-zengjiicon" />
                 努力工作中
               </a-select-option>
-              <a-select-option value="4">
+              <a-select-option :value="4">
                 <icon-font type="icon-icon-00FC" />
                 在家办公中
               </a-select-option>
-              <a-select-option value="5">
+              <a-select-option :value="5">
                 <icon-font type="icon-yu-" />
                 持续摸鱼中
               </a-select-option>
-              <a-select-option value="6">
+              <a-select-option :value="6">
                 <icon-font type="icon-feiji" />
                 出差奔波中
               </a-select-option>
-              <a-select-option value="7">
+              <a-select-option :value="7">
                 <icon-font type="icon-game" />
                 愉快游戏中
               </a-select-option>
@@ -329,15 +329,9 @@ export default {
           }
           this.updateUserInfo(sendData)
             .then((res) => {
-              if (res.data.isSuccess) {
-                this.$notification.success({
-                  message: '修改个人信息成功！',
-                })
-              } else {
-                this.$notification.error({
-                  message: '修改个人信息失败，请重试',
-                })
-              }
+              this.$notification.success({
+                message: '修改个人信息成功！',
+              })
             })
             .catch((err) => {
               this.$notification.error({

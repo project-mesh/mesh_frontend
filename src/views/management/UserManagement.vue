@@ -229,7 +229,7 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions(['queryUserInfo', 'updateUserPasswordAdmin', 'updateUserInfo']),
+    ...mapActions(['queryUserInfo', 'updateUserPasswordAdmin', 'updateUserInfoAdmin']),
     splitAddress(address) {
       let oriStr = address
       let resStr = oriStr.split(' ')
@@ -307,15 +307,21 @@ export default {
           res.data.users.forEach((queryUser) => {
             getUserAvatar(queryUser.username)
               .then((ret) => {
+                queryUser.avatar = ret
+              })
+              .catch((err) => {
+                console.log('error in avatar of', queryUser.username)
+              })
+              .finally(() => {
                 if (!queryUser.nickname) {
                   queryUser.nickname = queryUser.username
                 }
                 console.log('in 1, birthday is:', queryUser.birthday)
-                queryUser.birthday = queryUser.birthday.substring(0, 11)
+                queryUser.birthday = queryUser.birthday.substring(0, 10)
                 console.log('in 2, birthday is:', queryUser.birthday)
                 this.data.push({
                   username: queryUser.username,
-                  avatar: ret,
+                  avatar: queryUser.avatar,
                   nickname: queryUser.nickname,
                   gender: queryUser.gender,
                   birthday: queryUser.birthday,
@@ -326,9 +332,6 @@ export default {
                 this.cacheData = _.cloneDeep(this.data)
                 console.log('cacheData is:', this.cacheData)
                 console.log('Data is:', this.data)
-              })
-              .catch((err) => {
-                console.log('error in avatar of', queryUser.username)
               })
           })
         })
@@ -406,7 +409,7 @@ export default {
       }
       if (target.editable) {
         if (target && targetCache) {
-          this.updateUserInfo({
+          this.updateUserInfoAdmin({
             username,
             nickname: target.nickname,
             gender: target.gender,

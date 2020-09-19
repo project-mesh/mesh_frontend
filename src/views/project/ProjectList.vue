@@ -292,7 +292,7 @@ export default {
     ]),
     tryJumpToProjectDetail(projectId) {
       const currPrj = this.teamProjects.find((prj) => prj.projectId === projectId)
-      if (!currPrj || currPrj.adminName !== this.username) {
+      if (!currPrj || !currPrj.members.includes(this.username)) {
         return this.$notification.error({
           message: '你不是该项目成员！',
         })
@@ -390,26 +390,26 @@ export default {
                 dataURItoBlob(values.prjLogo.file.thumbUrl)
               )
               // 延迟显示欢迎信息
-              setTimeout(() => {
-                this.$notification.success({
-                  message: '创建成功',
-                  description: `${timeFix()}，已成功添加新项目`,
-                })
-                this.queryTeam({
-                  username: this.username,
-                  teamId: this.teamId,
-                })
-                  .then(() => {
-                    this.$notification.success({
-                      message: '团队信息加载成功！',
-                    })
-                  })
-                  .catch((err) => {
-                    this.$notification.error({
-                      message: '请求团队信息失败，请重试',
-                    })
-                  })
-              }, 1000)
+              // setTimeout(() => {
+              //   this.$notification.success({
+              //     message: '创建成功',
+              //     description: `${timeFix()}，已成功添加新项目`,
+              //   })
+              //   this.queryTeam({
+              //     username: this.username,
+              //     teamId: this.teamId,
+              //   })
+              //     .then(() => {
+              //       this.$notification.success({
+              //         message: '团队信息加载成功！',
+              //       })
+              //     })
+              //     .catch((err) => {
+              //       this.$notification.error({
+              //         message: '请求团队信息失败，请重试',
+              //       })
+              //     })
+              // }, 1000)
               // 实时更新
             })
             .catch((err) => {

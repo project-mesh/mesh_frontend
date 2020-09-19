@@ -29,7 +29,7 @@
 
 <script>
 import { Modal } from 'ant-design-vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'AvatarDropdown',
@@ -47,6 +47,7 @@ export default {
     ...mapGetters(['username', 'avatar', 'role']),
   },
   methods: {
+    ...mapActions(['Logout']),
     handleToCenter() {
       this.$router.push({ path: '/account/center' })
     },
@@ -58,13 +59,15 @@ export default {
       }
     },
     handleLogout() {
+      const vm = this
       Modal.confirm({
         title: '您确定要退出吗？',
         onOk: () => {
-          this.$store.dispatch('Logout')
-          this.$router.push({ name: 'login' })
+          console.log(vm.Logout)
+          vm.Logout({ username: vm.username }).then(() => {
+            vm.$router.push({ name: 'login' })
+          })
         },
-        onCancel() {},
       })
     },
   },

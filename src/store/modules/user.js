@@ -67,7 +67,7 @@ const user = {
       if (status === 0) {
         state.status = ''
       } else {
-        state.status = status.toString()
+        state.status = status
       }
     },
     ADD_NEW_TEAM: (state, newTeam) => {
@@ -110,15 +110,20 @@ const user = {
           })
       })
     },
-    Logout({ commit }) {
-      commit('SET_USERNAME', '')
-      commit('SET_ROLE', '')
-      commit('SET_ROUTERS', [], { root: true })
-      commit('SET_TEAMID', '', { root: true })
-      commit('SET_PROJECT_ID', '', { root: true })
-      commit('SET_NOTIFICATIONS', [], { root: true })
-      commit('SET_PROJECT_TASKS', [], { root: true })
-      commit('SET_TEAM_TASKS', [], { root: true })
+    Logout({ commit }, requestData) {
+      return new Promise((resolve) => {
+        sendRequest('logout', requestData).finally(() => {
+          commit('SET_USERNAME', '')
+          commit('SET_ROLE', '')
+          commit('SET_ROUTERS', [], { root: true })
+          commit('SET_TEAMID', '', { root: true })
+          commit('SET_PROJECT_ID', '', { root: true })
+          commit('SET_NOTIFICATIONS', [], { root: true })
+          commit('SET_PROJECT_TASKS', [], { root: true })
+          commit('SET_TEAM_TASKS', [], { root: true })
+          resolve()
+        })
+      })
     },
     updatePreferenceColor({ commit, state }, requestData) {
       return new Promise((resolve, reject) => {
@@ -127,19 +132,6 @@ const user = {
             commit('SET_PREFERENCE', {
               ...state.preference,
               preferenceColor: requestData.preferenceColor,
-            })
-            resolve()
-          })
-          .catch((err) => reject(err))
-      })
-    },
-    updatePreferenceTeam({ commit, state }, requestData) {
-      return new Promise((resolve, reject) => {
-        sendRequest('preferenceTeam', requestData)
-          .then((res) => {
-            commit('SET_PREFERENCE', {
-              ...state.preference,
-              preferenceTeam: requestData.preferenceTeam,
             })
             resolve()
           })
@@ -189,11 +181,44 @@ const user = {
               commit('SET_GENDER', data.gender)
               commit('SET_DESCRIPTION', data.description)
               commit('SET_STATUS', data.status)
+              commit('UPDATE_TEAM_MEMBER', data, { root: true })
+              commit('UPDATE_PROJECT_MEMBER', data, { root: true })
+              resolve(res)
             }
-            resolve(res)
+            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.log('error in updateUserInfo, error: ', err)
+            reject(err)
+          })
+      })
+    },
+    updateUserInfoAdmin({ commit, state }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('updateUserInfoAdmin', requestData)
+          .then((res) => {
+            const { data } = res
+            if (data.isSuccess) {
+              if (data.username === state.username) {
+                commit('SET_USERNAME', data.username)
+                commit('SET_ROLE', data.role)
+                commit('SET_AVATAR', data.avatar)
+                commit('SET_TEAMS', data.teams)
+                commit('SET_PREFERENCE', data.preference)
+                commit('SET_ADDRESS', data.address)
+                commit('SET_NICKNAME', data.nickname)
+                commit('SET_BIRTHDAY', data.birthday)
+                commit('SET_GENDER', data.gender)
+                commit('SET_DESCRIPTION', data.description)
+                commit('SET_STATUS', data.status)
+              }
+              resolve(res)
+            }
+
+            reject(new Error(data.msg))
+          })
+          .catch((err) => {
+            console.log('error in updateUserInfoAdmin, error: ', err)
             reject(err)
           })
       })

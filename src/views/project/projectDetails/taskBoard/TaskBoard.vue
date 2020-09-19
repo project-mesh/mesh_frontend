@@ -78,7 +78,6 @@ import projectMixin from '@/utils/mixins/projectMixin'
 import taskDrawerMixin from '@/utils/mixins/taskDrawerMixin'
 import { mapGetters, mapActions } from 'vuex'
 import { priorityMarks } from './common/priority'
-import eventBus from '../eventBus'
 
 export default {
   components: {

@@ -4,12 +4,14 @@
     <a-descriptions size="small" :column="4" @click="console.log(task)">
       <div slot="title">
         {{ task.taskName }}
-        <a-icon
-          class="icon-checkbox"
-          key="check-square"
-          :type="task.isFinished ? 'check-square' : 'border'"
-          @click.stop="changeTaskFinishingStatus"
-        />
+        <a :disabled="username !== projectAdminName && username !== task.principal">
+          <a-icon
+            class="icon-checkbox"
+            key="check-square"
+            :type="task.isFinished ? 'check-square' : 'border'"
+            @click.stop="changeTaskFinishingStatus"
+          />
+        </a>
       </div>
       <a-descriptions-item label="创建时间" :span="4">
         {{ task.createTime | dateFilter }}
@@ -24,7 +26,6 @@
 <script>
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
-import eventBus from '../eventBus'
 
 export default {
   components: {
@@ -37,7 +38,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['username', 'projectId']),
+    ...mapGetters(['username', 'projectId', 'projectAdminName']),
   },
   methods: {
     changeTaskFinishingStatus: function () {
