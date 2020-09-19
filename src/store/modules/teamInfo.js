@@ -149,6 +149,25 @@ const teamInfo = {
           })
       })
     },
+    removeMember({ commit, dispatch }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('removeTeamMember', requestData)
+          .then((res) => {
+            if (res.data.isSuccess) {
+              return dispatch('queryTeam', requestData)
+            } else {
+              reject(new Error(res.data.msg))
+            }
+          })
+          .then((res) => {
+            resolve(res)
+          })
+          .catch((err) => {
+            console.log('err from removeMember action is:', err)
+            reject(err)
+          })
+      })
+    },
     inviteMember({ commit, dispatch }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('inviteNewTeamMember', requestData)

@@ -70,14 +70,14 @@
       <template slot="job" slot-scope="text, item">
         <p>{{ item.username === teamAdminName ? '管理员' : '组员' }}</p>
       </template>
-      <span slot="action" slot-scope="text, item, index">
-        <a-popconfirm title="是否要移除此成员？" @confirm="deleteKB(item, index)">
+      <span slot="action" slot-scope="text, item">
+        <a-popconfirm title="是否要移除此成员？" @confirm="handleRemoveTeamMember(item)">
           <a-tooltip title="移除成员">
             <a-icon
               type="user-delete"
               class="removeIcon"
               style="font-size: 23px"
-              :disabled="!isAdminButNotHimself(item)"
+              v-if="isAdminButNotHimself(item) && item.username !== teamAdminName"
             />
           </a-tooltip>
         </a-popconfirm>
@@ -234,7 +234,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['queryUser', 'joinTeam', 'updateTeam', 'inviteMember']),
+    ...mapActions(['queryUser', 'joinTeam', 'updateTeam', 'inviteMember', 'removeMember']),
     addmember() {},
     isAdminButNotHimself(chosedUser) {
       return this.username === this.teamAdminName && chosedUser.username !== this.teamAdminName
@@ -362,8 +362,23 @@ export default {
     onChange(pagination, filters, sorter) {
       console.log('params', pagination, filters, sorter)
     },
-    deleteKB(teammate) {
-      console.log(teammate)
+    handleRemoveTeamMember(member) {
+      console.log(member.username)
+      this.removeMember({
+        username: this.username,
+        teamId: this.teamId,
+        removeName: member.username,
+      })
+        .then((res) => {
+          console.log('remove team member success')
+        })
+        .catch((err) => {
+          this.$notification.error({
+            message: 'remove team member failed',
+            description: err.msg,
+          })
+        })
+        .finally(() => {})
     },
   },
   mounted() {
