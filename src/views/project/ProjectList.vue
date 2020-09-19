@@ -223,9 +223,6 @@
                 <a :disabled="username !== item.adminName" @click="showUpdatePrjForm(item)">
                   <a-icon key="edit" type="edit" />
                 </a>
-                <a @click="showInviteForm(item)">
-                  <a-icon type="usergroup-add" />
-                </a>
                 <a :disabled="username !== item.adminName" @click="handleProjectDelete(item)">
                   <a-icon key="delete" type="delete" />
                 </a>
@@ -294,6 +291,13 @@ export default {
       'joinProject',
     ]),
     tryJumpToProjectDetail(projectId) {
+      const currPrj = this.teamProjects.find((prj) => prj.projectId === projectId)
+      if (!currPrj || currPrj.adminName !== this.username) {
+        return this.$notification.error({
+          message: '你不是该项目成员！',
+        })
+      }
+
       this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
     },
     showListView() {
@@ -465,7 +469,6 @@ export default {
               }, 1000)
             })
             .catch((err) => {
-              console.log('error, boy: ', err)
               this.$notification.error({
                 message: '更新失败',
                 description: err,
