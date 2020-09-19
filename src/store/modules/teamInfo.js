@@ -111,15 +111,18 @@ const teamInfo = {
           })
       })
     },
-    inviteMember({ commit }, requestData) {
+    inviteMember({ commit, dispatch }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('inviteNewTeamMember', requestData)
           .then((res) => {
             if (res.data.isSuccess) {
-              resolve(res)
+              return dispatch('queryTeam', requestData)
             } else {
-              reject('添加成员失败')
+              reject(new Error(res.data.msg))
             }
+          })
+          .then((res) => {
+            resolve(res)
           })
           .catch((err) => {
             console.log('err from inviteMember action is:', err)

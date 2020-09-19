@@ -167,23 +167,18 @@ const projectInfo = {
           .catch((err) => reject(err))
       })
     },
-    joinProject({ commit, state }, requestData) {
+    joinProject({ commit, state, dispatch }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('inviteNewProjectMember', requestData)
           .then((res) => {
             const { data } = res
             if (data.isSuccess) {
-              const { project } = data
-
-              console.log('response in joinProject: ', project)
-
-              if (requestData.projectId === state.projectId) {
-                commit('SET_PROJECT_MEMBERS', project.members)
-              }
-              return resolve(res)
+              return this.dispatch('queryProject', requestData)
             }
-
             reject(new Error(data.msg))
+          })
+          .then((res) => {
+            resolve(res)
           })
           .catch((err) => reject(err))
       })
