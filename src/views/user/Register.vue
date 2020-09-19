@@ -113,7 +113,7 @@ const levelColor = {
   3: '#52c41a',
 }
 import sendRequest from '@/api'
-
+import { putObject, getDefaultAvatar, dataURItoBlob } from '../../utils/oss'
 export default {
   name: 'Register',
   components: {},
@@ -197,9 +197,17 @@ export default {
           sendRequest('register', { ...values })
             .then((response) => {
               //TODO : store commit
+              getDefaultAvatar().then((ret) => {
+                console.log('values.username is:', values.username)
+                putObject('userAvatar_' + values.username, dataURItoBlob(ret)).then(() => {
+                  console.log('success in put avatar')
+                })
+              })
               this.$router.push({ name: 'registerResult', params: { ...values } })
             })
-            .catch((err) => {})
+            .catch((err) => {
+              console.log(err)
+            })
         }
       })
     },

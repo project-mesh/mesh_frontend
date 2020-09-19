@@ -87,3 +87,21 @@ export function getProjectLogo(projectId) {
     return Promise.resolve(base64Data)
   })
 }
+
+export function getDefaultAvatar() {
+  let object_key = 'userDefault'
+  let imgUrl = testGet(object_key)
+  return getBase64(imgUrl).then((ret) => {
+    let base64Data = 'data:image/jpg;base64,' + ret.toString()
+    return Promise.resolve(base64Data)
+  })
+}
+
+export function getDefaultProjectAvatar() {
+  let object_key = 'projectDefault'
+  let imgUrl = testGet(object_key)
+  return getBase64(imgUrl).then((ret) => {
+    let base64Data = 'data:image/jpg;base64,' + ret.toString()
+    return Promise.resolve(base64Data)
+  })
+}

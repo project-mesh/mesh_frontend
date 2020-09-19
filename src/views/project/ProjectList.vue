@@ -244,7 +244,7 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
-import { putProjectLogo, dataURItoBlob } from '../../utils/oss'
+import { putProjectLogo, dataURItoBlob, putObject, getDefaultProjectAvatar } from '../../utils/oss'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 
@@ -384,11 +384,20 @@ export default {
             .then((response) => {
               console.log('success,boy', response)
               console.log('projectId is:', response.data.project.projectId)
-              console.log('prjLogo is:', values.prjLogo.file.thumbUrl)
-              putProjectLogo(
-                response.data.project.projectId,
-                dataURItoBlob(values.prjLogo.file.thumbUrl)
-              )
+              if (values.prjLogo && values.prjLogo !== 'xxx') {
+                console.log('prjLogo is:', values.prjLogo)
+                putProjectLogo(
+                  response.data.project.projectId,
+                  dataURItoBlob(values.prjLogo.file.thumbUrl)
+                )
+              } else {
+                getDefaultProjectAvatar().then((ret) => {
+                  console.log('defaultAvatar ret is:', ret)
+                  putProjectLogo(response.data.project.projectId, dataURItoBlob(ret)).then(() => {
+                    console.log('success in put Logo')
+                  })
+                })
+              }
               // 延迟显示欢迎信息
               setTimeout(() => {
                 this.$notification.success({
@@ -548,7 +557,7 @@ export default {
         const formData = {
           prjName: '',
           prjAuthority: 'public',
-          prjLogo: 'xxxxxxxx',
+          prjLogo: 'xxx',
           prjAdmin: '',
         }
         this.createForm.setFieldsValue(formData)
