@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     changeTaskFinishingStatus: function () {
-      eventBus.$emit('task-update', {
+      this.$emit('task-update', {
         task: this.task,
         requestData: {
           username: this.username,

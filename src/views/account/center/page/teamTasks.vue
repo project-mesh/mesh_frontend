@@ -25,7 +25,7 @@
             </div>
             <div class="list-content-item">
               <a-progress
-                :percent="item.progress.value"
+                :percent="+item.progress.value"
                 :status="!item.progress.status ? null : item.progress.status"
                 style="width: 180px"
               />
@@ -39,7 +39,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import teamTasks from '../../../../store/modules/teamTasks'
 
 export default {
   name: 'TeamTasksPage',

@@ -47,7 +47,6 @@
 <script>
 import AvatarFeaturedUser from './task_input/AvatarFeaturedUser'
 import { mapGetters } from 'vuex'
-import eventBus from '../eventBus'
 export default {
   components: {
     AvatarFeaturedUser,
@@ -81,7 +80,7 @@ export default {
   },
   methods: {
     handleEdit(subTask) {
-      eventBus.$emit('open-sub-drawer', subTask)
+      this.$emit('open-sub-drawer', subTask)
     },
     handleRemove: function (subTask) {
       const requestData = {
@@ -92,7 +91,7 @@ export default {
         principal: subTask.principal,
       }
       console.log('delete')
-      eventBus.$emit('sub-task-delete', { subTask, requestData })
+      this.$emit('sub-task-delete', { subTask, requestData })
     },
     handleFinishSubTask: function (subTask) {
       const requestData = {
@@ -104,7 +103,7 @@ export default {
         isFinished: !subTask.isFinished,
       }
       console.log('finish')
-      eventBus.$emit('sub-task-finish', { subTask, requestData })
+      this.$emit('sub-task-finish', { subTask, requestData })
     },
     handleSubTaskCreate: function () {
       if (this.newSubTaskName) {
@@ -116,7 +115,6 @@ export default {
             message: '已有同名子任务！',
           })
         }
-        console.log('fuckkkkkkkkkkkkkk')
         const requestData = {
           username: this.username,
           subTaskName: this.newSubTaskName,
@@ -124,8 +122,7 @@ export default {
           taskId: this.parentTask.taskId,
           principal: this.username,
         }
-        console.log('create')
-        eventBus.$emit('sub-task-create', { task: this.parentTask, requestData })
+        this.$emit('sub-task-create', { task: this.parentTask, requestData })
       }
     },
     exitAdding: function () {

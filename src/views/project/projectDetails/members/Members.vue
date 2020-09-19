@@ -159,9 +159,10 @@ export default {
         console.log(username)
         promises.push(
           this.joinProject({
-            username,
+            username: this.username,
             teamId: this.teamId,
             projectId: this.projectId,
+            inviteName: username,
           })
         )
       })
@@ -172,7 +173,7 @@ export default {
           })
           .catch((err) => {
             this.$notification.error({
-              message: '成功添加新项目成员',
+              message: '添加新项目成员失败',
               description: err.message,
             })
           })

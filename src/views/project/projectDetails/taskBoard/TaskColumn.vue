@@ -30,6 +30,7 @@
             :task="task"
             @update-task="updateTaskData"
             @click.native="selectTask(task)"
+            @task-update="$emit('task-update', $event)"
           ></task-info>
         </transition-group>
         <div slot="footer">

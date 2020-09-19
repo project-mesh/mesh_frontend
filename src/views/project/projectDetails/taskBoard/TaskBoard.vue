@@ -7,6 +7,10 @@
       @close="setDetailDrawerVisible(false)"
       @task-update="tryUpdateTask"
       @task-delete="tryDeleteTask"
+      @sub-task-create="tryCreateSubTask"
+      @open-sub-drawer="openSubDrawer"
+      @sub-task-delete="tryDeleteSubTask"
+      @sub-task-finish="tryUpdateSubTask"
     ></task-detail>
     <editing-task-detail
       :visible="editingDrawerVisible"
@@ -56,6 +60,7 @@
             :id="taskListWithPriority.priority"
             @end="onDragEnd"
             @show-task-detail="showTaskDetail"
+            @task-update="tryUpdateTask"
             ghost-class="task-column"
           ></task-column>
         </a-col>
@@ -334,7 +339,8 @@ export default {
       })
     },
     tryCreateSubTask($event) {
-      console.log('llllllllllllllllllllllllll')
+      console.log('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL')
+
       this.createSubTask($event.requestData)
         .then((res) => {
           console.log(('创建子任务成功, res', res))
@@ -406,6 +412,10 @@ export default {
       console.log(color)
       return color
     },
+    openSubDrawer($event) {
+      this.selectedSubTask = $event
+      this.enterSubEditingMode(true)
+    },
   },
   mounted() {
     this.resetSelectedTask()
@@ -443,23 +453,39 @@ export default {
 
     this.$emit('load', 'taskBoard')
   },
-  created() {
-    this.reloadTasks()
+  // created() {
+  //   console.log('taskBoard created')
 
-    eventBus.$on('task-update', this.tryUpdateTask)
+  //   this.reloadTasks()
 
-    eventBus.$on('sub-task-delete', this.tryDeleteSubTask)
+  //   eventBus.$on('task-update', this.tryUpdateTask)
 
-    eventBus.$on('sub-task-finish', this.tryUpdateSubTask)
+  //   eventBus.$on('sub-task-delete', this.tryDeleteSubTask)
 
-    eventBus.$on('sub-task-create', this.tryCreateSubTask)
+  //   eventBus.$on('sub-task-finish', this.tryUpdateSubTask)
 
-    eventBus.$on('open-sub-drawer', ($event) => {
-      console.log('!!!!!!!!!!!!!!!!!!')
-      this.selectedSubTask = $event
-      this.enterSubEditingMode(true)
-    })
-  },
+  //   eventBus.$on('sub-task-create', ($event) => {
+  //     this.tryCreateSubTask($event)
+  //   })
+
+  //   eventBus.$on('open-sub-drawer', ($event) => {
+  //     this.selectedSubTask = $event
+  //     this.enterSubEditingMode(true)
+  //   })
+  // },
+  // beforeDestroy() {
+  //   console.log('TaskBoard beforeDestroy')
+
+  //   eventBus.$off('task-update')
+
+  //   eventBus.$off('sub-task-delete')
+
+  //   eventBus.$off('sub-task-finish')
+
+  //   eventBus.$off('sub-task-create')
+
+  //   eventBus.$off('open-sub-drawer')
+  // },
 }
 </script>
 <style lang="less">

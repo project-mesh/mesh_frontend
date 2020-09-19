@@ -214,21 +214,6 @@ export default {
           this.$notification.success({
             message: '知识词条创建成功',
           })
-          this.queryTeamKB({
-            username: this.username,
-            teamId: this.preference.preferenceTeam,
-          })
-            .then((res) => {
-              this.$notification.success({
-                message: '知识库更新成功',
-              })
-            })
-            .catch((err) => {
-              this.$notification.error({
-                message: '知识库更新失败',
-                description: err.message,
-              })
-            })
         })
         .catch((err) => {
           this.$notification.error({
@@ -245,12 +230,17 @@ export default {
     },
     update(item, key, value) {
       const { knowledgeId } = item
-      this.updateTeamKB({
+      const requestData = {
         username: this.username,
         teamId: this.teamId,
         knowledgeId,
-        [key]: value,
-      }).catch((err) => {
+        knowledgeName: item.knowledgeName,
+        hyperlink: item.hyperlink,
+      }
+
+      requestData[key] = value
+
+      this.updateTeamKB(requestData).catch((err) => {
         this.$notification.error({
           message: '更新知识库失败',
           description: err.message,

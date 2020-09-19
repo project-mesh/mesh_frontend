@@ -7,17 +7,17 @@ const addProgressToTask = (item) => {
   let ddl_timeStamp = new Date(item.deadline + others).getTime()
   let value = (ct_timeStamp - item.createTime) / (ddl_timeStamp - item.createTime)
   value = value.toFixed(2)
-  if (value > 100) {
+  if (value > 1) {
     item.progress = {
-      value: 100.0,
+      value: 100,
       status: 'exception',
     }
   } else {
     if (value <= 0) {
-      value = 0.0
+      value = 0
     }
     item.progress = {
-      value: value,
+      value: value * 100,
     }
   }
   item.short = (item.description && item.description.substring(0, 41)) || ''

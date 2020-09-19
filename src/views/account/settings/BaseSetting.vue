@@ -148,7 +148,7 @@ export default {
     IconFont,
   },
   computed: {
-    ...mapGetters(['username', 'status', 'nickname', 'address', 'description']),
+    ...mapGetters(['username', 'status', 'nickname', 'address', 'description', 'avatar']),
     cities: function () {
       let tmp = this.address.split(' ')
       if (tmp) {
@@ -289,7 +289,7 @@ export default {
       preview: {},
       form: this.$form.createForm(this),
       option: {
-        img: '/avatar2.jpg',
+        img: '',
         info: true,
         size: 1,
         outputType: 'jpeg',
@@ -510,6 +510,7 @@ export default {
     this.gender = store.getters.gender
     this.birthday = store.getters.birthday
     this.defaultAddress = store.getters.address
+    this.option.img = this.avatar
     if (store.getters.address && store.getters.address.split(' ').length === 3) {
       this.defaultCitiesList = store.getters.address.split(' ')
     }

@@ -223,9 +223,6 @@
                 <a :disabled="username !== item.adminName" @click="showUpdatePrjForm(item)">
                   <a-icon key="edit" type="edit" />
                 </a>
-                <a @click="showInviteForm(item)">
-                  <a-icon type="usergroup-add" />
-                </a>
                 <a :disabled="username !== item.adminName" @click="handleProjectDelete(item)">
                   <a-icon key="delete" type="delete" />
                 </a>
@@ -247,6 +244,7 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
+import { putProjectLogo, dataURItoBlob } from '../../utils/oss'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 
@@ -293,6 +291,13 @@ export default {
       'joinProject',
     ]),
     tryJumpToProjectDetail(projectId) {
+      const currPrj = this.teamProjects.find((prj) => prj.projectId === projectId)
+      if (!currPrj || currPrj.adminName !== this.username) {
+        return this.$notification.error({
+          message: '你不是该项目成员！',
+        })
+      }
+
       this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
     },
     showListView() {
@@ -300,7 +305,7 @@ export default {
       this.listVisible = true
       this.updatePreferenceShowMode({
         username: this.username,
-        preferenceShowMode: 'list',
+        showMode: 'list',
       }).then(() => {
         console.log('update preferenceShowMode success')
       })
@@ -310,7 +315,7 @@ export default {
       this.listVisible = false
       this.updatePreferenceShowMode({
         username: this.username,
-        preferenceShowMode: 'card',
+        howMode: 'card',
       }).then(() => {
         console.log('update preferenceShowMode success')
       })
@@ -368,6 +373,7 @@ export default {
       this.createForm.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
+          console.log('prjLogp:', values.prjLogo)
           this.createProject({
             username: store.getters.username,
             teamId: store.getters.teamId,
@@ -377,13 +383,34 @@ export default {
           })
             .then((response) => {
               console.log('success,boy', response)
+              console.log('projectId is:', response.data.project.projectId)
+              console.log('prjLogo is:', values.prjLogo.file.thumbUrl)
+              putProjectLogo(
+                response.data.project.projectId,
+                dataURItoBlob(values.prjLogo.file.thumbUrl)
+              )
               // 延迟显示欢迎信息
               setTimeout(() => {
                 this.$notification.success({
                   message: '创建成功',
                   description: `${timeFix()}，已成功添加新项目`,
                 })
-              }, 0)
+                this.queryTeam({
+                  username: this.username,
+                  teamId: this.teamId,
+                })
+                  .then(() => {
+                    this.$notification.success({
+                      message: '团队信息加载成功！',
+                    })
+                  })
+                  .catch((err) => {
+                    this.$notification.error({
+                      message: '请求团队信息失败，请重试',
+                    })
+                  })
+              }, 1000)
+              // 实时更新
             })
             .catch((err) => {
               console.log('error, boy: ', err)
@@ -415,16 +442,33 @@ export default {
           })
             .then((response) => {
               console.log('success,boy', response)
+              putProjectLogo(
+                this.selectedUpdatePrj.projectId,
+                dataURItoBlob(values.prjLogo.file.thumbUrl)
+              )
               // 延迟显示欢迎信息
               setTimeout(() => {
                 this.$notification.success({
-                  message: '更新成功',
-                  description: `${timeFix()}，已成功添加新项目`,
+                  message: '修改成功',
+                  description: `${timeFix()}，已成功修改项目`,
                 })
-              }, 0)
+                this.queryTeam({
+                  username: this.username,
+                  teamId: this.teamId,
+                })
+                  .then(() => {
+                    this.$notification.success({
+                      message: '团队信息加载成功！',
+                    })
+                  })
+                  .catch((err) => {
+                    this.$notification.error({
+                      message: '请求团队信息失败，请重试',
+                    })
+                  })
+              }, 1000)
             })
             .catch((err) => {
-              console.log('error, boy: ', err)
               this.$notification.error({
                 message: '更新失败',
                 description: err,

@@ -1,5 +1,6 @@
 import sendRequest from '@/api/index'
-
+// import getUserAvatar from '../../utils/oss'
+import { getUserAvatar } from '../../utils/oss'
 const projectInfo = {
   state: {
     projectId: '',
@@ -86,12 +87,24 @@ const projectInfo = {
             const { data } = res
             if (data.isSuccess) {
               const { project } = data
+              console.log('xxx project is:', project)
               commit('SET_PROJECT_ID', project.projectId)
               commit('SET_PROJECT_NAME', project.projectName)
               commit('SET_CREATE_TIME', project.createTime)
               commit('SET_PROJECT_LOGO', project.projectLogo)
               commit('SET_ADMIN_NAME', project.adminName)
-              commit('SET_PROJECT_MEMBERS', project.members)
+              // 获取团队成员的Avatar
+              for (let i = 0; i < project.members.length; i++) {
+                getUserAvatar(project.members[i].username)
+                  .then((ret) => {
+                    project.members[i].avatar = ret
+                    console.log('the members will be commit is:', project.members)
+                    commit('SET_PROJECT_MEMBERS', project.members)
+                  })
+                  .catch((err) => {
+                    console.log('error in projectMember:', i, err)
+                  })
+              }
               commit('SET_VISIBILITY', project.isPublic)
             }
             resolve(res)
@@ -106,15 +119,13 @@ const projectInfo = {
             const { data } = res
             if (data.isSuccess) {
               const { project } = data
-              if (project.projectId === requestData.projectId) {
-                commit('SET_PROJECT_ID', project.projectId)
-                commit('SET_PROJECT_NAME', project.projectName)
-                commit('SET_CREATE_TIME', project.createTime)
-                commit('SET_PROJECT_LOGO', project.projectLogo)
-                commit('SET_ADMIN_NAME', project.adminName)
-                commit('SET_PROJECT_MEMBERS', project.members)
-                commit('SET_VISIBILITY', project.isPublic)
-              }
+              commit('SET_PROJECT_ID', project.projectId)
+              commit('SET_PROJECT_NAME', project.projectName)
+              commit('SET_CREATE_TIME', project.createTime)
+              commit('SET_PROJECT_LOGO', project.projectLogo)
+              commit('SET_ADMIN_NAME', project.adminName)
+              commit('SET_PROJECT_MEMBERS', project.members)
+              commit('SET_VISIBILITY', project.isPublic)
 
               commit('UPDATE_PROJECT', project, { root: true })
             }
@@ -167,23 +178,18 @@ const projectInfo = {
           .catch((err) => reject(err))
       })
     },
-    joinProject({ commit, state }, requestData) {
+    joinProject({ commit, state, dispatch }, requestData) {
       return new Promise((resolve, reject) => {
-        sendRequest('joinProject', requestData)
+        sendRequest('inviteNewProjectMember', requestData)
           .then((res) => {
             const { data } = res
             if (data.isSuccess) {
-              const { project } = data
-
-              console.log('response in joinProject: ', project)
-
-              if (requestData.projectId === state.projectId) {
-                commit('SET_PROJECT_MEMBERS', project.members)
-              }
-              return resolve(res)
+              return this.dispatch('queryProject', requestData)
             }
-
             reject(new Error(data.msg))
+          })
+          .then((res) => {
+            resolve(res)
           })
           .catch((err) => reject(err))
       })
@@ -193,8 +199,9 @@ const projectInfo = {
         sendRequest('queryBulletin', requestData)
           .then((res) => {
             const { data } = res
-            if (data.isSuccess && requestData.projectId === state.projectId) {
+            if (data.isSuccess) {
               commit('SET_BULLETINS', data.bulletins)
+              console.log(state.bulletins)
             }
             resolve(res)
           })
@@ -206,7 +213,7 @@ const projectInfo = {
         sendRequest('createBulletin', requestData)
           .then((res) => {
             const { data } = res
-            if (data.isSuccess && requestData.projectId === state.projectId) {
+            if (data.isSuccess) {
               commit('ADD_BULLETIN', data.bulletin)
               return resolve(res)
             }
@@ -225,8 +232,9 @@ const projectInfo = {
             const { data } = res
             if (data.isSuccess) {
               commit('REMOVE_BULLETIN', requestData.bulletinId)
+              resolve(res)
             }
-            resolve(res)
+            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.error('error in deleteBulletin: ', err)
@@ -243,8 +251,9 @@ const projectInfo = {
             if (data.isSuccess) {
               commit('UPDATE_BULLETIN', data.bulletin)
               console.log('updated bulletins: ', state.bulletins)
+              resolve(res)
             }
-            resolve(res)
+            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.error('error in updateBulletin: ', err)

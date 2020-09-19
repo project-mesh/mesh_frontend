@@ -1,8 +1,7 @@
 // teamName存储team-selector选择的具体团队
 // 该模块存储当前团队下的数据
 import sendRequest from '../../api'
-import store from '@/store'
-
+import { getProjectLogo, getUserAvatar } from '../../utils/oss'
 const teamInfo = {
   state: {
     teamId: '',
@@ -78,9 +77,35 @@ const teamInfo = {
         sendRequest('queryTeam', requestData)
           .then((res) => {
             const { data } = res
-
             if (data.isSuccess) {
-              console.log('res in GetTeamInfo is : ', res)
+              // 用户avatar
+              console.log('data.team in GetTeamInfo is : ', data.team)
+              for (let i = 0; i < data.team.members.length; i++) {
+                console.log('members in', i, 'is: ', data.team.members[i])
+                let username = data.team.members[i].username
+                getUserAvatar(username)
+                  .then((ret) => {
+                    data.team.members[i].avatar = ret
+                  })
+                  .catch((err) => {
+                    console.log('get projectLogo error in: ', i, ' ', err)
+                  })
+              }
+              // 获取项目logo
+              console.log('data.team in GetTeamInfo is : ', data.team)
+              for (let i = 0; i < data.team.teamProjects.length; i++) {
+                console.log('teamProjects in', i, 'is: ', data.team.teamProjects[i])
+                let projectId = data.team.teamProjects[i].projectId
+                getProjectLogo(projectId)
+                  .then((ret) => {
+                    console.log('getProjectLogo ret is:', ret)
+                    data.team.teamProjects[i].projectLogo = ret
+                  })
+                  .catch((err) => {
+                    console.log('get projectLogo error in: ', i, ' ', err)
+                  })
+              }
+              console.log('in new queryTeam teamProjects: ', data.team.teamProjects)
               commit('SET_ALL', data.team)
               return resolve(res)
             }
@@ -111,15 +136,18 @@ const teamInfo = {
           })
       })
     },
-    inviteMember({ commit }, requestData) {
+    inviteMember({ commit, dispatch }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('inviteNewTeamMember', requestData)
           .then((res) => {
             if (res.data.isSuccess) {
-              resolve(res)
+              return dispatch('queryTeam', requestData)
             } else {
-              reject('添加成员失败')
+              reject(new Error(res.data.msg))
             }
+          })
+          .then((res) => {
+            resolve(res)
           })
           .catch((err) => {
             console.log('err from inviteMember action is:', err)
@@ -145,7 +173,7 @@ const teamInfo = {
     },
     joinTeam({ commit }, requestData) {
       return new Promise((resolve, reject) => {
-        sendRequest('joinTeam', requestData)
+        sendRequest('inviteNewTeamMember', requestData)
           .then((res) => {
             console.log('res from joinTeam action is:', res)
             commit('SET_ALL', res.data.team)
@@ -178,9 +206,9 @@ const teamInfo = {
             const { data } = res
             if (data.isSuccess) {
               commit('ADD_TEAMKB', data.knowledge)
+              resolve(res)
             }
-            console.log('createTeamKB success')
-            resolve(res)
+            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.log('err in createTeamKB is : ', err)
