@@ -2,7 +2,7 @@
 // 该模块存储当前团队下的数据
 import sendRequest from '../../api'
 import store from '@/store'
-import { getProjectLogo } from '../../utils/oss'
+import { getProjectLogo, getUserAvatar } from '../../utils/oss'
 const teamInfo = {
   state: {
     teamId: '',
@@ -79,6 +79,21 @@ const teamInfo = {
           .then((res) => {
             const { data } = res
             if (data.isSuccess) {
+              // 用户avatar
+              console.log('data.team in GetTeamInfo is : ', data.team)
+              for (let i = 0; i < data.team.members.length; i++) {
+                console.log('members in', i, 'is: ', data.team.members[i])
+                let username = data.team.members[i].username
+                getUserAvatar(username)
+                  .then((ret) => {
+                    console.log('getUserAvatar ret is:', ret)
+                    data.team.members[i].avatar = ret
+                  })
+                  .catch((err) => {
+                    console.log('get projectLogo error in: ', i, ' ', err)
+                  })
+              }
+              // 获取项目logo
               console.log('data.team in GetTeamInfo is : ', data.team)
               for (let i = 0; i < data.team.teamProjects.length; i++) {
                 console.log('teamProjects in', i, 'is: ', data.team.teamProjects[i])
