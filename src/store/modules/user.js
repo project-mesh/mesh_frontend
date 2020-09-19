@@ -1,6 +1,7 @@
 import storage from 'store'
 import sendRequest from '@/api'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { getMyAvatar } from '../../utils/oss'
 
 const user = {
   state: {
@@ -17,6 +18,7 @@ const user = {
     gender: '',
     description: '',
     status: '1',
+    avatarUrl: '',
   },
 
   mutations: {
@@ -98,6 +100,7 @@ const user = {
                 commit('SET_GENDER', res.data.gender)
                 commit('SET_DESCRIPTION', res.data.description)
                 commit('SET_STATUS', res.data.status)
+                getMyAvatar()
               }
               resolve(res)
             }

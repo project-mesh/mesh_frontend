@@ -1,5 +1,5 @@
 import sendRequest from '@/api/index'
-
+import getUserAvatar from '../../utils/oss'
 const projectInfo = {
   state: {
     projectId: '',
@@ -86,11 +86,26 @@ const projectInfo = {
             const { data } = res
             if (data.isSuccess) {
               const { project } = data
+              console.log('xxx project is:', project)
+              // 获取团队成员的Avatar
+              for (let i = 0; i < project.members.length; i++) {
+                console.log('projectMember in', i, project.members[i].username)
+                let username = project.members[i].username
+                getUserAvatar(username)
+                  .then((ret) => {
+                    console.log('projectMember avatar is:', ret)
+                    project.members[i].avatar = ret
+                  })
+                  .catch((err) => {
+                    console.log('error in queryProject', i, err)
+                  })
+              }
               commit('SET_PROJECT_ID', project.projectId)
               commit('SET_PROJECT_NAME', project.projectName)
               commit('SET_CREATE_TIME', project.createTime)
               commit('SET_PROJECT_LOGO', project.projectLogo)
               commit('SET_ADMIN_NAME', project.adminName)
+              console.log('the members will be commit is:', project.members)
               commit('SET_PROJECT_MEMBERS', project.members)
               commit('SET_VISIBILITY', project.isPublic)
             }

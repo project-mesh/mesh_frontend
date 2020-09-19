@@ -138,7 +138,7 @@ import teamMixin from '@/utils/mixins/teamMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
 import EditableCell from './EditableCell'
 import validator from 'validator'
-
+import { getUserAvatar } from '../../utils/oss'
 export default {
   mixins: [teamMixin, paginationMixin],
   components: {
@@ -258,6 +258,13 @@ export default {
         .then((res) => {
           const { data } = res
           console.log('onSearch', data)
+          getUserAvatar(data.users[0].username)
+            .then((ret) => {
+              data.users[0].avatar = ret
+            })
+            .catch((err) => {
+              console.log('error in onSearch avatar:', err)
+            })
           this.users = data.users
         })
         .finally(() => {

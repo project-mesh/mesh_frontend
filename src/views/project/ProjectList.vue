@@ -247,6 +247,7 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
+import { putProjectLogo, dataURItoBlob } from '../../utils/oss'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 
@@ -368,6 +369,7 @@ export default {
       this.createForm.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
+          console.log('prjLogp:', values.prjLogo)
           this.createProject({
             username: store.getters.username,
             teamId: store.getters.teamId,
@@ -377,13 +379,34 @@ export default {
           })
             .then((response) => {
               console.log('success,boy', response)
+              console.log('projectId is:', response.data.project.projectId)
+              console.log('prjLogo is:', values.prjLogo.file.thumbUrl)
+              putProjectLogo(
+                response.data.project.projectId,
+                dataURItoBlob(values.prjLogo.file.thumbUrl)
+              )
               // 延迟显示欢迎信息
               setTimeout(() => {
                 this.$notification.success({
                   message: '创建成功',
                   description: `${timeFix()}，已成功添加新项目`,
                 })
-              }, 0)
+                this.queryTeam({
+                  username: this.username,
+                  teamId: this.teamId,
+                })
+                  .then(() => {
+                    this.$notification.success({
+                      message: '团队信息加载成功！',
+                    })
+                  })
+                  .catch((err) => {
+                    this.$notification.error({
+                      message: '请求团队信息失败，请重试',
+                    })
+                  })
+              }, 1000)
+              // 实时更新
             })
             .catch((err) => {
               console.log('error, boy: ', err)
