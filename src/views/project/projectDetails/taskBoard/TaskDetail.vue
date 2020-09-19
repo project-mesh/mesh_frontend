@@ -33,7 +33,7 @@
         @sub-task-finish="$emit('sub-task-finish', $event)"
       />
       <template slot="actions" class="ant-card-actions">
-        <a-popconfirm title="是否要删除此行？" @confirm="handleDelete">
+        <a-popconfirm title="是否要删除此任务？" @confirm="handleDelete">
           <a :disabled="username !== projectAdminName">
             <a-icon key="delete" type="delete" />
           </a>
