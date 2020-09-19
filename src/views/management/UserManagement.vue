@@ -229,7 +229,12 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions(['queryUserInfo', 'updateUserPasswordAdmin', 'updateUserInfo']),
+    ...mapActions([
+      'queryUserInfo',
+      'updateUserPasswordAdmin',
+      'updateUserInfo',
+      'updateUserInfoAdmin',
+    ]),
     splitAddress(address) {
       let oriStr = address
       let resStr = oriStr.split(' ')
@@ -406,7 +411,7 @@ export default {
       }
       if (target.editable) {
         if (target && targetCache) {
-          this.updateUserInfo({
+          this.updateUserInfoAdmin({
             username,
             nickname: target.nickname,
             gender: target.gender,

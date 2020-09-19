@@ -166,6 +166,14 @@ export default {
       const columns = ['位置', '用户数']
       const rows = []
       if (this.userLocation === undefined) {
+        rows.push({
+          位置: '上海',
+          用户数: 1,
+        })
+        rows.push({
+          位置: '江苏',
+          用户数: 2,
+        })
         return { columns, rows }
       }
       for (let i = 0; i < this.userLocation.length; ++i) {

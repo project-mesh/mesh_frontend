@@ -198,6 +198,32 @@ const user = {
           })
       })
     },
+    updateUserInfoAdmin({ commit, state }, requestData) {
+      return new Promise((resolve, reject) => {
+        sendRequest('updateUserInfoAdmin', requestData)
+          .then((res) => {
+            const { data } = res
+            if (data.isSuccess && data.username === state.username) {
+              commit('SET_USERNAME', data.username)
+              commit('SET_ROLE', data.role)
+              commit('SET_AVATAR', data.avatar)
+              commit('SET_TEAMS', data.teams)
+              commit('SET_PREFERENCE', data.preference)
+              commit('SET_ADDRESS', data.address)
+              commit('SET_NICKNAME', data.nickname)
+              commit('SET_BIRTHDAY', data.birthday)
+              commit('SET_GENDER', data.gender)
+              commit('SET_DESCRIPTION', data.description)
+              commit('SET_STATUS', data.status)
+            }
+            resolve(res)
+          })
+          .catch((err) => {
+            console.log('error in updateUserInfoAdmin, error: ', err)
+            reject(err)
+          })
+      })
+    },
     updateUserPassword({ commit }, requestData) {
       return new Promise((resolve, reject) => {
         sendRequest('updateUserPassword', requestData)
