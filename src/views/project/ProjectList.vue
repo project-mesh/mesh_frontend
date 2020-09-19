@@ -439,12 +439,10 @@ export default {
             .then((response) => {
               console.log('success,boy', response)
               // 延迟显示欢迎信息
-              setTimeout(() => {
-                this.$notification.success({
-                  message: '更新成功',
-                  description: `${timeFix()}，已成功添加新项目`,
-                })
-              }, 0)
+              this.$notification.success({
+                message: '更新成功',
+                description: `${timeFix()}，已成功更新项目`,
+              })
             })
             .catch((err) => {
               console.log('error, boy: ', err)

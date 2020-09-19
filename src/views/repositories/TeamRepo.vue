@@ -214,21 +214,6 @@ export default {
           this.$notification.success({
             message: '知识词条创建成功',
           })
-          this.queryTeamKB({
-            username: this.username,
-            teamId: this.preference.preferenceTeam,
-          })
-            .then((res) => {
-              this.$notification.success({
-                message: '知识库更新成功',
-              })
-            })
-            .catch((err) => {
-              this.$notification.error({
-                message: '知识库更新失败',
-                description: err.message,
-              })
-            })
         })
         .catch((err) => {
           this.$notification.error({
