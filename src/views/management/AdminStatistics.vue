@@ -165,7 +165,9 @@ export default {
     mapChartData() {
       const columns = ['位置', '用户数']
       const rows = []
-
+      if (this.userLocation === undefined) {
+        return { columns, rows }
+      }
       for (let i = 0; i < this.userLocation.length; ++i) {
         let location = this.userLocation[i].location
 
