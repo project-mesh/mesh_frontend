@@ -13,7 +13,7 @@
         <a-col :sm="24" :md="10" class="col">
           <a-card
             class="antd-pro-pages-dashboard-analysis-salesCard"
-            title="任务按执行者分布"
+            title="任务分布"
             :style="{ height: '100%' }"
           >
             <div slot="extra" style="height: inherit">
