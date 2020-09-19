@@ -60,6 +60,7 @@ export function getMyAvatar() {
   let imgUrl = testGet(object_key)
   getBase64(imgUrl).then((ret) => {
     let base64Data = 'data:image/jpg;base64,' + ret.toString()
+    console.log('will commit avatar')
     store.commit('SET_AVATAR', base64Data)
   })
 }

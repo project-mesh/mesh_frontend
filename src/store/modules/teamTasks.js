@@ -2,6 +2,7 @@ import sendRequest from '@/api/index'
 import { setTaskStatus } from '@/utils/util'
 
 const addProgressToTask = (item) => {
+  console.log('test item.createTime', item.createTime)
   let ct_timeStamp = Date.now()
   let others = ' 00:00:00'
   let ddl_timeStamp = new Date(item.deadline + others).getTime()
