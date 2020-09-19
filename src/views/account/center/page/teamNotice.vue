@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 const data = []
 data.push({
   title: '你被设置为后端数据库项目的管理员',
