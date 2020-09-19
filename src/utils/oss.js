@@ -60,6 +60,7 @@ export function getMyAvatar() {
   let imgUrl = testGet(object_key)
   getBase64(imgUrl).then((ret) => {
     let base64Data = 'data:image/jpg;base64,' + ret.toString()
+    console.log('will commit avatar')
     store.commit('SET_AVATAR', base64Data)
   })
 }
@@ -80,6 +81,24 @@ export function putProjectLogo(projectId, data) {
 
 export function getProjectLogo(projectId) {
   let object_key = 'projectAvatar_' + projectId.toString()
+  let imgUrl = testGet(object_key)
+  return getBase64(imgUrl).then((ret) => {
+    let base64Data = 'data:image/jpg;base64,' + ret.toString()
+    return Promise.resolve(base64Data)
+  })
+}
+
+export function getDefaultAvatar() {
+  let object_key = 'userDefault'
+  let imgUrl = testGet(object_key)
+  return getBase64(imgUrl).then((ret) => {
+    let base64Data = 'data:image/jpg;base64,' + ret.toString()
+    return Promise.resolve(base64Data)
+  })
+}
+
+export function getDefaultProjectAvatar() {
+  let object_key = 'projectDefault'
   let imgUrl = testGet(object_key)
   return getBase64(imgUrl).then((ret) => {
     let base64Data = 'data:image/jpg;base64,' + ret.toString()

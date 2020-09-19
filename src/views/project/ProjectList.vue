@@ -221,7 +221,7 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
-import { putProjectLogo, dataURItoBlob } from '../../utils/oss'
+import { putProjectLogo, dataURItoBlob, putObject, getDefaultProjectAvatar } from '../../utils/oss'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 
@@ -360,14 +360,42 @@ export default {
             .then((response) => {
               console.log('success,boy', response)
               console.log('projectId is:', response.data.project.projectId)
-
-              if (values.prjLogo && values.prjLogo.file) {
-                console.log('prjLogo is:', values.prjLogo.file.thumbUrl)
+              if (values.prjLogo && values.prjLogo !== 'xxx') {
+                console.log('prjLogo is:', values.prjLogo)
                 putProjectLogo(
                   response.data.project.projectId,
                   dataURItoBlob(values.prjLogo.file.thumbUrl)
                 )
+              } else {
+                getDefaultProjectAvatar().then((ret) => {
+                  console.log('defaultAvatar ret is:', ret)
+                  putProjectLogo(response.data.project.projectId, dataURItoBlob(ret)).then(() => {
+                    console.log('success in put Logo')
+                  })
+                })
               }
+              // 延迟显示欢迎信息
+              setTimeout(() => {
+                this.$notification.success({
+                  message: '创建成功',
+                  description: `${timeFix()}，已成功添加新项目`,
+                })
+                this.queryTeam({
+                  username: this.username,
+                  teamId: this.teamId,
+                })
+                  .then(() => {
+                    this.$notification.success({
+                      message: '团队信息加载成功！',
+                    })
+                  })
+                  .catch((err) => {
+                    this.$notification.error({
+                      message: '请求团队信息失败，请重试',
+                    })
+                  })
+              }, 1000)
+              // 实时更新
             })
             .catch((err) => {
               console.log('error, boy: ', err)
@@ -445,7 +473,7 @@ export default {
         const formData = {
           prjName: '',
           prjAuthority: 'public',
-          prjLogo: 'xxxxxxxx',
+          prjLogo: 'xxx',
           prjAdmin: '',
         }
         this.createForm.setFieldsValue(formData)

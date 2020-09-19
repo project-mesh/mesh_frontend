@@ -113,7 +113,7 @@ const levelColor = {
   3: '#52c41a',
 }
 import sendRequest from '@/api'
-
+import { putObject, getDefaultAvatar, dataURItoBlob } from '../../utils/oss'
 export default {
   name: 'Register',
   components: {},
@@ -190,7 +190,41 @@ export default {
       this.state.passwordLevelChecked = true
     },
 
+    async localImgToBase64() {
+      let img = new Image()
+      img.src = '/avatar2.jpg'
+      let canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      let context = canvas.getContext('2d')
+      context.drawImage(img, 0, 0)
+
+      var res = ''
+
+      let blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg')).then(
+        function (blob) {
+          // blob ready, download it
+          let reader = new FileReader()
+          var base64 = ''
+
+          reader.onload = (function (b) {
+            return function (e) {
+              // 回调的位置
+              b = e.target.result
+              base64 = e.target.result
+            }
+          })(base64)
+
+          reader.readAsDataURL(blob)
+          console.log(base64)
+          return base64
+          // delete the internal blob reference, to let the browser clear memory from it
+        }
+      )
+    },
+
     handleSubmit() {
+      var x = this.localImgToBase64()
       this.form.validateFields({ force: true }, (err, values) => {
         if (!err) {
           this.state.passwordLevelChecked = false
@@ -199,15 +233,24 @@ export default {
               //TODO : store commit
               const { data } = res
               console.log('register result, data: ', data)
-              if (data.isSuccess)
-                return this.$router.push({ name: 'registerResult', params: { ...values } })
+              if (data.isSuccess) {
+                getDefaultAvatar().then((ret) => {
+                  console.log('values.username is:', values.username)
+                  putObject('userAvatar_' + values.username, dataURItoBlob(ret)).then(() => {
+                    console.log('success in put avatar')
+                  })
+                })
+                this.$router.push({ name: 'registerResult', params: { ...values } })
+              }
 
               if (res.err_code === 101)
                 this.$notification.error({
                   message: '该用户名已被注册！',
                 })
             })
-            .catch((err) => {})
+            .catch((err) => {
+              console.log(err)
+            })
         }
       })
     },

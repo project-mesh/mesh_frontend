@@ -77,10 +77,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['username', 'nickname', 'birthday', 'avatar']),
+    ...mapGetters(['username', 'nickname', 'birthday', 'avatar', 'teamId']),
   },
   methods: {
-    ...mapActions(['updateUserInfo']),
+    ...mapActions(['updateUserInfo', 'queryTeam']),
     ...mapMutations(['SET_AVATAR']),
     edit(id) {
       this.visible = true
@@ -139,6 +139,12 @@ export default {
         console.log('getCropData', data)
         putObject('userAvatar_' + this.username, dataURItoBlob(data)).then((res) => {
           getMyAvatar()
+          if (this.teamId !== -1) {
+            this.queryTeam({
+              username: this.username,
+              teamId: this.teamId,
+            })
+          }
         })
         // let imgUrl = testGet('userAvatar_' + this.username)
         // getBase64(imgUrl).then((ret) => {
