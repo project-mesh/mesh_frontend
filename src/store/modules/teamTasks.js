@@ -29,6 +29,7 @@ const addProgressToTask = (item) => {
       status: 'exception',
     }
   }
+  item.progress.value = item.progress.value.toFixed(2)
   item.short = (item.description && item.description.substring(0, 41)) || ''
   return item
 }
