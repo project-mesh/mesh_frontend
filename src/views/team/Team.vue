@@ -21,13 +21,6 @@
       <div style="display: inline; margin-left: 5%">
         创建时间：{{ year }}年{{ month }}月{{ day }}日
       </div>
-      <a-popconfirm :title="quitMsg">
-        <a-icon slot="icon" type="warning" style="color: red" />
-        <a-button type="danger" class="quitBtn">
-          <a-icon :type="quitIcon" />
-          {{ quitName }}
-        </a-button>
-      </a-popconfirm>
     </div>
     <div class="operate">
       <a-button
@@ -152,9 +145,6 @@ export default {
       day: null,
       modalVisible: false,
       teamNameEditing: false,
-      quitName: '解散团队',
-      quitIcon: 'close-square',
-      quitMsg: '确定要解散团队吗？',
       labelCol: {
         xs: { span: 24 },
         sm: { span: 7 },
@@ -388,11 +378,6 @@ export default {
   },
   created() {
     this.dateChange(this.teamCreateTime)
-    if (this.username !== this.teamAdminName) {
-      this.quitName = '退出团队'
-      this.quitIcon = 'user-delete'
-      this.quitMsg = '确定要退出团队吗？'
-    }
   },
 }
 </script>

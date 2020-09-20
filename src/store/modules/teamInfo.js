@@ -138,7 +138,32 @@ const teamInfo = {
 
             if (data.isSuccess) {
               console.log('res in UpdateTeam is: ', res)
+              for (let i = 0; i < data.team.members.length; i++) {
+                console.log('members in', i, 'is: ', data.team.members[i])
+                let username = data.team.members[i].username
+                getUserAvatar(username)
+                  .then((ret) => {
+                    data.team.members[i].avatar = ret
+                  })
+                  .catch((err) => {
+                    console.log('get projectLogo error in: ', i, ' ', err)
+                  })
+              }
+              // 获取项目logo
+              console.log('data.team in GetTeamInfo is : ', data.team)
+              for (let i = 0; i < data.team.teamProjects.length; i++) {
+                console.log('teamProjects in', i, 'is: ', data.team.teamProjects[i])
+                let projectId = data.team.teamProjects[i].projectId
+                getProjectLogo(projectId)
+                  .then((ret) => {
+                    data.team.teamProjects[i].projectLogo = ret
+                  })
+                  .catch((err) => {
+                    console.log('get projectLogo error in: ', i, ' ', err)
+                  })
+              }
               commit('SET_ALL', data.team)
+              commit('UPDATE_TEAM', data.team, { root: true })
               return resolve(res)
             }
             reject(new Error(data.msg))

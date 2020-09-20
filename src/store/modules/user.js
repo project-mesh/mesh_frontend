@@ -73,6 +73,15 @@ const user = {
     ADD_NEW_TEAM: (state, newTeam) => {
       state.teams.push(newTeam)
     },
+    UPDATE_TEAM: (state, updatedTeam) => {
+      const currTeam = state.teams.find((team) => team.teamId === updatedTeam.teamId)
+
+      if (currTeam) {
+        Object.keys(updatedTeam).forEach((key) => {
+          if (key in currTeam) currTeam[key] = updatedTeam[key]
+        })
+      }
+    },
   },
 
   actions: {

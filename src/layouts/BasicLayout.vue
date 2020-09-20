@@ -134,8 +134,6 @@ export default {
     if (this.preference.preferenceColor)
       this.settings.primaryColor = this.preference.preferenceColor
     if (this.preference.preferenceLayout) this.settings.layout = this.preference.preferenceLayout
-
-    updateTheme(this.settings.primaryColor)
   },
   watch: {
     localCreatingTeam: function (newValue) {

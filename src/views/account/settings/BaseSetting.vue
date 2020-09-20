@@ -3,7 +3,7 @@
     <a-row :gutter="16">
       <a-col :md="24" :lg="16">
         <a-form layout="horizontal" :form="form">
-          <a-form-item label="账号/邮箱">
+          <a-form-item label="账号">
             <span>{{ username }}</span>
             <a-tooltip title="男">
               <icon-font

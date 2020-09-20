@@ -342,8 +342,7 @@ export default {
 
       this.createSubTask($event.requestData)
         .then((res) => {
-          console.log(('创建子任务成功, res', res))
-          this.createSubTaskLocal({ subTask: res.data.subTask })
+          console.log('创建子任务成功, res', res)
         })
         .catch((err) => {
           this.$notification.error({
@@ -375,10 +374,6 @@ export default {
           this.closeDrawer()
           this.loading = false
         })
-    },
-    createSubTaskLocal({ subTask: newSubTask }) {
-      console.log('newSubTask: ', newSubTask)
-      this.selectedTask.subTasks.push(newSubTask)
     },
     createTaskLocal({ task: newTask }) {
       this.tasks[newTask.priority].tasks.unshift(newTask)

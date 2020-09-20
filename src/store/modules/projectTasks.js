@@ -86,7 +86,7 @@ const projectTasks = {
           })
       })
     },
-    createSubTask: ({ commit, rootGetters }, requestData) => {
+    createSubTask: ({ commit }, requestData) => {
       return new Promise((resolve, reject) => {
         sendRequest('createSubTask', requestData)
           .then((res) => {
