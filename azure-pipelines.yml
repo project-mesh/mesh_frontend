@@ -18,8 +18,8 @@ steps:
 - script: |
     npm install
     npm uninstall @vue/cli-plugin-eslint
-    npm run build
-  displayName: 'npm install and build'
+    npm run build:preview
+  displayName: 'npm install and build:preview'
   
 - task: CopyFiles@2
   inputs:
