@@ -289,7 +289,7 @@ const projectInfo = {
         sendRequest('queryProjectKB', requestData)
           .then((res) => {
             const { data } = res
-            if (data.isSuccess && requestData.projectId === state.projectId) {
+            if (data.isSuccess) {
               commit('SET_KNOWLEDGEBASE', data.knowledgeBase)
             }
             resolve(res)
@@ -302,7 +302,7 @@ const projectInfo = {
         sendRequest('createProjectKB', requestData)
           .then((res) => {
             const { data } = res
-            if (data.isSuccess && requestData.projectId === state.projectId) {
+            if (data.isSuccess) {
               commit('ADD_KNOWLEDGE', data.knowledge)
             }
             resolve(res)
