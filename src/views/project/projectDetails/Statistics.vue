@@ -20,8 +20,8 @@
               <div class="analysis-salesTypeRadio">
                 <a-radio-group v-model="filterType" default-value="all">
                   <a-radio-button value="all">全部任务</a-radio-button>
-                  <a-radio-button value="finished">未完成</a-radio-button>
-                  <a-radio-button value="unfinished">已完成</a-radio-button>
+                  <a-radio-button value="finished">已完成</a-radio-button>
+                  <a-radio-button value="unfinished">未完成</a-radio-button>
                   <a-radio-button value="overdue">已逾期</a-radio-button>
                 </a-radio-group>
               </div>
