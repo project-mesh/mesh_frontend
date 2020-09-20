@@ -7,7 +7,11 @@ const addProgressToTask = (item) => {
   let others = ' 00:00:00'
   let ddl_timeStamp = new Date(item.deadline + others).getTime()
   console.log('ddl_timeStamp', ddl_timeStamp)
-  if (ddl_timeStamp - item.createTime > 0) {
+  if (item.isFinished) {
+    item.progress = {
+      value: 100,
+    }
+  } else if (ddl_timeStamp - item.createTime > 0) {
     let value = (ct_timeStamp - item.createTime) / (ddl_timeStamp - item.createTime)
     value = value.toFixed(2)
     if (value > 1) {
