@@ -29,7 +29,7 @@ steps:
   
 - task: CopyFilesOverSSH@0
   inputs:
-    sshEndpoint: my_vps
+    sshEndpoint: mesh_vps
     sourceFolder: '$(Build.ArtifactStagingDirectory)'
     targetFolder: '/home/rika/mesh_temp'
     cleanTargetFolder: true
@@ -37,12 +37,12 @@ steps:
     
 - task: SSH@0
   inputs:
-    sshEndpoint: my_vps
+    sshEndpoint: mesh_vps
     runOptions: 'commands'
     commands: 'rm -rf /var/www/html/*'
     
 - task: SSH@0
   inputs:
-    sshEndpoint: my_vps
+    sshEndpoint: mesh_vps
     runOptions: 'commands'
     commands: 'cp -rf /home/rika/mesh_temp/dist/* /var/www/html/;cp -f /home/rika/mesh_temp/.htaccess /var/www/html/'
