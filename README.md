@@ -7,6 +7,7 @@
 
 [![License](https://img.shields.io/npm/l/package.json.svg?style=flat)](https://github.com/vueComponent/ant-design-vue-pro/blob/master/LICENSE)
 [![Build Status](https://dev.azure.com/moreonenight/mesh/_apis/build/status/project-mesh.mesh_frontend%20(1)?branchName=master)](https://dev.azure.com/moreonenight/mesh/_build/latest?definitionId=2&branchName=master)
+[![All Contributors](https://img.shields.io/badge/all_contributors-54-orange.svg?style=flat-square)](#contributors-)
 
 </div>
 
