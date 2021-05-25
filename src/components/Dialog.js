@@ -39,7 +39,7 @@ export default (Vue) => {
       router: _vm.$router,
       store: _vm.$store,
       mounted() {
-        this.$on('close', (v) => {
+        this.$on('close', (_) => {
           this.handleClose()
         })
       },

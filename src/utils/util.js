@@ -38,3 +38,20 @@ export function removeLoadingAnimate(id = '', timeout = 1500) {
     document.body.removeChild(document.getElementById(id))
   }, timeout)
 }
+
+/**
+ * 将(...fnArgs: any[], (err: Error, ...resultValues: any[]) => void) => void
+ * 类型函数promise话，如果产生err，调用reject，否则调用resolve(resultValues)
+ * @param {(...fnArgs: any[], (err: Error, ...resultValues: any[]) => void) => void} fn 需要promise化的函数
+ * @returns {(...args: any[]) => Promise<any[] | undefined>} promise化后的函数
+ */
+export const promisify = (fn) => {
+  return (...fnArgs) => {
+    return new Promise((res, rej) => {
+      fn(...fnArgs, (err, ...resultValues) => {
+        if (err) rej(err)
+        res(resultValues)
+      })
+    })
+  }
+}

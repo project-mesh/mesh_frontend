@@ -21,12 +21,12 @@
         >
           <task-info
             class="task-info"
-            v-for="(task, taskIndex) in tasks"
+            v-for="task in tasks"
             v-show="
               (task.principal === username || !onlyViewMine) &&
               (!task.isFinished || !onlyNotFinished)
             "
-            :key="taskIndex"
+            :key="task.taskId"
             :task="task"
             @update-task="updateTaskData"
             @click.native="selectTask(task)"

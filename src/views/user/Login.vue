@@ -5,13 +5,13 @@
       class="user-layout-login"
       ref="formLogin"
       :form="form"
-      @submit="handleSubmit"
+      @submit.stop.prevent="handleSubmit"
     >
       <a-tabs
         :active-key="customActiveKey"
         :tab-bar-style="{ textAlign: 'center', borderBottom: 'unset' }"
       >
-        <a-tab-pane key="tab1" tab="账号密码登录">
+        <a-tab-pane key="tab1" tab="邮箱密码登录">
           <a-alert
             v-if="isLoginError"
             type="error"
@@ -19,32 +19,18 @@
             style="margin-bottom: 24px"
             message="账户或密码错误（admin/ant.design )"
           />
-          <a-form-item>
-            <a-input
-              size="large"
-              type="text"
-              placeholder="账户: admin"
-              v-decorator="[
-                'username',
-                {
-                  rules: [{ required: true, message: '请输入帐户名' }],
-                  validateTrigger: 'change',
-                },
-              ]"
-            >
-              <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }" />
-            </a-input>
-          </a-form-item>
+
+          <username-input />
 
           <a-form-item>
             <a-input-password
               size="large"
-              placeholder="密码: admin or ant.design"
+              placeholder="密码"
               v-decorator="[
                 'password',
                 {
                   rules: [{ required: true, message: '请输入密码' }],
-                  validateTrigger: 'blur',
+                  validateTrigger: ['blur', 'change'],
                 },
               ]"
             >
@@ -68,6 +54,9 @@
       </a-form-item>
       <div class="user-login-other">
         <router-link class="register" :to="{ name: 'register' }">注册账户</router-link>
+        <router-link class="find-password" :to="{ name: 'findPassword' }">
+          忘记密码？点此找回
+        </router-link>
       </div>
     </a-form>
   </div>
@@ -76,16 +65,18 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
-import axios from 'axios'
+import UsernameInput from './components/UsernameInput'
+
 export default {
   name: 'Login',
+  components: {
+    UsernameInput,
+  },
   data() {
     return {
       customActiveKey: 'tab1',
       loginBtn: false,
       isLoginError: false,
-      // requiredTwoStepCaptcha: false,
-      // stepCaptchaVisible: false,
       form: this.$form.createForm(this),
       state: {
         time: 60,
@@ -99,8 +90,7 @@ export default {
   },
   methods: {
     ...mapActions(['Login']),
-    handleSubmit(e) {
-      e.preventDefault()
+    handleSubmit() {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
@@ -180,6 +170,9 @@ export default {
     }
     .register {
       float: right;
+    }
+    .find-password {
+      float: left;
     }
   }
 }
