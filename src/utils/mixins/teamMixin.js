@@ -27,7 +27,7 @@ export default {
       const currentRoute = this.$route
 
       // console.log('currentRoute: ', currentRoute)
-
+      /*
       if (!this.notifications || this.notifications.length === 0) {
         promises.push(
           this.queryNotification({
@@ -35,6 +35,7 @@ export default {
           })
         )
       }
+      */
 
       if (this.needToLoadTeamInfo()) {
         const requestData = {
