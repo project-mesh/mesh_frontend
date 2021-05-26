@@ -169,7 +169,9 @@ export default {
               this.ADD_NEW_TEAM(response.data.team)
               console.log('after add new team', store.getters.teams)
               // 更新当前团队下的项目，消息和知识库
+              /*
               promises.push(this.queryNotification({ username: this.username }))
+              */
               const requestData = { username: this.username, teamId: response.data.team.teamId }
               promises.push(this.queryTeam(requestData), this.queryTeamKB(requestData))
               // 异步显示成功信息
