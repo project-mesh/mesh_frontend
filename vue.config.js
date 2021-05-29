@@ -45,6 +45,8 @@ const vueConfig = {
     ],
     // if prod, add externals
     externals: isProd ? assetsCDN.externals : {},
+
+    devtool: 'source-map',
   },
 
   chainWebpack: (config) => {

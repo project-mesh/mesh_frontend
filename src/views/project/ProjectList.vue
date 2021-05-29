@@ -242,6 +242,7 @@ export default {
       'teamAdminName',
       'teamMembers',
       'teamId',
+      'projectMembers',
     ]),
     filteredProjects() {
       return this.teamProjects.filter((project) =>
@@ -265,16 +266,29 @@ export default {
       'deleteProject',
       'updateProject',
       'joinProject',
+      'queryProject',
     ]),
     tryJumpToProjectDetail(projectId) {
       const currPrj = this.teamProjects.find((prj) => prj.projectId === projectId)
-      if (!currPrj || !currPrj.members.includes(this.username)) {
+      if (!currPrj) {
         return this.$notification.error({
           message: '你不是该项目成员！',
         })
       }
-
-      this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
+      const username = this.username
+      this.queryProject({
+        username: this.username,
+        projectId: projectId,
+      }).then((response) => {
+        const members = response.data.project.members
+        if (!members.some((m) => m.username == username)) {
+          return this.$notification.error({
+            message: '你不是该项目成员！',
+          })
+        } else {
+          this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
+        }
+      })
     },
     showListView() {
       console.log('显示列表')
