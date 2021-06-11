@@ -1,9 +1,20 @@
 <template>
   <div>
     <div class="toolbox">
-      <button @click="updateFirstRow">Update first row</button>
-      <button @click="changeZoomLevel">Change zoom level</button>
+      <!-- <button @click="updateFirstRow">Update first row</button>
+     -->
+      <a-button-group :size="large">
+        <a-button type="primary" @click="increaseZoomLevel">
+          <a-icon type="minus" />
+          缩小
+        </a-button>
+        <a-button type="primary" @click="decreaseZoomLevel">
+          放大
+          <a-icon type="plus" />
+        </a-button>
+      </a-button-group>
     </div>
+
     <div class="gstc-wrapper" ref="gstc"></div>
   </div>
 </template>
@@ -20,55 +31,13 @@ let gstc, state
 
 // helper functions
 
-/**
- * @returns { import("gantt-schedule-timeline-calendar").Rows }
- */
-function generateRows() {
-  const rows = {}
-  for (let i = 0; i < this.teamProjects.length; i++) {
-    const id = GSTC.api.GSTCID(i.toString())
-    const prj = this.teamProjects[i]
-    rows[id] = {
-      id,
-      label: prj.projectName,
-    }
-  }
-  return rows
-}
-
-/**
- * @returns { import("gantt-schedule-timeline-calendar").Items }
- */
-function generateItems() {
-  const items = {}
-  let start = GSTC.api.date().startOf('day').subtract(6, 'day')
-  for (let i = 0; i < this.teamProjects.length; i++) {
-    const id = GSTC.api.GSTCID(i.toString())
-    const rowId = GSTC.api.GSTCID(Math.floor(Math.random() * 100).toString())
-    const prj = this.teamProjects[i]
-    const name = this.teamProjects[i].projectName
-    start = start.add(1, 'day')
-    items[id] = {
-      id,
-      label: prj.adminName,
-      rowId,
-      time: {
-        start: start.valueOf(),
-        end: start.add(1, 'day').endOf('day').valueOf(),
-      },
-    }
-  }
-  return items
-}
-
 // main component
 import { mapActions, mapGetters } from 'vuex'
-import moment from 'moment'
-import teamMixin from '@/utils/mixins/teamMixin'
-
 export default {
   name: 'GSTC',
-  computed: mapGetters(['teamTasks', 'username', 'teamId', 'teamAdminName', 'teamProjects']),
+  computed: {
+    ...mapGetters(['projectId', 'projectName', 'username', 'projectTasks', 'projectSubTasks']),
+  },
   mounted() {
     /**
      * @type { import("gantt-schedule-timeline-calendar").Config }
@@ -84,8 +53,9 @@ export default {
               id: GSTC.api.GSTCID('id'),
               width: 60,
               data: ({ row }) => GSTC.api.sourceID(row.id),
+              sortable: ({ row }) => Number(GSTC.api.sourceID(row.id)),
               header: {
-                content: 'ID',
+                content: '编号',
               },
             },
             [GSTC.api.GSTCID('label')]: {
@@ -93,15 +63,15 @@ export default {
               width: 200,
               data: 'label',
               header: {
-                content: 'Label',
+                content: '任务名',
               },
             },
           },
         },
-        rows: generateRows(),
+        rows: this.generateRows(),
       },
       chart: {
-        items: generateItems(),
+        items: this.generateItems(),
       },
     }
 
@@ -116,7 +86,6 @@ export default {
   beforeUnmount() {
     if (gstc) gstc.destroy()
   },
-
   methods: {
     ...mapActions(['queryTeamTasks', 'updateTask']),
     updateFirstRow() {
@@ -126,8 +95,61 @@ export default {
       })
     },
 
-    changeZoomLevel() {
-      state.update('config.chart.time.zoom', 21)
+    increaseZoomLevel() {
+      state.update('config.chart.time.zoom', (o) => {
+        return o + 1
+      })
+    },
+
+    decreaseZoomLevel() {
+      state.update('config.chart.time.zoom', (o) => {
+        return o - 1
+      })
+    },
+    /**
+     * @returns { import("gantt-schedule-timeline-calendar").Items }
+     */
+    generateItems() {
+      const items = {}
+      for (let i = 0; i < this.projectTasks.length; i++) {
+        const task = this.projectTasks[i]
+        const taskId = task.taskId
+        const founder = task.founder
+        const id = GSTC.api.GSTCID(taskId.toString() + founder.toString())
+        const rowId = GSTC.api.GSTCID(taskId.toString())
+        const startTime = GSTC.api.date(task.createTime).startOf('day').valueOf()
+        const endTime = GSTC.api.date(task.deadline).endOf('day').valueOf()
+        const priorityColor = ['#1890FF', '#52C41A', '#FAAD14', '#F5222D']
+        items[id] = {
+          id,
+          label: founder,
+          rowId,
+          style: {
+            background: priorityColor[task.priority],
+          },
+          time: {
+            start: startTime,
+            end: endTime,
+          },
+        }
+      }
+      return items
+    },
+    /**
+     * @returns { import("gantt-schedule-timeline-calendar").Rows }
+     */
+    generateRows() {
+      const rows = {}
+      for (let i = 0; i < this.projectTasks.length; i++) {
+        const task = this.projectTasks[i]
+        const taskId = task.taskId
+        const id = GSTC.api.GSTCID(taskId.toString())
+        rows[id] = {
+          id,
+          label: task.taskName,
+        }
+      }
+      return rows
     },
   },
 }
