@@ -1246,6 +1246,14 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
+"@neuronet.io/vido@^3.2.7":
+  version "3.2.7"
+  resolved "https://registry.nlark.com/@neuronet.io/vido/download/@neuronet.io/vido-3.2.7.tgz#cb3b825f21119194ca80dccd402fde2073cebb0b"
+  integrity sha1-yzuCXyERkZTKgNzNQC/eIHPOuws=
+  dependencies:
+    csstype "^2.6.10"
+    lit-html-optimised "^1.3.0"
+
 "@nodelib/fs.stat@^1.1.2":
   version "1.1.3"
   resolved "https://registry.npm.taobao.org/@nodelib/fs.stat/download/@nodelib/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
@@ -4175,6 +4183,16 @@ cssstyle@^2.0.0:
   dependencies:
     cssom "~0.3.6"
 
+csstype@^2.6.10:
+  version "2.6.17"
+  resolved "https://registry.nlark.com/csstype/download/csstype-2.6.17.tgz?cache=0&sync_timestamp=1618818393132&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcsstype%2Fdownload%2Fcsstype-2.6.17.tgz#4cf30eb87e1d1a005d8b6510f95292413f6a1c0e"
+  integrity sha1-TPMOuH4dGgBdi2UQ+VKSQT9qHA4=
+
+csstype@^3.0.5:
+  version "3.0.8"
+  resolved "https://registry.nlark.com/csstype/download/csstype-3.0.8.tgz?cache=0&sync_timestamp=1618818393132&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fcsstype%2Fdownload%2Fcsstype-3.0.8.tgz#d2266a792729fb227cd216fb572f43728e1ad340"
+  integrity sha1-0iZqeScp+yJ80hb7Vy9Dco4a00A=
+
 cyclist@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/cyclist/download/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
@@ -4358,6 +4376,11 @@ dateformat@^2.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-2.2.0.tgz#4065e2013cf9fb916ddfd82efb506ad4c6769062"
   integrity sha1-QGXiATz5+5Ft39gu+1Bq1MZ2kGI=
 
+dayjs@^1.9.7:
+  version "1.10.5"
+  resolved "https://registry.nlark.com/dayjs/download/dayjs-1.10.5.tgz?cache=0&sync_timestamp=1622012447949&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fdayjs%2Fdownload%2Fdayjs-1.10.5.tgz#5600df4548fc2453b3f163ebb2abbe965ccfb986"
+  integrity sha1-VgDfRUj8JFOz8WPrsqu+llzPuYY=
+
 de-indent@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/de-indent/download/de-indent-1.0.2.tgz#b2038e846dc33baa5796128d0804b455b8c1e21d"
@@ -4430,6 +4453,11 @@ deep-is@^0.1.3, deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.npm.taobao.org/deep-is/download/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
+
+deep-state-observer@^3.22.9:
+  version "3.22.9"
+  resolved "https://registry.nlark.com/deep-state-observer/download/deep-state-observer-3.22.9.tgz#83906a3f5ba72e73a62df9d9636bc83c10f1913f"
+  integrity sha1-g5BqP1unLnOmLfnZY2vIPBDxkT8=
 
 deepmerge@^1.5.2:
   version "1.5.2"
@@ -5897,6 +5925,16 @@ functional-red-black-tree@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npm.taobao.org/functional-red-black-tree/download/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
+
+gantt-schedule-timeline-calendar@^3.7.1:
+  version "3.7.1"
+  resolved "https://registry.nlark.com/gantt-schedule-timeline-calendar/download/gantt-schedule-timeline-calendar-3.7.1.tgz#608e31a72a9455af112da028e08870c11c9dbf13"
+  integrity sha1-YI4xpyqUVa8RLaAo4IhwwRydvxM=
+  dependencies:
+    "@neuronet.io/vido" "^3.2.7"
+    csstype "^3.0.5"
+    dayjs "^1.9.7"
+    deep-state-observer "^3.22.9"
 
 gensync@^1.0.0-beta.1:
   version "1.0.0-beta.1"
@@ -7892,6 +7930,11 @@ listr2@^2.6.0:
     p-map "^4.0.0"
     rxjs "^6.6.2"
     through "^2.3.8"
+
+lit-html-optimised@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.nlark.com/lit-html-optimised/download/lit-html-optimised-1.3.0.tgz#8cf89d0a655b529cd23fa49b231f7297e681faf6"
+  integrity sha1-jPidCmVbUpzSP6SbIx9yl+aB+vY=
 
 load-json-file@^2.0.0:
   version "2.0.0"
@@ -12389,14 +12432,9 @@ vue-template-es2015-compiler@^1.6.0, vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU=
 
-vue@^2.5.17, vue@^2.5.3:
+vue@^2.5.17, vue@^2.5.3, vue@^2.6.12:
   version "2.6.12"
   resolved "https://registry.npm.taobao.org/vue/download/vue-2.6.12.tgz?cache=0&sync_timestamp=1599065113387&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue%2Fdownload%2Fvue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
-  integrity sha1-9evU+mvShpQD4pqJau1JBEVskSM=
-
-vue@^2.6.12:
-  version "2.6.12"
-  resolved "https://registry.nlark.com/vue/download/vue-2.6.12.tgz?cache=0&sync_timestamp=1622235952885&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fvue%2Fdownload%2Fvue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
   integrity sha1-9evU+mvShpQD4pqJau1JBEVskSM=
 
 vuedraggable@^2.24.1:
