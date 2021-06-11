@@ -115,6 +115,19 @@ export const asyncRouterMap = [
                   permission: ['user'],
                 },
               },
+              // 甘特图页面
+              {
+                path: '/project/detail/gantt',
+                name: 'gantt',
+                beforeEnter: guard,
+                component: () => import('@/views/project/projectDetails/gantt/BasicGantt'),
+                meta: {
+                  title: '甘特图',
+                  icon: 'calendar',
+                  keepAlive: true,
+                  permission: ['user'],
+                },
+              },
               // 公告
               {
                 path: '/project/detail/members',
@@ -169,19 +182,7 @@ export const asyncRouterMap = [
           permission: ['user'],
         },
       },
-      // 甘特图页面
-      {
-        path: '/gantt',
-        name: 'gantt',
-        beforeEnter: guard,
-        component: () => import('@/views/gantt/BasicGantt'),
-        meta: {
-          title: '甘特图',
-          icon: 'calendar',
-          keepAlive: true,
-          permission: ['user'],
-        },
-      },
+
       // 团队页面
       {
         path: '/members',
