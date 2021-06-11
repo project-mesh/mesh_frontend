@@ -83,8 +83,9 @@ export default {
       formatedData.forEach((bulletin) => {
         bulletin.createTimeDisplay = formatDateByPattern(
           new Date(Number(bulletin.createTime)),
-          'yyyy-MM-dd hh:mm'
+          'yyyy-MM-dd'
         )
+        console.log(this.bulletins)
       })
 
       return formatedData

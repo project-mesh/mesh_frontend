@@ -12,24 +12,18 @@ export default {
       const currentRoute = this.$route
 
       // console.log('currentRoute: ', currentRoute)
-
-      if (
-        currentRoute.query &&
-        currentRoute.query.projectId &&
-        currentRoute.query.projectId !== this.projectId
-      ) {
-        const requestData = {
-          username: this.username,
-          projectId: currentRoute.query.projectId,
-        }
-
-        promises.push(
-          this.queryProject(requestData),
-          this.queryProjectKB(requestData),
-          this.queryProjectTasks(requestData),
-          this.queryBulletin(requestData)
-        )
+      const requestData = {
+        username: this.username,
+        projectId: currentRoute.query.projectId,
       }
+
+      promises.push(
+        this.queryProject(requestData),
+        this.queryProjectKB(requestData),
+        this.queryProjectTasks(requestData),
+        this.queryBulletin(requestData)
+      )
+
       if (promises.length) {
         Promise.all(promises)
           .then(() => {
