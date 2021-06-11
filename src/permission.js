@@ -1,14 +1,12 @@
 import NProgress from 'nprogress' // progress bar
 import router from './router'
 import '@/components/NProgress/nprogress.less' // progress bar custom style
-import storage from 'store'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
 // import notification from 'ant-design-vue/es/notification'
 import store from './store'
 import Cookies from 'js-cookie'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['login', 'register', 'registerResult'] // no redirect whitelist
+const whiteList = ['login', 'register', 'registerResult', 'findPassword', 'resetPassword'] // no redirect whitelist
 const loginRoutePath = '/user/login'
 const defaultRoutePath = '/project/list'
 

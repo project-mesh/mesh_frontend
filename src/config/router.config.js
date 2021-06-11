@@ -142,7 +142,6 @@ export const asyncRouterMap = [
           },
         ],
       },
-
       // 团队知识库
       {
         path: '/repositories',
@@ -355,9 +354,14 @@ export const constantRouterMap = [
         component: () => import(/* webpackChunkName: "user" */ '@/views/user/RegisterResult'),
       },
       {
-        path: 'recover',
-        name: 'recover',
-        component: undefined,
+        path: 'find-password',
+        name: 'findPassword',
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/FindPassword'),
+      },
+      {
+        path: 'reset-password',
+        name: 'resetPassword',
+        component: () => import(/* webpackChunkName: "user" */ '@/views/user/ResetPassword'),
       },
     ],
   },

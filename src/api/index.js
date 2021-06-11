@@ -205,6 +205,14 @@ const apiMap = {
     url: '/admin/password',
     method: 'patch',
   },
+  findPassword: {
+    url: '/user/find-password',
+    method: 'post',
+  },
+  resetPassword: {
+    url: '/user/reset-password',
+    method: 'post',
+  },
 }
 
 const sendRequest = (apiName, data) => {

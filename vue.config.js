@@ -96,18 +96,13 @@ const vueConfig = {
 
   devServer: {
     disableHostCheck: true,
-    // development server port 8000
     port: 8000,
-    proxy: 'http://101.226.16.95:8088/mesh/api',
-
-    // If you want to turn on the proxy, please remove the mockjs /src/main.js L11
-    // proxy: {
-    //   '/api': {
-    //     target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-    //     ws: false,
-    //     changeOrigin: true
-    //   }
-    // }
+    proxy: {
+      '/api': {
+        target: process.env.VUE_APP_API_SERVER,
+        changeOrigin: true,
+      },
+    },
   },
 
   // disable source map in production
