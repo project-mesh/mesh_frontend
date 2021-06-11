@@ -3,10 +3,10 @@
 </template>
 
 <script>
-import uuidV1 from 'uuid/v1'
+import { v4 as uuidv4 } from 'uuid'
 import utils from './utils/utils'
 function generateGuid() {
-  return uuidV1()
+  return uuidv4()
 }
 export default {
   name: 'FriendlyIframe',

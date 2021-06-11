@@ -110,20 +110,27 @@ const projectInfo = {
                 { root: true }
               )
               // 获取团队成员的Avatar
+              const promises = []
               for (let i = 0; i < project.members.length; i++) {
-                getUserAvatar(project.members[i].username)
-                  .then((ret) => {
-                    project.members[i].avatar = ret
-                    console.log('the members will be commit is:', project.members)
-                    commit('SET_PROJECT_MEMBERS', project.members)
-                  })
-                  .catch((err) => {
-                    console.log('error in projectMember:', i, err)
-                  })
+                promises.push(
+                  getUserAvatar(project.members[i].username)
+                    .then((ret) => {
+                      project.members[i].avatar = ret
+                      console.log('the members will be commit is:', project.members)
+                      commit('SET_PROJECT_MEMBERS', project.members)
+                    })
+                    .catch((err) => {
+                      console.log('error in projectMember:', i, err)
+                    })
+                )
               }
-              commit('SET_VISIBILITY', project.isPublic)
+              Promise.allSettled(promises).then(() => {
+                commit('SET_VISIBILITY', project.isPublic)
+                resolve(res)
+              })
+            } else {
+              resolve(res)
             }
-            resolve(res)
           })
           .catch((err) => reject(err))
       })

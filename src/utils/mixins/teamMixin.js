@@ -26,16 +26,6 @@ export default {
       const promises = []
       const currentRoute = this.$route
 
-      // console.log('currentRoute: ', currentRoute)
-
-      if (!this.notifications || this.notifications.length === 0) {
-        promises.push(
-          this.queryNotification({
-            username: this.username,
-          })
-        )
-      }
-
       if (this.needToLoadTeamInfo()) {
         const requestData = {
           username: this.username,

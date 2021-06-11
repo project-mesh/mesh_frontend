@@ -2,12 +2,16 @@ import axios from 'axios'
 import store from '../store'
 const OSS = require('ali-oss')
 
+const region = process.env.VUE_APP_OSS_REGION
+const accessKeyId = process.env.VUE_APP_OSS_ID
+const accessKeySecret = process.env.VUE_APP_OSS_SECRET
+const bucket = process.env.VUE_APP_OSS_BUCKET
+
 const client = new OSS({
-  region: 'oss-cn-shanghai.aliyuncs.com?s=' + Math.random().toString(),
-  accessKeyId: 'LTAI4GH43ciwxxfuugQdZxfc',
-  accessKeySecret: '2NbIDggbyq2mQKSXF0BhYY0YKOhY8F',
-  bucket: 'meshoss',
-  secure: true,
+  region,
+  accessKeyId,
+  accessKeySecret,
+  bucket,
 })
 // 支持File对象、Blob数据以及OSS Buffer。
 // const data = '<File Object>'
@@ -44,7 +48,7 @@ export function dataURItoBlob(dataURI) {
 }
 
 export function testGet(object_key) {
-  return client.signatureUrl(object_key)
+  return `https://${bucket}.${region}.aliyuncs.com/${encodeURIComponent(object_key)}`
 }
 
 export function getBase64(url) {
@@ -60,7 +64,6 @@ export function getMyAvatar() {
   let imgUrl = testGet(object_key)
   getBase64(imgUrl).then((ret) => {
     let base64Data = 'data:image/jpg;base64,' + ret.toString()
-    console.log('will commit avatar')
     store.commit('SET_AVATAR', base64Data)
   })
 }
