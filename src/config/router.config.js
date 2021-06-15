@@ -276,14 +276,6 @@ export const asyncRouterMap = [
           permission: ['user'],
         },
         children: [
-          // 个人中心
-          {
-            path: '/account/center',
-            name: 'center',
-            beforeEnter: guard,
-            component: () => import('@/views/account/center'),
-            meta: { title: '个人中心', keepAlive: true, permission: ['user'], icon: 'info-circle' },
-          },
           // 设置
           {
             path: '/account/settings',
