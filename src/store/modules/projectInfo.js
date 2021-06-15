@@ -117,7 +117,6 @@ const projectInfo = {
                     .then((ret) => {
                       project.members[i].avatar = ret
                       console.log('the members will be commit is:', project.members)
-                      commit('SET_PROJECT_MEMBERS', project.members)
                     })
                     .catch((err) => {
                       console.log('error in projectMember:', i, err)
@@ -125,6 +124,7 @@ const projectInfo = {
                 )
               }
               Promise.allSettled(promises).then(() => {
+                commit('SET_PROJECT_MEMBERS', project.members)
                 commit('SET_VISIBILITY', project.isPublic)
                 resolve(res)
               })

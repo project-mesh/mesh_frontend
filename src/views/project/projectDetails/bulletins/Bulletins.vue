@@ -28,11 +28,7 @@
     >
       <create-form ref="createForm"></create-form>
     </a-modal>
-    <a-list
-      size="large"
-      :data-source="bulletinWithFormatedCreateTime"
-      :pagination="pagination(bulletinWithFormatedCreateTime)"
-    >
+    <a-list size="large" :data-source="bulletins" :pagination="pagination(bulletins)">
       <a-list-item slot="renderItem" slot-scope="bulletin, index" :key="bulletin.bulletinId">
         <a-list-item-meta :description="bulletin.description">
           <a slot="title">{{ bulletin.bulletinName }}</a>
@@ -44,7 +40,7 @@
             <a :disabled="username !== projectAdminName || deleteLoading[index]">删除</a>
           </a-popconfirm>
         </div>
-        <div>{{ bulletin.createTimeDisplay }}</div>
+        <div>{{ bulletin.createTime }}</div>
       </a-list-item>
     </a-list>
   </a-card>
@@ -53,7 +49,6 @@
 <script>
 import UpdateForm from './UpdateForm'
 import CreateForm from './CreateForm'
-import { formatDateByPattern } from '@/utils/dateUtil'
 import projectMixin from '@/utils/mixins/projectMixin'
 import teamMixin from '@/utils/mixins/teamMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
@@ -78,18 +73,6 @@ export default {
   },
   computed: {
     ...mapGetters(['bulletins', 'username', 'projectAdminName', 'projectId']),
-    bulletinWithFormatedCreateTime() {
-      const formatedData = _.cloneDeep(this.bulletins)
-      formatedData.forEach((bulletin) => {
-        bulletin.createTimeDisplay = formatDateByPattern(
-          new Date(Number(bulletin.createTime)),
-          'yyyy-MM-dd'
-        )
-        console.log(this.bulletins)
-      })
-
-      return formatedData
-    },
   },
   methods: {
     ...mapActions(['deleteBulletin']),

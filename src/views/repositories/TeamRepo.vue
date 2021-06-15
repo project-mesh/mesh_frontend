@@ -59,11 +59,9 @@ import { mapGetters, mapActions } from 'vuex'
 import validator from 'validator'
 
 import TaskForm from './TaskForm'
-import { formatDateByPattern } from '@/utils/dateUtil'
 import teamMixin from '@/utils/mixins/teamMixin'
 import paginationMixin from '@/utils/mixins/paginationMixin'
 import EditableCell from './EditableCell'
-import cloneDeep from 'lodash.clonedeep'
 import Mock from 'mockjs2'
 
 const columns = [
@@ -90,8 +88,8 @@ const columns = [
   },
   {
     title: '上传时间',
-    dataIndex: 'createTimeDisplay',
-    key: 'createTimeDisplay',
+    dataIndex: 'createTime',
+    key: 'createTime',
     ellipsis: true,
   },
   {
@@ -132,19 +130,8 @@ export default {
   },
   computed: {
     ...mapGetters(['teamKB', 'username', 'teamId', 'teamAdminName', 'teamMembers']),
-    teamKBWithFormatedCreateTime() {
-      const formatedData = cloneDeep(this.teamKB)
-      formatedData.forEach((knowledge) => {
-        knowledge.createTimeDisplay = formatDateByPattern(
-          new Date(Number(knowledge.createTime)),
-          'yyyy-MM-dd hh:mm'
-        )
-      })
-
-      return formatedData
-    },
     filteredTeamKB() {
-      const filtered = this.teamKBWithFormatedCreateTime.filter(
+      const filtered = this.teamKB.filter(
         (knowledge) =>
           knowledge.knowledgeName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase()) ||
           knowledge.hyperlink.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())
@@ -168,7 +155,6 @@ export default {
     },
     getAvatar(username) {
       const user = this.teamMembers.find((member) => member.username === username)
-      // return this.teamMembers.find((member) => member.username === username).avatar
       return user ? user.avatar : ''
     },
     add() {

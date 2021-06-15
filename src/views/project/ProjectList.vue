@@ -129,9 +129,9 @@
           </a-select>
         </a-form-item>
         <a-form-item label="项目负责人">
-          <a-select v-decorator="['prjAdmin']" placeholder="选择项目管理员" disabled>
-            <a-select-option v-for="member in prjMembers" :key="member" :value="member">
-              {{ member }}
+          <a-select v-decorator="['prjAdmin']" placeholder="选择项目管理员">
+            <a-select-option v-for="member in teamMembers" :key="member.username" :value="member">
+              {{ member.username }}
             </a-select-option>
           </a-select>
         </a-form-item>

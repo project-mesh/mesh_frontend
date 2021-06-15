@@ -43,9 +43,6 @@ export default {
       if (promises.length) {
         Promise.all(promises)
           .then(() => {
-            // this.$notification.success({
-            //   message: '团队信息加载成功！',
-            // })
             console.log('团队信息加载成功')
           })
           .catch((err) => {
