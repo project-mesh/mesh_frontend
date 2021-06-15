@@ -3,7 +3,7 @@
     <div class="toolbox">
       <!-- <button @click="updateFirstRow">Update first row</button>
      -->
-      <a-button-group :size="large">
+      <a-button-group size="large">
         <a-button type="primary" @click="increaseZoomLevel">
           <a-icon type="minus" />
           缩小
@@ -115,7 +115,7 @@ export default {
         const task = this.projectTasks[i]
         const taskId = task.taskId
         const founder = task.founder
-        const id = GSTC.api.GSTCID(taskId.toString() + founder.toString())
+        const id = GSTC.api.GSTCID('t' + taskId.toString())
         const rowId = GSTC.api.GSTCID(taskId.toString())
         const startTime = GSTC.api.date(task.createTime).startOf('day').valueOf()
         const endTime = GSTC.api.date(task.deadline).endOf('day').valueOf()
