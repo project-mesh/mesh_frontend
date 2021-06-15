@@ -36,18 +36,6 @@
             <a :disabled="!isProjectAdminOrUploader(item)">删除</a>
           </a-popconfirm>
         </div>
-        <!-- <div slot="actions">
-          <a-dropdown>
-            <a-menu slot="overlay">
-              <a-menu-item><a @click="edit(item)">编辑</a></a-menu-item>
-              <a-menu-item><a>删除</a></a-menu-item>
-            </a-menu>
-            <a>
-              更多
-              <a-icon type="down" />
-            </a>
-          </a-dropdown>
-        </div> -->
         <div class="list-content">
           <div class="name-group">
             <a-avatar slot="avatar" :src="getAvatar(item.uploaderName)" />
@@ -58,7 +46,7 @@
           </div>
           <div class="list-content-item">
             <span>上传时间</span>
-            <p>{{ item.createTimeDisplay }}</p>
+            <p>{{ item.createTime }}</p>
           </div>
         </div>
       </a-list-item>
@@ -69,7 +57,6 @@
 <script>
 // 演示如何使用 this.$dialog 封装 modal 组件
 import TaskForm from './TaskForm'
-import { formatDateByPattern } from '@/utils/dateUtil'
 import { mapGetters, mapActions } from 'vuex'
 import teamMixin from '@/utils/mixins/teamMixin'
 import projectMixin from '@/utils/mixins/projectMixin'
@@ -98,8 +85,8 @@ const columns = [
   },
   {
     title: '上传时间',
-    dataIndex: 'createTimeDisplay',
-    key: 'createTimeDisplay',
+    dataIndex: 'createTime',
+    key: 'createTime',
     ellipsis: true,
   },
   {
@@ -129,19 +116,8 @@ export default {
   },
   computed: {
     ...mapGetters(['projectKB', 'username', 'projectId', 'projectAdminName', 'teamMembers']),
-    projectKBWithFormatedCreateTime() {
-      const formatedData = _.cloneDeep(this.projectKB)
-      formatedData.forEach((knowledge) => {
-        knowledge.createTimeDisplay = formatDateByPattern(
-          new Date(Number(knowledge.createTime)),
-          'yyyy-MM-dd hh:mm'
-        )
-      })
-
-      return formatedData
-    },
     filteredProjects() {
-      return this.projectKBWithFormatedCreateTime.filter(
+      return this.projectKB.filter(
         (knowledge) =>
           knowledge.knowledgeName.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase()) ||
           knowledge.hyperlink.toLocaleUpperCase().match(this.filterText.toLocaleUpperCase())

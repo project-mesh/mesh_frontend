@@ -129,9 +129,9 @@
           </a-select>
         </a-form-item>
         <a-form-item label="项目负责人">
-          <a-select v-decorator="['prjAdmin']" placeholder="选择项目管理员" disabled>
-            <a-select-option v-for="member in prjMembers" :key="member" :value="member">
-              {{ member }}
+          <a-select v-decorator="['prjAdmin']" placeholder="选择项目管理员">
+            <a-select-option v-for="member in teamMembers" :key="member.username" :value="member">
+              {{ member.username }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -215,7 +215,7 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { promisify, timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
-import { putProjectLogo, dataURItoBlob, putObject, getDefaultProjectAvatar } from '../../utils/oss'
+import { putProjectLogo, dataURItoBlob, getDefaultProjectAvatar } from '../../utils/oss'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 
@@ -236,6 +236,7 @@ export default {
       'teamAdminName',
       'teamMembers',
       'teamId',
+      'projectMembers',
     ]),
     filteredProjects() {
       return this.teamProjects.filter((project) =>
@@ -259,16 +260,29 @@ export default {
       'deleteProject',
       'updateProject',
       'joinProject',
+      'queryProject',
     ]),
     tryJumpToProjectDetail(projectId) {
       const currPrj = this.teamProjects.find((prj) => prj.projectId === projectId)
-      if (!currPrj || !currPrj.members.includes(this.username)) {
+      if (!currPrj) {
         return this.$notification.error({
           message: '你不是该项目成员！',
         })
       }
-
-      this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
+      const username = this.username
+      this.queryProject({
+        username: this.username,
+        projectId: projectId,
+      }).then((response) => {
+        const members = response.data.project.members
+        if (!members.some((m) => m.username == username)) {
+          return this.$notification.error({
+            message: '你不是该项目成员！',
+          })
+        } else {
+          this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
+        }
+      })
     },
     showListView() {
       console.log('显示列表')

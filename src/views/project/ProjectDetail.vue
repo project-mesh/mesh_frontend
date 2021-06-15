@@ -25,6 +25,7 @@ export default {
         { key: 'taskList', tab: '列表' },
         { key: 'taskBoard', tab: '看板' },
         { key: 'projectRepo', tab: '知识库' },
+        { key: 'gantt', tab: '甘特图' },
         { key: 'statistics', tab: '统计' },
         { key: 'projectMember', tab: '成员' },
       ],

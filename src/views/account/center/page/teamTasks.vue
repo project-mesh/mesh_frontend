@@ -23,13 +23,6 @@
               <span>截止时间</span>
               <p>{{ item.deadline }}</p>
             </div>
-            <div class="list-content-item">
-              <a-progress
-                :percent="+item.progress.value"
-                :status="!item.progress.status ? null : item.progress.status"
-                style="width: 180px"
-              />
-            </div>
           </div>
         </a-list-item>
       </a-list>
