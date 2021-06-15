@@ -215,7 +215,7 @@ import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
-import { putProjectLogo, dataURItoBlob, putObject, getDefaultProjectAvatar } from '../../utils/oss'
+import { putProjectLogo, dataURItoBlob, getDefaultProjectAvatar } from '../../utils/oss'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 

@@ -27,9 +27,10 @@ export default {
       if (promises.length) {
         Promise.all(promises)
           .then(() => {
-            this.$notification.success({
-              message: '项目信息加载成功！',
-            })
+            // this.$notification.success({
+            //   message: '项目信息加载成功！',
+            // })
+            console.log('项目信息加载成功！')
           })
           .catch((err) => {
             this.$notification.error({
