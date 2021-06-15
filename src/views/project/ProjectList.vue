@@ -129,13 +129,7 @@
           </a-select>
         </a-form-item>
         <a-form-item label="项目负责人">
-          <a-select
-            v-decorator="[
-              'prjAdmin',
-              { rules: [{ required: true, message: '请选择项目负责人!' }] },
-            ]"
-            placeholder="选择项目管理员"
-          >
+          <a-select v-decorator="['prjAdmin']" placeholder="选择项目管理员" disabled>
             <a-select-option v-for="member in prjMembers" :key="member" :value="member">
               {{ member }}
             </a-select-option>
@@ -464,8 +458,6 @@ export default {
     showUpdatePrjForm(prj) {
       this.selectedUpdatePrj = prj
       this.modifyProjForm = true
-      console.log('In showUpdatePrjForm, prj: ', prj)
-      this.prjMembers = prj.members.filter((member) => typeof member === 'string')
 
       if (Object.keys(prj).length) {
         this.$nextTick(() => {

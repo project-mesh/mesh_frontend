@@ -93,36 +93,39 @@ const teamInfo = {
             const { data } = res
             if (data.isSuccess) {
               // 用户avatar
-              console.log('data.team in GetTeamInfo is : ', data.team)
+              const promises = []
               for (let i = 0; i < data.team.members.length; i++) {
-                console.log('members in', i, 'is: ', data.team.members[i])
                 let username = data.team.members[i].username
-                getUserAvatar(username)
-                  .then((ret) => {
-                    data.team.members[i].avatar = ret
-                  })
-                  .catch((err) => {
-                    console.log('get projectLogo error in: ', i, ' ', err)
-                  })
+                promises.push(
+                  getUserAvatar(username)
+                    .then((ret) => {
+                      data.team.members[i].avatar = ret
+                    })
+                    .catch((err) => {
+                      console.log('get projectLogo error in: ', i, ' ', err)
+                    })
+                )
               }
               // 获取项目logo
-              console.log('data.team in GetTeamInfo is : ', data.team)
               for (let i = 0; i < data.team.teamProjects.length; i++) {
-                console.log('teamProjects in', i, 'is: ', data.team.teamProjects[i])
                 let projectId = data.team.teamProjects[i].projectId
-                getProjectLogo(projectId)
-                  .then((ret) => {
-                    data.team.teamProjects[i].projectLogo = ret
-                  })
-                  .catch((err) => {
-                    console.log('get projectLogo error in: ', i, ' ', err)
-                  })
+                promises.push(
+                  getProjectLogo(projectId)
+                    .then((ret) => {
+                      data.team.teamProjects[i].projectLogo = ret
+                    })
+                    .catch((err) => {
+                      console.log('get projectLogo error in: ', i, ' ', err)
+                    })
+                )
               }
-              console.log('in new queryTeam teamProjects: ', data.team.teamProjects)
-              commit('SET_ALL', data.team)
-              return resolve(res)
+              Promise.allSettled(promises).then(() => {
+                commit('SET_ALL', data.team)
+                resolve(res)
+              })
+            } else {
+              reject(new Error(data.msg))
             }
-            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.log('err in GetTeamInfo is : ', err)
@@ -135,38 +138,41 @@ const teamInfo = {
         sendRequest('updateTeam', requestData)
           .then((res) => {
             const { data } = res
-
+            const promises = []
             if (data.isSuccess) {
-              console.log('res in UpdateTeam is: ', res)
               for (let i = 0; i < data.team.members.length; i++) {
-                console.log('members in', i, 'is: ', data.team.members[i])
                 let username = data.team.members[i].username
-                getUserAvatar(username)
-                  .then((ret) => {
-                    data.team.members[i].avatar = ret
-                  })
-                  .catch((err) => {
-                    console.log('get projectLogo error in: ', i, ' ', err)
-                  })
+                promises.push(
+                  getUserAvatar(username)
+                    .then((ret) => {
+                      data.team.members[i].avatar = ret
+                    })
+                    .catch((err) => {
+                      console.log('get projectLogo error in: ', i, ' ', err)
+                    })
+                )
               }
               // 获取项目logo
-              console.log('data.team in GetTeamInfo is : ', data.team)
               for (let i = 0; i < data.team.teamProjects.length; i++) {
-                console.log('teamProjects in', i, 'is: ', data.team.teamProjects[i])
                 let projectId = data.team.teamProjects[i].projectId
-                getProjectLogo(projectId)
-                  .then((ret) => {
-                    data.team.teamProjects[i].projectLogo = ret
-                  })
-                  .catch((err) => {
-                    console.log('get projectLogo error in: ', i, ' ', err)
-                  })
+                promises.push(
+                  getProjectLogo(projectId)
+                    .then((ret) => {
+                      data.team.teamProjects[i].projectLogo = ret
+                    })
+                    .catch((err) => {
+                      console.log('get projectLogo error in: ', i, ' ', err)
+                    })
+                )
               }
-              commit('SET_ALL', data.team)
-              commit('UPDATE_TEAM', data.team, { root: true })
-              return resolve(res)
+              Promise.allSettled(promises).then(() => {
+                commit('SET_ALL', data.team)
+                commit('UPDATE_TEAM', data.team, { root: true })
+                resolve(res)
+              })
+            } else {
+              reject(new Error(data.msg))
             }
-            reject(new Error(data.msg))
           })
           .catch((err) => {
             console.error(err)
