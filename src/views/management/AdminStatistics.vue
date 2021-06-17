@@ -62,7 +62,6 @@
 <script>
 import China from 'echarts/map/json/china.json'
 import { mapGetters, mapActions } from 'vuex'
-import moment from 'moment'
 
 export default {
   name: 'Statistics',
@@ -176,8 +175,10 @@ export default {
         })
         return { columns, rows }
       }
+      console.log('usersLocation: ', this.userLocation)
       for (let i = 0; i < this.userLocation.length; ++i) {
-        let location = this.userLocation[i].location
+        let location = this.userLocation[i].userLocation
+        console.log(location)
 
         if (location.endsWith('省')) {
           location = location.slice(0, -1)

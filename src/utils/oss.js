@@ -68,27 +68,34 @@ export function getMyAvatar() {
   })
 }
 
-export function getUserAvatar(username) {
-  let object_key = 'userAvatar_' + username
-  let imgUrl = testGet(object_key)
-  return getBase64(imgUrl).then((ret) => {
-    let base64Data = 'data:image/jpg;base64,' + ret.toString()
-    return Promise.resolve(base64Data)
-  })
+export async function getUserAvatar(username) {
+  let objectKey = 'userAvatar_' + username
+  let imgUrl = testGet(objectKey)
+
+  try {
+    const result = await getBase64(imgUrl)
+    return 'data:image/jpg;base64,' + result
+  } catch {
+    const result = await getBase64(testGet('userDefault'))
+    return 'data:image/jpg;base64,' + result
+  }
 }
 
-export function putProjectLogo(projectId, data) {
+export async function putProjectLogo(projectId, data) {
   let object_key = 'projectAvatar_' + projectId.toString()
-  putObject(object_key, data)
+  await putObject(object_key, data)
 }
 
-export function getProjectLogo(projectId) {
-  let object_key = 'projectAvatar_' + projectId.toString()
-  let imgUrl = testGet(object_key)
-  return getBase64(imgUrl).then((ret) => {
-    let base64Data = 'data:image/jpg;base64,' + ret.toString()
-    return Promise.resolve(base64Data)
-  })
+export async function getProjectLogo(projectId) {
+  let objectKey = 'projectAvatar_' + projectId.toString()
+  let imgUrl = testGet(objectKey)
+  try {
+    const result = await getBase64(imgUrl)
+    return 'data:image/jpg;base64,' + result
+  } catch {
+    const result = await getBase64(testGet('projectDefault'))
+    return 'data:image/jpg;base64,' + result
+  }
 }
 
 export function getDefaultAvatar() {

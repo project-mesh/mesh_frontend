@@ -74,7 +74,7 @@
                   {{ task.deadline }}
                 </a-descriptions-item>
                 <a-descriptions-item :span="2" label="创建时间">
-                  {{ moment(+task.createTime).format('YYYY-MM-DD hh:mm') }}
+                  {{ task.createTime }}
                 </a-descriptions-item>
                 <a-descriptions-item :span="1" label="优先级">
                   <div

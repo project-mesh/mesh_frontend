@@ -129,9 +129,9 @@
           </a-select>
         </a-form-item>
         <a-form-item label="项目负责人">
-          <a-select v-decorator="['prjAdmin']" placeholder="选择项目管理员" disabled>
-            <a-select-option v-for="member in prjMembers" :key="member" :value="member">
-              {{ member }}
+          <a-select v-decorator="['prjAdmin']" placeholder="选择项目管理员">
+            <a-select-option v-for="member in teamMembers" :key="member.username" :value="member">
+              {{ member.username }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -213,9 +213,9 @@
 <script>
 import store from '../../store'
 import { mapActions, mapGetters } from 'vuex'
-import { timeFix } from '@/utils/util'
+import { promisify, timeFix } from '@/utils/util'
 import teamMixin from '@/utils/mixins/teamMixin'
-import { putProjectLogo, dataURItoBlob, putObject, getDefaultProjectAvatar } from '../../utils/oss'
+import { putProjectLogo, dataURItoBlob, getDefaultProjectAvatar } from '../../utils/oss'
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters']
 
@@ -236,6 +236,7 @@ export default {
       'teamAdminName',
       'teamMembers',
       'teamId',
+      'projectMembers',
     ]),
     filteredProjects() {
       return this.teamProjects.filter((project) =>
@@ -259,16 +260,29 @@ export default {
       'deleteProject',
       'updateProject',
       'joinProject',
+      'queryProject',
     ]),
     tryJumpToProjectDetail(projectId) {
       const currPrj = this.teamProjects.find((prj) => prj.projectId === projectId)
-      if (!currPrj || !currPrj.members.includes(this.username)) {
+      if (!currPrj) {
         return this.$notification.error({
           message: '你不是该项目成员！',
         })
       }
-
-      this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
+      const username = this.username
+      this.queryProject({
+        username: this.username,
+        projectId: projectId,
+      }).then((response) => {
+        const members = response.data.project.members
+        if (!members.some((m) => m.username == username)) {
+          return this.$notification.error({
+            message: '你不是该项目成员！',
+          })
+        } else {
+          this.$router.push({ name: 'taskList', query: { teamId: this.teamId, projectId } })
+        }
+      })
     },
     showListView() {
       console.log('显示列表')
@@ -337,109 +351,84 @@ export default {
         class: 'test',
       })
     },
-    handleCreateSubmit(e) {
+    async handleCreateSubmit(e) {
       e.preventDefault()
       this.createLoading = true
-      this.createForm.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values)
-          console.log('prjLogp:', values.prjLogo)
-          this.createProject({
-            username: store.getters.username,
-            teamId: store.getters.teamId,
-            projectName: values.prjName,
-            adminName: values.prjAdmin,
-            isPublic: values.prjAuthority === 'public',
-          })
-            .then((response) => {
-              console.log('success,boy', response)
-              console.log('projectId is:', response.data.project.projectId)
-              if (values.prjLogo && values.prjLogo !== 'xxx') {
-                console.log('prjLogo is:', values.prjLogo)
-                putProjectLogo(
-                  response.data.project.projectId,
-                  dataURItoBlob(values.prjLogo.file.thumbUrl)
-                )
-              } else {
-                getDefaultProjectAvatar().then((ret) => {
-                  console.log('defaultAvatar ret is:', ret)
-                  putProjectLogo(response.data.project.projectId, dataURItoBlob(ret)).then(() => {
-                    console.log('success in put Logo')
-                  })
-                })
-              }
-              // 延迟显示欢迎信息
-              setTimeout(() => {
-                this.$notification.success({
-                  message: '创建成功',
-                  description: `${timeFix()}，已成功添加新项目`,
-                })
-                this.queryTeam({
-                  username: this.username,
-                  teamId: this.teamId,
-                })
-                  .then(() => {
-                    this.$notification.success({
-                      message: '团队信息加载成功！',
-                    })
-                  })
-                  .catch((err) => {
-                    this.$notification.error({
-                      message: '请求团队信息失败，请重试',
-                    })
-                  })
-              }, 1000)
-              // 实时更新
-            })
-            .catch((err) => {
-              console.log('error, boy: ', err)
-              this.$notification.error({
-                message: '创建失败',
-                description: err.message,
-              })
-            })
-            .finally(() => {
-              this.createLoading = false
-              this.createProjForm = false
-            })
-        }
+      const asyncValidate = promisify(this.createForm.validateFields)
+      const [values] = await asyncValidate()
+      const { data } = await this.createProject({
+        username: this.username,
+        teamId: this.teamId,
+        projectName: values.prjName,
+        adminName: values.prjAdmin,
+        isPublic: values.prjAuthority === 'public',
       })
+      if (values.prjLogo && values.prjLogo !== 'xxx') {
+        try {
+          await putProjectLogo(data.project.projectId, dataURItoBlob(values.prjLogo.file.thumbUrl))
+        } catch {
+          this.$notification.error({
+            message: '图片上传失败',
+          })
+        }
+      }
+
+      try {
+        await this.queryTeam({
+          username: this.username,
+          teamId: this.teamId,
+        })
+        this.$notification.success({
+          message: '已成功添加新项目',
+        })
+      } catch {
+        this.$notification.error({
+          message: '请求团队信息失败，请重试',
+        })
+      }
+
+      this.createLoading = false
+      this.createProjForm = false
     },
-    handleUpdateSubmit(e) {
+    async handleUpdateSubmit(e) {
       e.preventDefault()
       this.updateLoading = true
-      this.updateForm.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values)
-          this.updateProject({
-            username: store.getters.username,
-            teamId: store.getters.teamId,
-            projectId: this.selectedUpdatePrj.projectId,
-            isPublic: values.prjAuthority === 'public',
-            projectName: values.prjName,
-            adminName: values.prjAdmin,
-          })
-            .then((response) => {
-              console.log('success,boy', response)
-              if (values.prjLogo && values.prjLogo.file) {
-                putProjectLogo(
-                  this.selectedUpdatePrj.projectId,
-                  dataURItoBlob(values.prjLogo.file.thumbUrl)
-                )
-              }
-            })
-            .catch((err) => {
-              this.$notification.error({
-                message: '更新失败',
-                description: err,
-              })
-            })
-            .finally(() => {
-              this.updateLoading = false
-              this.modifyProjForm = false
-            })
-        }
+      const asyncValidate = promisify(this.updateForm.validateFields)
+      const [values] = await asyncValidate()
+      const { data } = await this.updateProject({
+        username: this.username,
+        teamId: this.teamId,
+        projectId: this.selectedUpdatePrj.projectId,
+        isPublic: values.prjAuthority === 'public',
+        projectName: values.prjName,
+        adminName: values.prjAdmin,
       })
+      if (values.prjLogo && values.prjLogo.file) {
+        try {
+          await putProjectLogo(data.project.projectId, dataURItoBlob(values.prjLogo.file.thumbUrl))
+        } catch {
+          this.$notification.error({
+            message: '图片上传失败',
+          })
+        }
+      }
+
+      try {
+        await this.queryTeam({
+          username: this.username,
+          teamId: this.teamId,
+        })
+        this.$notification.success({
+          message: '已成功更新新项目',
+        })
+      } catch {
+        this.$notification.error({
+          message: '请求团队信息失败，请重试',
+        })
+      }
+
+      this.updateLoading = false
+      this.modifyProjForm = false
     },
     showUpdatePrjForm(prj) {
       this.selectedUpdatePrj = prj
